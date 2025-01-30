@@ -1,0 +1,10 @@
+---
+title: "Practical Use Case"
+---
+
+{{< include _setup.qmd >}}
+
+
+Brief recap of what is important to get good and fast performance in `mlr3torch`:
+
+* Use jit-compilation to speed up the training

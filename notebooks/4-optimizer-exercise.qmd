@@ -1,0 +1,337 @@
+---
+title: "Optimizer Exercises"
+---
+
+{{< include _setup.qmd >}}
+
+**Question 1**
+
+In this exercise, the task is to play around with the settings for the optimization of a neural network.
+We start by generating some (highly non-linear) synthetic data using the `mlbench` package.
+
+```{r, message = FALSE}
+library(torch)
+data <- mlbench::mlbench.friedman3(n = 3000, sd = 0.1)
+X <- torch_tensor(data$x)
+X[1:2, ]
+Y <- torch_tensor(data$y)$unsqueeze(2)
+Y[1:2, ]
+```
+
+The associated machine learning task is to predict the output `Y` from the input `X`.
+
+Next, we create a dataset for it using the `tensor_dataset()` function.
+
+```{r}
+ds <- tensor_dataset(X, Y)
+ds$.getitem(1)
+```
+
+We can create two sub-datasets -- for training and validation -- using `dataset_subset()`.
+
+```{r}
+ids_train <- sample(1000, 700)
+ids_valid <- setdiff(seq_len(1000), ids_train)
+ds_train <- dataset_subset(ds, ids_train)
+ds_valid <- dataset_subset(ds, ids_valid)
+```
+
+The network that we will be fitting is a simple MLP:
+
+```{r}
+nn_mlp <- nn_module("nn_mlp",
+  initialize = function() {
+    self$lin1 <- nn_linear(4, 50)
+    self$lin2 <- nn_linear(50, 50)
+    self$lin3 <- nn_linear(50, 1)
+  },
+  forward = function(x) {
+    x |>
+      self$lin1() |>
+      nnf_relu() |>
+      self$lin2() |>
+      nnf_relu() |>
+      self$lin3()
+  }
+)
+```
+
+The code to compare different optimizer configurations is provided through the (provided) `compare_configs()` function.
+It takes as arguments:
+
+* `epochs`: The number of epochs to train for. Defaults to 30.
+* `batch_size`: The batch size to use for training. Defaults to 16.
+* `lr`: The learning rate to use for training. Defaults to 0.01.
+* `weight_decay`: The weight decay to use for training. Defaults to 0.01.
+* `beta1`: The momentum parameter to use for training. Defaults to 0.9.
+* `beta2`: The adaptive step size parameter to use for training. Defaults to 0.999.
+
+One of the arguments (except for `epochs`) must be a list of values.
+The function will then run the same training configuration for each of the values in the list and visualize the results.
+
+<details>
+<summary>Implementation of `compare_configs`</summary>
+
+```{r}
+library(ggplot2)
+compare_configs <- function(epochs = 30, batch_size = 16, lr = 0.01, weight_decay = 0.01, beta1 = 0.9, beta2 = 0.999) {
+  # Identify which parameter is a list
+  args <- list(batch_size = batch_size, lr = lr, weight_decay = weight_decay, beta1 = beta1, beta2 = beta2)
+  is_list <- sapply(args, is.list)
+
+  if (sum(is_list) != 1) {
+    stop("One of the arguments must be a list")
+  }
+
+  list_arg_name <- names(args)[is_list]
+  list_args <- args[[list_arg_name]]
+  other_args <- args[!is_list]
+
+  # Run train_valid for each value in the list
+  results <- lapply(list_args, function(arg) {
+    network <- with_torch_manual_seed(seed = 123, nn_mlp())
+    other_args[[list_arg_name]] <- arg
+    train_valid(network, ds_train = ds_train, ds_valid = ds_valid, epochs = epochs, batch_size = other_args$batch_size,
+      lr = other_args$lr, betas = c(other_args$beta1, other_args$beta2), weight_decay = other_args$weight_decay)
+  })
+
+  # Combine results into a single data frame
+  combined_results <- do.call(rbind, lapply(seq_along(results), function(i) {
+    df <- results[[i]]
+    df$config <- paste(list_arg_name, "=", list_args[[i]])
+    df
+  }))
+
+  upper <- if (max(combined_results$valid_loss) > 10) quantile(combined_results$valid_loss, 0.98) else max(combined_results$valid_loss)
+
+  ggplot(combined_results, aes(x = epoch, y = valid_loss, color = config)) +
+    geom_line() +
+    theme_minimal() +
+    labs(x = "Epoch", y = "Validation RMSE", color = "Configuration") +
+    ylim(min(combined_results$valid_loss), upper)
+}
+train_loop <- function(network, dl_train, opt) {
+  network$train()
+  coro::loop(for (batch in dl_train) {
+    opt$zero_grad()
+    Y_pred <- network(batch[[1]])
+    loss <- nnf_mse_loss(Y_pred, batch[[2]])
+    loss$backward()
+    opt$step()
+  })
+}
+
+valid_loop <- function(network, dl_valid) {
+  network$eval()
+  valid_loss <- c()
+  coro::loop(for (batch in dl_valid) {
+    Y_pred <- with_no_grad(network(batch[[1]]))
+    loss <- sqrt(nnf_mse_loss(Y_pred, batch[[2]]))
+    valid_loss <- c(valid_loss, loss$item())
+  })
+  mean(valid_loss)
+}
+
+train_valid <- function(network, ds_train, ds_valid, epochs, batch_size, ...) {
+  opt <- optim_ignite_adamw(network$parameters, ...)
+  train_losses <- numeric(epochs)
+  valid_losses <- numeric(epochs)
+  dl_train <- dataloader(ds_train, batch_size = batch_size)
+  dl_valid <- dataloader(ds_valid, batch_size = batch_size)
+  for (epoch in seq_len(epochs)) {
+    train_loop(network, dl_train, opt)
+    valid_losses[epoch] <- valid_loop(network, dl_valid)
+  }
+  data.frame(epoch = seq_len(epochs), valid_loss = valid_losses)
+}
+```
+
+</details>
+
+You can e.g. call the function like below:
+
+```{r}
+compare_configs(epochs = 30, lr = list(0.1, 0.2), weight_decay = 0.02)
+```
+
+Explore a few hyperparameter settings and make some observations as to how they affect the trajectory of the validation loss.
+
+
+::: {.content-visible when-meta=solutions}
+**Solution**
+
+There is not really a 'solution' to this exercise.
+We will go through some of the configurations and explain what is happening.
+
+*Learning rate*
+
+```{r}
+compare_configs(epochs = 30, lr = list(1,  0.1, 0.01, 0.001))
+```
+
+*Batch Size*
+
+For this configuration, we can see that larger batch sizes lead to considerably better results as they allow for *more* updates for the given number of epochs.
+
+```{r}
+compare_configs(epochs = 30, batch_size = list(2, 4, 8, 16, 32, 64))
+```
+
+*Weight Decay*
+
+For too large values of the weight decay, we see that the network struggles to get a good validation loss.
+
+```{r}
+compare_configs(epochs = 30, weight_decay = list(0.2, 0.1, 0.05, 0.025, 0.0125))
+```
+
+*Beta 1*
+
+For the momentum parameter, we can observe that too large values for the momentum parameter lead to oscillations because the local information is not used enough.
+
+```{r}
+compare_configs(epochs = 30, beta1 = list(0.5, 0.85, 0.9, 0.95, 0.99))
+```
+
+*Beta 2*
+
+For larger values of `beta2`, the loss trajectory is considerably smoother.
+While smaller values will -- in this scenario -- lead to more oscillations, they also lead to a better fit.
+Once the value of `beta2` is getting too small, the performance will also deteriorate.
+
+```{r}
+compare_configs(epochs = 30, beta2 = list(0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 0.999, 0.9999))
+```
+:::
+
+**Question 2**: Optimization with Momentum
+
+In this exercise, you will build a gradient descent optimizer with momentum.
+As a use case, we will minimize the *Rosenbrock* function.
+The function is defined as:
+
+
+```{r}
+rosenbrock <- function(x, y) {
+  (1 - x)^2 + 2 * (y - x^2)^2
+}
+rosenbrock(torch_tensor(-1), torch_tensor(-1))
+```
+
+The 'parameters' we will be optimizing is the position of a point `(x, y)`, which will both be updated using gradient descent.
+The figure below shows the Rosenbrock function, where darker values indicate lower values.
+
+```{r, echo = FALSE}
+x <- seq(-2, 2, length.out = 400)
+y <- seq(-1, 3, length.out = 400)
+grid <- expand.grid(x = x, y = y)
+grid$z <- with(grid, rosenbrock(x, y))
+
+breaks <- c(seq(0, 1.9, by = 0.1), seq(2, 19, by = 1), seq(20, 190, by= 10), seq(200, 2000, by = 200))
+
+plot_rosenbrock <- function() {
+  ggplot(grid, aes(x = x, y = y, z = z)) +
+    geom_contour_filled(breaks = breaks) +
+    labs(title = "Rosenbrock Function", x = "x", y = "y") +
+    theme_minimal() +
+    theme(legend.position = "none")
+}
+plot_rb <- plot_rosenbrock()
+plot_rb
+```
+
+The task is to implement the `optim_step()` function.
+
+```{r, eval FALSE}
+optim_step <- function(x, y, lr, x_momentum, y_momentum, beta) {
+  ...
+}
+```
+
+It will receive as arguments, the current values `x` and `y`, as well as the momentum values `x_momentum` and `y_momentum` (all scalar tensors).
+The function should then:
+
+1. Perform a forward pass by calling the `rosenbrock()` function.
+2. Call `$backward()` on the result of the forward pass.
+3. First multiply both momentum values in-place using `$mul_()` with `beta`, then add (`1 - beta`) times the gradient to the momentum values using `$add_()`.
+4. Update the parameters using `$sub_()` with `lr * x_momentum` and `lr * y_momentum`.
+   Perform this update within `with_no_grad()` as we don't want to track the gradients for the parameters.
+
+To perform in-place updates, you can use the `$mul_()` and `$add_()` methods.
+
+The update rule is given exemplarily for `x`:
+
+$$
+\begin{aligned}
+v_{t + 1} &= \beta v_t + (1 - \beta) \nabla_{x} f(x_t, y_t) \\
+\end{aligned}
+$$
+
+
+$$
+\begin{aligned}
+x_{t+1} &= x_t - \eta v_{t + 1}
+\end{aligned}
+$$
+
+To test your optimizer, you can use the following code:
+
+```{r}
+optimize_rosenbrock <- function(steps, lr, beta) {
+  x <- torch_tensor(-1, requires_grad = TRUE)
+  y <- torch_tensor(2, requires_grad = TRUE)
+  momentum_x <- torch_tensor(0)
+  momentum_y <- torch_tensor(0)
+
+  trajectory <- data.frame(
+    x = numeric(steps + 1),
+    y = numeric(steps + 1),
+    value = numeric(steps + 1)
+  )
+  for (step in seq_len(steps)){
+    optim_step(x, y, lr, momentum_x, momentum_y, beta)
+    x$grad$zero_()
+    y$grad$zero_()
+    trajectory$x[step] <- x$item()
+    trajectory$y[step] <- y$item()
+  }
+  trajectory$x[steps + 1] <- x$item()
+  trajectory$y[steps + 1] <- y$item()
+
+  plot_rosenbrock() +
+    geom_path(data = trajectory, aes(x = x, y = y, z = NULL), color = "red") +
+    labs(title = "Optimization Path on Rosenbrock Function", x = "X-axis", y = "Y-axis")
+}
+```
+
+::: {.content-visible when-meta=solutions}
+**Solution**
+
+```{r}
+optim_step <- function(x, y, lr, x_momentum, y_momentum, beta) {
+  value <- rosenbrock(x, y)
+  value$backward()
+  x_momentum$mul_(beta)
+  x_momentum$add_((1 - beta) * x$grad)
+  y_momentum$mul_(beta)
+  y_momentum$add_((1 - beta) * y$grad)
+  with_no_grad({
+    x$sub_(lr * x_momentum)
+    y$sub_(lr * y_momentum)
+  })
+  value$item()
+}
+optimize_rosenbrock(steps = 500, lr = 0.01, beta = 0.9)
+```
+:::
+
+**Question 3**: Weight Decay
+
+In exercise 2, we have optimized the Rosenbrock function.
+Does it make sense to also use weight decay for this optimization?
+
+::: {.content-visible when-meta=solutions}
+**Solution**
+No, it does not make sense to use weight decay for this optimization as it is intended to prevent overfitting which is not a problem in this case.
+This is, because there is no uncertainty in the function we are optimizing.
+:::

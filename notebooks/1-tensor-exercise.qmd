@@ -1,0 +1,263 @@
+---
+title: "Tensors"
+---
+
+{{< include _setup.qmd >}}
+
+:::{.callout-note}
+To solve these exercises, consulting the `torch` [function reference](https://torch.mlverse.org/docs/reference/) can be helpful.
+:::
+
+**Question 1**: Tensor creation and manipulation
+
+Recreate this torch tensor:
+
+```{r, echo = FALSE}
+library(torch)
+x <- torch_tensor(matrix(1:6, byrow = TRUE, nrow = 2))
+x
+```
+
+<details>
+<summary>Hint</summary>
+First create an R `matrix` and then convert it using `torch_tensor()`.
+</details>
+
+Next, create a view of the tensor so it looks like this:
+
+```{r, echo = FALSE}
+x$view(c(3, 2))
+```
+
+<details>
+<summary>Hint</summary>
+Use the `$view()` method and pass the desired shape as a vector.
+</details>
+
+Check programmatically that you successfully created a view, and not a copy.
+
+<details>
+<summary>Hint</summary>
+See what happens when you modify one of the tensors.
+</details>
+
+::: {.content-visible when-meta=solutions}
+**Solution**
+
+We start by creating the tensor:
+
+```{r}
+x <- torch_tensor(matrix(1:6, byrow = TRUE, nrow = 2))
+x
+```
+
+Then, we create a view of the tensor:
+
+```{r}
+y <- x$view(c(3, 2))
+```
+
+To check that we created a view, we can modify one of the tensors and see if the other one changes:
+
+```{r}
+x[1, 1] <- 100
+y
+```
+:::
+
+**Question 2**: More complex reshaping
+
+Consider the following tensor:
+
+```{r}
+x <- torch_tensor(1:6)
+x
+```
+
+
+Reshape it so it looks like this.
+
+```{r, echo = FALSE}
+x$reshape(c(3, 2))$permute(c(2, 1))
+```
+
+<details>
+<summary>Hint</summary>
+First reshape to `(2, 3)` and then `$permute()` the two dimensions.
+</details>
+
+::: {.content-visible when-meta=solutions}
+**Solution**
+We therefore first reshape to `(3, 2)` and then permute the two dimensions to get the desired shape `(2, 3)`.
+
+```{r}
+x <- x$reshape(c(3, 2))
+x
+x$permute(c(2, 1))
+```
+:::
+
+**Question 3**: Broadcasting
+
+Consider the following vectors:
+
+```{r}
+x1 <- torch_tensor(c(1, 2))
+x1
+x2 <- torch_tensor(c(3, 7))
+x2
+```
+
+Predict the result (shape and values) of the following operation by applying the broadcasting rules.
+
+```{r, output = FALSE}
+x1 + x2$reshape(c(2, 1))
+```
+
+::: {.content-visible when-meta=solutions}
+**Solution**
+
+The result is the following tensor:
+
+```{r, echo = FALSE}
+x1 + x2$reshape(c(2, 1))
+```
+
+We will now show how to arrive at this step by step.
+According to the broadcasting rules, we start by adding a singleton dimension to the first tensor:
+
+```{r}
+x1 <- x1$reshape(c(1, 2))
+```
+
+Now, we have a tensor of shape `(1, 2)` and a tensor of shape `(2, 1)`.
+Next, we extend the first tensor along the first dimension to match the second tensor:
+
+```{r}
+x1 <- x1$expand(c(2, 2))
+```
+
+We do this analogously for the second (reshaped) tensor:
+
+```{r}
+x2 <- x2$reshape(c(2, 1))$expand(c(2, 2))
+```
+
+Now they both have the same shape `(2, 2)`, so we can add them:
+
+```{r}
+x1 + x2
+```
+:::
+
+**Question 4**: Handling Singleton dimensions
+
+A common operation in deep learning is to add or get rid of singleton dimensions, i.e., dimensions of size 1.
+As this is so common, torch offers a [`$squeeze()`](https://torch.mlverse.org/docs/reference/torch_squeeze.html) and [`$unsqueeze()`](https://torch.mlverse.org/docs/reference/torch_squeeze.html) method to add and remove singleton dimensions.
+
+Use these two functions to first remove the second dimension and then add one in the first position.
+
+```{r}
+x <- torch_randn(2, 1)
+x
+```
+
+::: {.content-visible when-meta=solutions}
+**Solution**
+```{r}
+x$squeeze(2)$unsqueeze(1)
+```
+:::
+
+**Question 5**: Matrix multiplication
+
+Generate a random matrix $A$ of shape `(10, 5)` and a random matrix $B$ of shape `(10, 5)` by sampling from a standard normal distribution.
+
+<details>
+<summary>Hint</summary>
+Use `torch_randn(nrow, ncol)` to generate random matrices.
+</details>
+
+Can you multiply these two matrices with each other and if so, in which order?
+If not, generate two random matrices with compatible shapes and multiply them.
+
+::: {.content-visible when-meta=solutions}
+**Solution**
+
+We can only multiply a matrix of shape `(n, k)` with a matrix of shape `(k, m)`, i.e., the the number of columns in the first matrix matches the number of rows in the second matrix.
+
+We can therefore not multiply the two matrices with each other in either order.
+To generate two random matrices with compatible shapes, we can generate two random matrices with shape `(10, 5)` and `(5, 10)`.
+
+```{r}
+A <- torch_randn(10, 5)
+B <- torch_randn(5, 10)
+A$matmul(B)
+```
+:::
+
+**Question 6**: Uniform sampling
+
+Generate 10 random variables from a uniform distribution (using only torch functions) in the interval $[10, 20]$.
+Use `torch_rand()` for this (which does not allow for `min` and `max` parameters).
+
+<details>
+<summary>Hint</summary>
+Add the lower bound and multiply with the width of the interval.
+</details>
+
+Then, calculate the mean of the values that are larger than 15.
+
+
+::: {.content-visible when-meta=solutions}
+**Solution**
+Because the uniform distribution of `torch` has no `min` and `max` parameters like `runif()`, we instead sample from a standard uniform distribution and then scale and shift it to the desired interval.
+
+```{r}
+n <- 10
+a <- 10
+b <- 20
+x <- torch_rand(n) * (b - a) + a
+x
+
+mean(x[x > 15])
+```
+:::
+
+**Question 7**: Don't touch this
+
+Consider the code below:
+
+```{r}
+f <- function(x) {
+  x[1] <- torch_tensor(-99)
+  return(x)
+}
+x <- torch_tensor(1:3)
+y <- f(x)
+x
+```
+
+Implement a new different version of this function that returns the same tensor but does not change the value of the input tensor in-place.
+
+<details>
+<summary>Hint</summary>
+The `$clone()` method might be helpful.
+</details>
+
+::: {.content-visible when-meta=solutions}
+**Solution**
+
+We need to `$clone()` the tensor before we modify it.
+
+```{r}
+g <- function(x) {
+  x <- x$clone()
+  x[1] <- torch_tensor(-99)
+  x
+}
+x <- torch_tensor(1:3)
+y <- g(x)
+x
+```
+:::

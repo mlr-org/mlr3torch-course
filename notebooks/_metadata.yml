@@ -1,0 +1,7 @@
+freeze: true
+
+knitr:
+  opts_chunk:
+    fig.align: center
+    R.options:
+      width: 120

@@ -1,0 +1,6 @@
+---
+title: "Optimizers"
+solutions: true
+---
+
+{{< include 4-optimizer-exercise.qmd >}}

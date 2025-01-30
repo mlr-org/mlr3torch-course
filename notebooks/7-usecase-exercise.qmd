@@ -1,0 +1,10 @@
+---
+title: "Practical Use Case"
+---
+
+{{< include _setup.qmd >}}
+
+In this notebook, the goal is to solve an actual problem using a neural network.
+As a baseline model, we will use a simple tree-based model.
+
+You are free to use either only `torch` or `mlr3torch`.

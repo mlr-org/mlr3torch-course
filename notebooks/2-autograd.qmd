@@ -1,0 +1,332 @@
+---
+title: "Autograd"
+---
+
+{{< include _setup.qmd >}}
+
+Automatic differentiation (autograd) is one of torch's key features, enabling the automatic computation of gradients for optimization tasks like training neural networks. Unlike numerical differentiation, which approximates gradients using finite differences, autograd computes exact gradients by tracking operations as they are performed and automatically applying the chain rule of calculus. This makes it possible to efficiently compute gradients of complex functions with respect to many parameters—a critical requirement for training modern neural networks.
+
+Autograd works by building a dynamic computational graph of operations, where each node represents a tensor and each edge represents a mathematical operation.
+
+**Why do we need automatic differentiation?**
+
+In deep learning, training a model requires iteratively updating parameters to minimize a loss function, which measures the difference between predictions and actual data. These updates depend on calculating gradients of the loss with respect to model parameters, information used by optimization algorithms like stochastic gradient descent (SGD). *Automatic Differentiation* eliminates the need to manually derive these gradients, which is error-prone.
+
+## Enabling Gradient Tracking
+
+To use autograd, tensors must have their `requires_grad` field set to `TRUE`. This can either be set during tensor construction or changed afterward using the in-place modifier `$requires_grad_(TRUE)`. In the context of deep learning, we track the gradients of the weights of a neural network. The simplest "neural network" is a linear model with slope $a$ and bias $b$ and a single input $x$.
+
+The forward pass is defined as:
+
+$$\hat{y} = a \times x + b$$
+
+We might be interested in how the prediction $\hat{y}$ changes for the given $x$ when we change the weight $a$ or the bias $b$.
+We will later use this to adjust the weights $a$ and $b$ to improve predictions, i.e., to perform gradient-based optimization. To write down the gradients, let $u = a \times x$ denote the intermediate tensor from the linear predictor.
+
+We can now denote the gradients for:
+
+* **Weight $a$**:
+
+  This is expressed by the gradient $\frac{\partial \hat{y}}{\partial a}$. We can compute the derivative using the chain rule as:
+
+  $$\frac{\partial \hat{y}}{\partial a} = \frac{\partial \hat{y}}{\partial u} \cdot \frac{\partial u}{\partial a} = 1 \cdot x = x$$
+
+* **Bias $b$**:
+
+  $$\frac{\partial \hat{y}}{\partial b} = 1$$
+
+```{r}
+library(torch)
+
+a <- torch_tensor(2, requires_grad = TRUE)
+a$requires_grad
+b <- torch_tensor(1, requires_grad = TRUE)
+x <- torch_tensor(3)
+```
+
+We can use the weights and input to perform a forward pass:
+
+```{r}
+u <- a * x
+y <- u + b
+```
+
+When you perform operations on tensors with gradient tracking, torch builds a computational graph on the fly. In the figure below:
+
+* Blue tensors are those for which we want to calculate gradients.
+* The violet node is an intermediate tensor.
+* The yellow boxes are differentiable functions.
+* The green node is the final tensor with respect to which we want to calculate gradients.
+
+```{mermaid}
+graph TD
+    a[a] --> mul[Multiply]
+    x[x] --> mul
+    mul --> u[u]
+    u --> add[Add]
+    b[b] --> add
+    add --> y[y]
+
+    %% Styling
+    classDef input fill:#a8d5ff,stroke:#333
+    classDef op fill:#ffe5a8,stroke:#333
+    classDef output fill:#a8ffb6,stroke:#333
+    classDef grad fill:#ffa8a8,stroke:#333,stroke-dasharray:5,5
+    classDef intermediate fill:#d5a8ff,stroke:#333
+    classDef nograd fill:#e8e8e8,stroke:#333
+
+    class a,b input
+    class mul,add op
+    class y output
+    class u intermediate
+    class x nograd
+```
+
+Each intermediate tensor knows how to calculate gradients with respect to its inputs.
+
+```{r}
+y$grad_fn
+u$grad_fn
+```
+
+To calculate the gradients $\frac{\partial y}{\partial a}$ and $\frac{\partial y}{\partial b}$, we can traverse this computational graph backward, invoke the differentiation functions, and multiply the individual derivatives according to the chain rule.
+
+In `torch`, this is done by calling `$backward()` on `y`.
+Note that `$backward()` can only be called on scalar tensors.
+Afterwards, the gradients are accessible in the `$grad` field of the tensors `a` and `b`:
+
+```{r}
+# Compute gradients
+y$backward()
+
+# Access gradients
+print(a$grad)  # dy/da = x = 3
+print(b$grad)  # dy/db = 1
+```
+
+Note that for the intermediate value `u`, no gradient is stored.
+
+:::{.callout-tip}
+When you want to perform an operation on tensors that require gradients without tracking this specific operation, you can use `with_no_grad(...)`.
+:::
+
+In the next section, we will show how we can use gradients to train our simple linear model.
+
+## A Simple Linear Model
+
+We can use autograd to fit a simple linear regression model. Let's first generate some synthetic data:
+
+```{r}
+library(ggplot2)
+
+# Set random seed for reproducibility
+torch_manual_seed(42)
+
+# Generate synthetic data
+n <- 100
+a_true <- 2.5
+b_true <- 1.0
+
+# Create input X and add noise to output Y
+X <- torch_randn(n)
+noise <- torch_randn(n) * 0.5
+Y <- X * a_true + b_true + noise
+```
+
+```{r, echo = FALSE}
+# Convert to R vectors for plotting
+x_r <- as.numeric(X)
+y_r <- as.numeric(Y)
+
+# Plot the data
+p <- ggplot(data.frame(x = x_r, y = y_r), aes(x = x, y = y)) +
+  geom_point(alpha = 0.5) +
+  geom_abline(intercept = 1.0, slope = 2.5, linewidth = 1,
+              color = "blue") +
+  theme_minimal() +
+  labs(title = "Simulated Linear Regression Data",
+       x = "X", y = "Y")
+p
+```
+
+To start the optimization, we need to randomly initialize our parameters `a` and `b`.
+
+```{r}
+# Initialize parameters with random values
+a <- torch_randn(1, requires_grad = TRUE)
+b <- torch_randn(1, requires_grad = TRUE)
+```
+
+To optimize the parameters $a$ and $b$, we further need to define the *Loss Function* that quantifies the discrepancy between our predictions $\hat{y}$ and the observed values $y$. The standard loss for linear regression is the L2 loss:
+
+$$ L(y, \hat{y}) = (y - \hat{y})^2$$
+
+The graphic below visualizes the relationship between the parameters $a$ and $b$ with the average L2 loss over all datapoints, i.e., the Mean Squared Error (MSE). For parameters $a$ and $b$ that are on the same contour line, the same loss is observed. The color gradient indicates the magnitude of the MSE. In this case, lighter values mark areas with higher loss, and darker values mark areas with lower loss. The red point marks the minimum loss, while the blue point shows the starting values of the parameters.
+
+```{r, echo = FALSE}
+# Create grid of a and b values
+a_range <- seq(0, 5, length.out = 50)
+b_range <- seq(-1, 3, length.out = 50)
+grid <- expand.grid(a = a_range, b = b_range)
+
+# Calculate MSE for each combination of a and b
+grid$mse <- sapply(1:nrow(grid), function(i) {
+  a_val <- grid$a[i]
+  b_val <- grid$b[i]
+  y_pred <- X * a_val + b_val
+  mean(as.array((Y - y_pred)^2))  # Changed from y to Y
+})
+
+# Fit linear model to get minimum
+d <- data.frame(y = as_array(Y), x = as_array(X))
+model <- lm(y ~ x, data = d)
+a_min <- coef(model)[2]  # slope coefficient
+b_min <- coef(model)[1]  # intercept coefficient
+
+# Create contour plot
+atmp = a$item()
+btmp = b$item()
+ggplot(grid, aes(x = a, y = b, z = mse)) +
+  geom_contour_filled() +
+  scale_fill_viridis_d() +
+  theme_minimal() +
+  geom_point(aes(x = a_min, y = b_min), color = "red", size = 3) +
+  geom_point(aes(x = atmp, y = btmp), color = "blue", size = 3) +
+  annotate("text", x = a_min + 0.3, y = b_min + 0.4,
+           label = sprintf("Minimum:\na = %.2f\nb = %.2f", a_min, b_min), color = "red") +
+  annotate("text", x = as.numeric(a) + 0.3, y = as.numeric(b) + 0.4,
+           label = sprintf("Start:\na = %.2f\nb = %.2f", as.numeric(a), as.numeric(b)), color = "blue") +
+  labs(title = "Loss Surface",
+       x = "Slope a",
+       y = "Bias b",
+       fill = "MSE") +
+  coord_fixed()
+```
+
+We can optimize the parameters $a$ and $b$ to converge to the minimum by using **gradient descent**. Gradient descent is a fundamental optimization algorithm that helps us find the minimum of a function by iteratively moving in the direction of steepest descent.
+
+## Understanding Gradient Descent
+
+The gradient of a function points in the direction of the steepest increase—like pointing uphill on mountainous terrain. Therefore, the negative gradient points in the direction of the steepest decrease—like pointing downhill.
+
+Gradient descent uses this property to iteratively:
+
+1. Calculate the gradient at the current position.
+2. Take a small step in the opposite direction of the gradient.
+3. Repeat until we reach a minimum.
+
+Note that the gradient only tells us in which direction we have to go, not how far. The length of the step should not be:
+
+- **Too large** because the gradient approximation -- and with it the notion of *steepest descent* -- only holds in a small neighborhood.
+- **Too small** as otherwise the convergence will be slow.
+
+The general update formula for the weights $a$ and $b$ is:
+
+$$a_{t+1} = a_t - \eta \frac{\partial L}{\partial a_t}$$
+$$b_{t+1} = b_t - \eta \frac{\partial L}{\partial b_t}$$
+
+where $\eta$ is the learning rate, and $L$ is the loss function.
+
+In practice, when dealing with large datasets, computing the gradient over the entire dataset can be computationally expensive.
+Instead, we often use **Stochastic Gradient Descent (SGD)**, where the gradient is estimated using only a few observations (a so called 'batch'), but more on that later.
+
+We start by implementing a single gradient step. Note that if we repeatedly call `loss$backward()`, the gradients in `a` and `b` would accumulate, so we set them to `0` before performing the update. The return value of the update will be the parameter values and the loss so we can plot them later. Also, note that we mutate the parameters `a` and `b` in-place (suffix `_`).
+
+```{r}
+update_params <- function(X_batch, Y_batch, lr, a, b) {
+
+  # Perform forward pass, calculate loss
+  Y_hat <- X_batch * a + b
+  loss <- mean((Y_hat - Y_batch)^2)
+
+  # Calculate gradients
+  loss$backward()
+
+  # We don't want to track gradients when we update the parameters.
+  with_no_grad({
+    a$sub_(lr * a$grad)
+    b$sub_(lr * b$grad)
+  })
+
+  # Ensure gradients are zero
+  a$grad$zero_()
+  b$grad$zero_()
+
+  list(
+    a = a$item(),
+    b = b$item(),
+    loss = loss$item()
+  )
+}
+```
+
+Next, we use this function to learn the parameters $a$ and $b$ by repeatedly applying the update function.
+
+```{r}
+library(data.table)
+
+# Hyperparameters
+lr <- 0.02
+epochs <- 10
+batch_size <- 10
+
+# Split data into 10 batches of size 10
+batches <- split(sample(1:100), rep(seq_len(batch_size), length.out = 100))
+history <- list()
+for (epoch in seq_len(epochs)) {
+  for (step in 1:10) {
+    result <- update_params(X[batches[[step]]], Y[batches[[step]]], lr, a, b)
+    history <- append(history, list(as.data.table(result)))
+  }
+}
+
+history = rbindlist(history)
+```
+
+This example demonstrates how we can use torch's autograd to implement gradient descent for fitting a simple linear regression model. The dashed red lines show the progression of the model during training, with increasing opacity for later steps. The blue line represents the true relationship.
+
+```{r, echo = FALSE}
+# Plot results with lines showing progression
+plot_steps <- seq(1, epochs * length(batches), length.out = epochs)
+for (i in plot_steps) {
+  p <- p + geom_abline(
+    intercept = history[i, "b"][[1]],
+    slope = history[i, "a"][[1]],
+    color = "red",
+    alpha = i / (length(plot_steps) + 10),
+    linetype = "dashed"
+  )
+}
+p
+```
+
+We can also visualize the parameter updates over time:
+
+```{r, echo = FALSE}
+# Plot parameter updates on the contour plot
+ggplot(data = grid, aes(x = a, y = b, z = mse)) +
+  geom_contour_filled() +
+  scale_fill_viridis_d() +
+  theme_minimal() +
+  # Add path of parameter updates
+  geom_path(data = history,
+            aes(x = a, y = b, z = NULL),
+            color = "red",
+            arrow = arrow(length = unit(0.1, "cm"),
+                         type = "closed",
+                         ends = "last")) +
+  # Add start and end points
+  geom_point(data = history[1,], aes(x = a, y = b, z = NULL), color = "darkred", size = 3) +
+  geom_point(data = history[nrow(history),], aes(x = a, y = b, z = NULL), color = "darkred", size = 3) +
+  annotate("text", x = history[1,]$a + 0.3, y = history[1,]$b,
+           label = "Start", color = "darkred") +
+  annotate("text", x = history[nrow(history),]$a + 0.3, y = history[nrow(history),]$b,
+           label = "End", color = "darkred") +
+  labs(title = "Parameter Updates on Loss Landscape",
+       x = "Slope a",
+       y = "Bias b",
+       fill = "MSE") +
+  coord_fixed()
+```
+
+Of course, better solutions exist for estimating a simple linear model, but this example demonstrates how we can utilize an autograd system to estimate the parameters of a model.

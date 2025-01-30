@@ -1,0 +1,6 @@
+---
+title: "Autograd"
+solutions: true
+---
+
+{{< include 2-autograd-exercise.qmd >}}

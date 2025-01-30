@@ -1,0 +1,77 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - "*.qmd"
+    - "README.md"
+
+markdown:
+  extensions: [emoji]
+
+website:
+  title: "Deep Learning with torch in R"
+  page-footer:
+    center: "CC BY SA 4.0"
+  navbar:
+    right:
+      - icon: "github"
+        href: "https://github.com/sebffischer/torch-eds"
+    left:
+      - text: "Setup"
+        href: "notebooks/setup-guide.html"
+      - text: "Resources"
+        href: "notebooks/resources.html"
+      - text: "Tutorials"
+        menu:
+          - text: "Intro"
+            href: "notebooks/0-tutorial-intro.html"
+          - text: "---"
+          - text: "1. Tensors"
+            href: "notebooks/1-tensor.html"
+          - text: "2. Autograd"
+            href: "notebooks/2-autograd.html"
+          - text: "3. Modules and Data"
+            href: "notebooks/3-modules-data.html"
+          - text: "4. Optimizers"
+            href: "notebooks/4-optimizer.html"
+          - text: "5. mlr3torch"
+            href: "notebooks/5-mlr3torch.html"
+          - text: "6. Training Efficiency"
+            href: "notebooks/6-training-efficiency.html"
+          - text: "7. Use Case"
+            href: "notebooks/7-usecase.html"
+      - text: "Exercises"
+        menu:
+          - text: "Intro"
+            href: "notebooks/0-exercise-intro.html"
+          - text: "---"
+          - text: "1. Tensors"
+            href: "notebooks/1-tensor-exercise-task.html"
+          - text: "2. Autograd"
+            href: "notebooks/2-autograd-exercise-task.html"
+          - text: "3. Modules and Data"
+            href: "notebooks/3-modules-data-exercise-task.html"
+          - text: "4. Optimizers"
+            href: "notebooks/4-optimizer-exercise-task.html"
+          - text: "5. mlr3torch"
+            href: "notebooks/5-mlr3torch-exercise-task.html"
+          - text: "6. Training Efficiency"
+            href: "notebooks/6-training-efficiency-exercise-task.html"
+          - text: "7. Use Case"
+            href: "notebooks/7-usecase-exercise-task.html"
+      - text: "Solutions"
+        menu:
+          - text: "1. Tensors"
+            href: "notebooks/1-tensor-exercise-solution.html"
+          - text: "2. Autograd"
+            href: "notebooks/2-autograd-exercise-solution.html"
+          - text: "3. Modules and Data"
+            href: "notebooks/3-modules-data-exercise-solution.html"
+          - text: "4. Optimizers"
+            href: "notebooks/4-optimizer-exercise-solution.html"
+          - text: "5. mlr3torch"
+            href: "notebooks/5-mlr3torch-exercise-solution.html"
+          - text: "6. Training Efficiency"
+            href: "notebooks/6-training-efficiency-exercise-solution.html"
+          - text: "7. Use Case"
+            href: "notebooks/7-usecase-exercise-solution.html"

@@ -1,0 +1,7 @@
+```{r, include = FALSE}
+lgr::get_logger("mlr3")$set_threshold("warn")
+lgr::get_logger("bbotk")$set_threshold("warn")
+set.seed(123)
+torch::torch_manual_seed(123)
+options(mlr3torch.cache = TRUE)
+```

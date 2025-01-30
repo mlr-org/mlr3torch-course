@@ -1,0 +1,6 @@
+---
+title: "Tensors"
+solutions: false
+---
+
+{{< include 1-tensor-exercise.qmd >}}

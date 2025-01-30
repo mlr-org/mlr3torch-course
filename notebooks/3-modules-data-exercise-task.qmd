@@ -1,0 +1,6 @@
+---
+title: "Modules and Data"
+solutions: false
+---
+
+{{< include 3-modules-data-exercise.qmd >}}

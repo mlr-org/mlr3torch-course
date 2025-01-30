@@ -1,0 +1,103 @@
+---
+title: "Training Neural Networks with mlr3torch"
+---
+
+{{< include _setup.qmd >}}
+
+**Question 1:** Hello World!
+
+In this exercise, you will train your first neural network with `mlr3torch`.
+
+As a task, we will use the 'Indian Liver Patient' dataset where the goal is to predict whether a patient has liver disease or not.
+
+```{r}
+library(mlr3verse)
+library(mlr3torch)
+ilpd <- tsk("ilpd")
+ilpd
+autoplot(ilpd)
+```
+
+We remove the *gender* column from the task, so we need to deal with numeric features for now.
+
+```{r}
+ilpd_num = ilpd$clone(deep = TRUE)
+ilpd_num$select(setdiff(ilpd_num$feature_names, "gender"))
+```
+
+
+Train a simple multi layer perceptron (`lrn("classif.mlp")`) with 2 hidden layers with 100 neurons each.
+Set the batch size to 32, the learning rate to 0.001 and the number of epochs to 20.
+Then, resample the learner on the task with a cross-validation with 5 folds and evaluate the results using classification error and false positive rate (FPR).
+Is the result good?
+
+<details>
+<summary>Hint</summary>
+* The parameter for the learning rate is `opt.lr`
+* Probability predictions are made by setting the `predict_type` field to `"prob"`.
+</details>
+
+
+::: {.content-visible when-meta=solutions}
+```{r}
+mlp <- lrn("classif.mlp",
+  neurons = c(100, 100),
+  batch_size = 32,
+  epochs = 20,
+  opt.lr = 0.001
+)
+cv10 <- rsmp("cv", folds = 10)
+rr1 <- resample(task = ilpd_num, learner = mlp, resampling = cv10)
+rr1$aggregate(msrs(c("classif.ce", "classif.fpr")))
+```
+
+While the classification error is low, this is not a good measure due to the imbalanced class distribution.
+This is confirmed by the FPR, which is relatively high.
+:::
+
+**Question 2:** Preprocessing
+
+In the previous task, we have operated on the `ilpd_num` task where we excluded the categorical `gender` column.
+This was done because the MLP learner operates on numeric features only.
+We will now create a more complex `GraphLearner` that also incudes one-hot encoding of the `gender` column.
+Resample this learner on the original `ilpd` task and evaluate the results using the same measures as before.
+
+<details>
+<summary>Hint</summary>
+Concatenate `po("encode")` with a `lrn("classif.mlp")` using `%>>%` to create the `GraphLearner`.
+For available options on the encoding, see `po("encode")$help()`.
+</details>
+
+:::{.content-visible when-meta=solutions}
+```{r}
+encoder <- po("encode", method = "one-hot")
+glrn <- as_learner(encoder %>>% mlp)
+rr2 <- resample(ilpd, glrn, cv10)
+rr2$aggregate(msrs(c("classif.ce", "classif.fpr")))
+```
+:::
+
+**Question 3**: Benchmarking
+
+Instead of resampling a single learner, we now want to compare the performance of our MLP with a simple classification tree
+Create a benchmark design and compare the performance of the two learners.
+
+<details>
+<summary>Hint</summary>
+Create a classification tree via `lrn("classif.rpart")`.
+A benchmark design can be created via `benchmark_grid()`.
+To run a benchmark, pass the design to `benchmark()`.
+</details>
+
+
+:::{.content-visible when-meta=solutions}
+```{r}
+design <- benchmark_grid(
+  task = ilpd,
+  learner = list(glrn, lrn("classif.rpart", predict_type = "prob")),
+  resampling = cv10
+)
+bmr <- benchmark(design)
+bmr$aggregate(msrs(c("classif.ce", "classif.tpr")))
+```
+:::

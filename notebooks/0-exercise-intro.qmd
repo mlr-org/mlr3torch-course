@@ -1,0 +1,25 @@
+---
+title: "Exercise Intro"
+---
+
+**Tutorial and Exercise**
+
+Most of the exercises are similar to the examples from the tutorial.
+
+**AI Autocompletion**
+
+If you have AI autocompletion, we recommend disabling it, as GPT-4 already knows the `torch` API.
+
+**Hints**
+
+Hints give additional information that can help you solve the exercise.
+Don't hesitate to open them when you are stuck.
+
+**CPU vs. CUDA**
+
+All exercises can be solved with a CPU only.
+
+**Uncertainty**
+
+To make the exercises run fast, we are often using datasets with few observations and resamplings without too many iterations.
+This means that there is often uncertainty in the results that we mostly ignore, but which would have to be taken account in a proper analysis.
