@@ -10,7 +10,7 @@ In this exercise, you will train your first neural network with `mlr3torch`.
 
 As a task, we will use the 'Indian Liver Patient' dataset where the goal is to predict whether a patient has liver disease or not.
 
-```{r}
+```{r, message = FALSE}
 library(mlr3verse)
 library(mlr3torch)
 ilpd <- tsk("ilpd")
@@ -18,7 +18,7 @@ ilpd
 autoplot(ilpd)
 ```
 
-We remove the *gender* column from the task, so we need to deal with numeric features for now.
+We remove the *gender* column from the task, so we need to only deal with numeric features for now.
 
 ```{r}
 ilpd_num = ilpd$clone(deep = TRUE)
@@ -26,15 +26,14 @@ ilpd_num$select(setdiff(ilpd_num$feature_names, "gender"))
 ```
 
 
-Train a simple multi layer perceptron (`lrn("classif.mlp")`) with 2 hidden layers with 100 neurons each.
+Your task is to train a simple multi layer perceptron (`lrn("classif.mlp")`) with 2 hidden layers with 100 neurons each.
 Set the batch size to 32, the learning rate to 0.001 and the number of epochs to 20.
 Then, resample the learner on the task with a cross-validation with 5 folds and evaluate the results using classification error and false positive rate (FPR).
 Is the result good?
 
 <details>
 <summary>Hint</summary>
-* The parameter for the learning rate is `opt.lr`
-* Probability predictions are made by setting the `predict_type` field to `"prob"`.
+The parameter for the learning rate is `opt.lr`
 </details>
 
 
@@ -57,9 +56,9 @@ This is confirmed by the FPR, which is relatively high.
 
 **Question 2:** Preprocessing
 
-In the previous task, we have operated on the `ilpd_num` task where we excluded the categorical `gender` column.
+In the previous question, we have operated on the `ilpd_num` task where we excluded the categorical `gender` column.
 This was done because the MLP learner operates on numeric features only.
-We will now create a more complex `GraphLearner` that also incudes one-hot encoding of the `gender` column.
+You will now create a more complex `GraphLearner` that also incudes one-hot encoding of the `gender` column before applying the MLP.
 Resample this learner on the original `ilpd` task and evaluate the results using the same measures as before.
 
 <details>
@@ -79,7 +78,7 @@ rr2$aggregate(msrs(c("classif.ce", "classif.fpr")))
 
 **Question 3**: Benchmarking
 
-Instead of resampling a single learner, we now want to compare the performance of our MLP with a simple classification tree
+Instead of resampling a single learner, the goal is now to compare the performance of the MLP with a simple classification tree.
 Create a benchmark design and compare the performance of the two learners.
 
 <details>
@@ -99,5 +98,61 @@ design <- benchmark_grid(
 )
 bmr <- benchmark(design)
 bmr$aggregate(msrs(c("classif.ce", "classif.tpr")))
+```
+:::
+
+
+**Question 4:** Iris as a Lazy Tensor
+
+Create a version of the iris task where the 4 features are represented as a single lazy tensor column.
+
+:::{.content-visible when-meta=solutions}
+
+**Solution:**
+
+```{r}
+X <- as.matrix(iris[, 1:4])
+dt_class <- dataset("iris",
+  initialize = function(x) {
+    self$x <- torch_tensor(x)
+  },
+  .getbatch = function(index) {
+    list(x = self$x[index, , drop = FALSE])
+  },
+  .length = function() {
+    nrow(self$x)
+  }
+)
+dt <- dt_class(X)
+lt <- as_lazy_tensor(dt, dataset_shapes = list(x = c(NA, 4)))
+dt <- data.table(
+  x = lt,
+  Species = iris$Species
+)
+task <- as_task_classif(dt, target = "Species")
+task
+```
+:::
+
+
+**Question 5:** Custom Architecture
+
+Create a network with one hidden layer with 100 neurons and a sigmoid activation function by assempling `PipeOp`s in a `Graph`.
+Convert the `Graph` to a `Learner` and train the network for 10 epochs using Adam with a learning rate of 0.001 and a batch size of 32.
+
+:::{.content-visible when-meta=solutions}
+**Solution:**
+
+```{r}
+graph <- po("torch_ingress_ltnsr") %>>%
+  po("nn_linear", out_features = 100) %>>%
+  po("nn_sigmoid") %>>%
+  po("nn_head") %>>%
+  po("torch_loss", t_loss("cross_entropy")) %>>%
+  po("torch_optimizer", optimizer = t_opt("adam"), lr = 0.001) %>>%
+  po("torch_model_classif", batch_size = 32, epochs = 10)
+
+glrn <- as_learner(graph)
+glrn$train(task)
 ```
 :::

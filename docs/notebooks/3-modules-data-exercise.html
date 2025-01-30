@@ -314,7 +314,7 @@ window.Quarto = {
 </header>
 
 
-<p><strong>Question 1</strong>: Create a <code>torch::dataset</code> that takes in arguments <code>n</code>, <code>min</code>, and <code>max</code> where:</p>
+<p><strong>Question 1</strong>: Create a <code>torch::dataset</code> class that takes in arguments <code>n</code>, <code>min</code>, and <code>max</code> during initialization where:</p>
 <ul>
 <li><code>n</code> is the total number of samples</li>
 <li><code>min</code> is the lower bound of the data</li>
@@ -322,8 +322,8 @@ window.Quarto = {
 </ul>
 <p>In the <code>initialize</code> method, generate and store:</p>
 <ul>
-<li>a 2D tensor (shape <code>(n, 1)</code>) <code>x</code> of <code>n</code> values drawn from a uniform distribution between <code>min</code> and <code>max</code></li>
-<li>a 2D tensor (shape <code>(n, 1)</code>) <code>y</code> that is defined as <span class="math inline">\(\sin(x) + \epsilon\)</span> where <span class="math inline">\(\epsilon\)</span> is drawn from a normal distribution with mean 0 and standard deviation 0.1</li>
+<li>a tensor <code>x</code> of shape <code>(n, 1)</code> that contains <code>n</code> values drawn from a uniform distribution between <code>min</code> and <code>max</code></li>
+<li>a tensor <code>y</code> of shape <code>(n, 1)</code> that is defined as <span class="math inline">\(\sin(x) + \epsilon\)</span> where <span class="math inline">\(\epsilon\)</span> is drawn from a normal distribution with mean 0 and standard deviation 0.1</li>
 </ul>
 <details>
 <summary>
@@ -829,6 +829,19 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>CC BY SA 4.0</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
 
 
 

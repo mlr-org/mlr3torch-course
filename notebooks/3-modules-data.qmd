@@ -187,7 +187,9 @@ Some examples of inductive biases in different neural network architectures are 
 
 The central component of a CNN is the convolutional layer:
 
-![[Source](https://www.ibm.com/think/topics/convolutional-neural-networks)](../assets/convolution.png)
+![](../assets/convolution.png)
+
+[Source](https://www.ibm.com/think/topics/convolutional-neural-networks)
 
 CNNs encode several strong inductive biases about visual data:
 
@@ -278,7 +280,9 @@ The input has $28 \times 28 = 784$ pixels and the output as well. The weights of
 
 While there are many variations of transformer architectures, the main idea is the (self-)attention mechanism:
 
-![[Source](https://medium.com/@ramendrakumar/self-attention-d8196b9e9143)](../assets/attention.png)
+![](../assets/attention.png)
+
+[Source](https://medium.com/@ramendrakumar/self-attention-d8196b9e9143)
 
 Transformer architecturers, which power language models like GPT-4 and are commonly used in natural language processing, have other inductive biases than CNNs:
 
@@ -318,7 +322,7 @@ Below, we print the attention weights between the random embeddings and weights.
 ```{r, echo = FALSE}
 # Convert to data frame for plotting
 attn_df <- as.data.frame(as_array(attn_weights[1, ..]$detach()$cpu()))
-colnames(attn_df) <- paste0("Key_", 1:seq_length)
+colnames(attn_df) <- paste0("Key_", 1:seq_length
 attn_df$Query <- paste0("Query_", 1:seq_length)
 attn_long <- reshape(attn_df, varying = list(names(attn_df)[startsWith(names(attn_df), "Key_")]),
                                              v.names = "Weight",
@@ -338,13 +342,17 @@ ggplot(attn_long, aes(x = Key, y = Query, fill = Weight)) +
 
 The architecture of the module is visualized below:
 
-![[Source](https://data-science-blog.com/blog/2021/04/07/multi-head-attention-mechanism/)](../assets/attention2.png){width=60%}
+![](../assets/attention2.png){width=60%}
+
+[Source](https://data-science-blog.com/blog/2021/04/07/multi-head-attention-mechanism/)
 
 ### MLPs (like our Spiral Network)
 
 The different layers in a Multi-Layer Perceptron (MLP) consist mainly of an affine-linear transformation followed by a non-linear function, such as a ReLU activation function:
 
-![[Source](https://scikit-learn.org/1.5/modules/neural_networks_supervised.html)](../assets/mlp-layer.png){width=40%}
+![](../assets/mlp-layer.png){width=40%}
+
+[Source](https://scikit-learn.org/1.5/modules/neural_networks_supervised.html)
 
 Our simple multi-layer perceptron has minimal inductive biases:
 
@@ -388,7 +396,9 @@ Furthermore, for simple sequential networks, we could have used `nn_sequential` 
 
 The architecture of such an MLP layer is visualized below:
 
-![[Source](https://tikz.net/neural_networks/)](../assets/neural_networks-002.png){width=60%}
+![](../assets/neural_networks-002.png){width=60%}
+
+[Source](https://tikz.net/neural_networks/)
 
 We can create a concrete network by calling the resulting `nn_module_generator` and specifying the required parameters.
 

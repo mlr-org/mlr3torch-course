@@ -289,19 +289,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>In this exercise, you will train your first neural network with <code>mlr3torch</code>.</p>
 <p>As a task, we will use the ‘Indian Liver Patient’ dataset where the goal is to predict whether a patient has liver disease or not.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3verse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: mlr3</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3torch)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: mlr3pipelines</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: torch</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ilpd <span class="ot">&lt;-</span> <span class="fu">tsk</span>(<span class="st">"ilpd"</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ilpd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3verse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3torch)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>ilpd <span class="ot">&lt;-</span> <span class="fu">tsk</span>(<span class="st">"ilpd"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>ilpd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;TaskClassif:ilpd&gt; (583 x 11): Indian Liver Patient Data
 * Target: diseased
@@ -311,7 +302,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   - int (4): age, alanine_transaminase, alkaline_phosphatase, aspartate_transaminase
   - fct (1): gender</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(ilpd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(ilpd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -320,23 +311,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>We remove the <em>gender</em> column from the task, so we need to deal with numeric features for now.</p>
+<p>We remove the <em>gender</em> column from the task, so we need to only deal with numeric features for now.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ilpd_num <span class="ot">=</span> ilpd<span class="sc">$</span><span class="fu">clone</span>(<span class="at">deep =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ilpd_num<span class="sc">$</span><span class="fu">select</span>(<span class="fu">setdiff</span>(ilpd_num<span class="sc">$</span>feature_names, <span class="st">"gender"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ilpd_num <span class="ot">=</span> ilpd<span class="sc">$</span><span class="fu">clone</span>(<span class="at">deep =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ilpd_num<span class="sc">$</span><span class="fu">select</span>(<span class="fu">setdiff</span>(ilpd_num<span class="sc">$</span>feature_names, <span class="st">"gender"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Train a simple multi layer perceptron (<code>lrn("classif.mlp")</code>) with 2 hidden layers with 100 neurons each. Set the batch size to 32, the learning rate to 0.001 and the number of epochs to 20. Then, resample the learner on the task with a cross-validation with 5 folds and evaluate the results using classification error and false positive rate (FPR). Is the result good?</p>
+<p>Your task is to train a simple multi layer perceptron (<code>lrn("classif.mlp")</code>) with 2 hidden layers with 100 neurons each. Set the batch size to 32, the learning rate to 0.001 and the number of epochs to 20. Then, resample the learner on the task with a cross-validation with 5 folds and evaluate the results using classification error and false positive rate (FPR). Is the result good?</p>
 <details>
 <summary>
 Hint
 </summary>
-<ul>
-<li>The parameter for the learning rate is <code>opt.lr</code></li>
-<li>Probability predictions are made by setting the <code>predict_type</code> field to <code>"prob"</code>.</li>
-</ul>
+The parameter for the learning rate is <code>opt.lr</code>
 </details>
 <p><strong>Question 2:</strong> Preprocessing</p>
-<p>In the previous task, we have operated on the <code>ilpd_num</code> task where we excluded the categorical <code>gender</code> column. This was done because the MLP learner operates on numeric features only. We will now create a more complex <code>GraphLearner</code> that also incudes one-hot encoding of the <code>gender</code> column. Resample this learner on the original <code>ilpd</code> task and evaluate the results using the same measures as before.</p>
+<p>In the previous question, we have operated on the <code>ilpd_num</code> task where we excluded the categorical <code>gender</code> column. This was done because the MLP learner operates on numeric features only. You will now create a more complex <code>GraphLearner</code> that also incudes one-hot encoding of the <code>gender</code> column before applying the MLP. Resample this learner on the original <code>ilpd</code> task and evaluate the results using the same measures as before.</p>
 <details>
 <summary>
 Hint
@@ -344,13 +332,17 @@ Hint
 Concatenate <code>po("encode")</code> with a <code>lrn("classif.mlp")</code> using <code>%&gt;&gt;%</code> to create the <code>GraphLearner</code>. For available options on the encoding, see <code>po("encode")$help()</code>.
 </details>
 <p><strong>Question 3</strong>: Benchmarking</p>
-<p>Instead of resampling a single learner, we now want to compare the performance of our MLP with a simple classification tree Create a benchmark design and compare the performance of the two learners.</p>
+<p>Instead of resampling a single learner, the goal is now to compare the performance of the MLP with a simple classification tree. Create a benchmark design and compare the performance of the two learners.</p>
 <details>
 <summary>
 Hint
 </summary>
 Create a classification tree via <code>lrn("classif.rpart")</code>. A benchmark design can be created via <code>benchmark_grid()</code>. To run a benchmark, pass the design to <code>benchmark()</code>.
 </details>
+<p><strong>Question 4:</strong> Iris as a Lazy Tensor</p>
+<p>Create a version of the iris task where the 4 features are represented as a single lazy tensor column.</p>
+<p><strong>Question 5:</strong> Custom Architecture</p>
+<p>Create a network with one hidden layer with 100 neurons and a sigmoid activation function by assempling <code>PipeOp</code>s in a <code>Graph</code>. Convert the <code>Graph</code> to a <code>Learner</code> and train the network for 10 epochs using Adam with a learning rate of 0.001 and a batch size of 32.</p>
 
 
 
@@ -773,6 +765,19 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>CC BY SA 4.0</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
 
 
 

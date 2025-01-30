@@ -4,7 +4,7 @@ title: "Training Neural Networks with mlr3torch"
 
 {{< include _setup.qmd >}}
 
-## Why Use `mlr3torch`?
+**Why Use `mlr3torch`?**
 
 `mlr3torch` is a package that extends the `mlr3` framework with deep learning capabilities, allowing the application of deep learning techniques to both tabular and non-tabular data. The package implements many routines common in deep learning and allows users to focus on the actual problem at hand. Some advantages of using `mlr3torch` over 'only' `torch` are:
 
@@ -44,7 +44,7 @@ You can access the data of a task using the `$data()` method, which accepts argu
 tsk_iris$data(rows = 1:5, cols = c("Sepal.Length", "Sepal.Width"))
 ```
 
-Using the `mlr3viz` extension, we can get an overview of the task:
+Using the `mlr3viz` extension, we can get an overview of the target distribution:
 
 ```{r}
 library(mlr3viz)
@@ -53,7 +53,9 @@ autoplot(tsk_iris)
 
 ### Learner
 
-A learner is a machine learning algorithm that can be `$train()`ed on a `Task` and `$predict()`ed on a `Task`. An overview of all learners is shown on our [website](https://mlr-org.com/learners.html). We can construct one by passing the name of the learner to the `lrn()` function.
+A learner is a machine learning algorithm that can be `$train()`ed on a `Task` and be used to make `$predict()`ions on it.
+An overview of all learners is shown on our [website](https://mlr-org.com/learners.html).
+We can construct one by passing the identifier of the learner to the `lrn()` function.
 
 ```{r}
 lrn_tree <- lrn("classif.rpart")
@@ -107,23 +109,13 @@ rr$aggregate(msr("classif.acc"))
 
 ### Hyperparameter Tuning
 
-Hyperparameter tuning is an essential process in machine learning to optimize the performance of models by selecting the best combination of hyperparameters. In the `mlr3` framework, hyperparameter tuning is facilitated by the `mlr3tuning` extension, which provides a flexible and powerful interface for defining, searching, and evaluating hyperparameters.
+Hyperparameter tuning is an essential process in machine learning to optimize the performance of models by selecting the best combination of hyperparameters. In the `mlr3` framework, hyperparameter tuning is facilitated by the [`mlr3tuning`](https://github.com/mlr-org/mlr3tuning) extension.
 
-#### Key Concepts
-
-- **Hyperparameters**: Configurable settings provided to the learning algorithm before training begins, such as learning rate, number of trees in a random forest, or regularization parameters.
-
-- **Search Space**: The range of values or distributions from which hyperparameters are sampled during the tuning process.
-
-- **Resampling Strategy**: A method to evaluate the performance of a hyperparameter configuration, commonly using techniques like cross-validation or bootstrapping.
-
-- **Tuner**: An algorithm that explores the search space to find the optimal hyperparameters. Common tuners include grid search, random search, and Bayesian optimization.
-
-#### Workflow
+We will now demonstrate how to tune the hyperparameters of the `classif.rpart` learner.
 
 1. **Define the Search Space**: Specify the range and distribution of hyperparameters to explore.
 
-   ```{r}
+   ```{r, message = FALSE}
    library(mlr3tuning)
    lrn_tree$configure(
      cp = to_tune(lower = 0.001, upper = 0.1),
@@ -172,7 +164,7 @@ Hyperparameter tuning is an essential process in machine learning to optimize th
 ::: {.callout-note}
 ## Quiz: Tuning Performance
 
-Question 1: Estimating the performance of a tuned model:
+**Question 1**: Estimating the performance of a tuned model:
 
 Through the tuning archive, we can access the performance of the best-found hyperparameter configuration.
 
@@ -186,19 +178,7 @@ Do you think this is a good estimate for the performance of the final model? Exp
 <summary>Click for answer</summary>
 One reason why we would expect the performance of the final model to be worse than the performance of the best-found hyperparameter configuration is due to *optimization bias*:
 We choose the model configuration with the highest validation performance.
-This selection process biases the result since the chosen model is the best among several trials.
-To illustrate this, imagine that we take the maximum of 10 random numbers drawn from a normal distribution with mean 0.
-The maximum over those numbers is larger than $0$, even though this is the mean of the generating distribution.
-
-```{r, echo = FALSE}
-library(ggplot2)
-x <- rnorm(100)
-ggplot(data.frame(x = x), aes(y = x)) +
-  geom_boxplot() +
-  geom_hline(yintercept = max(x), color = "red") +
-  theme_minimal()
-```
-
+This selection process biases the result since the chosen model is the best among several trials that are all affected by randomness.
 </details>
 :::
 
@@ -220,14 +200,14 @@ This is called *nested resampling*: the outer resampling is for evaluation and t
 
 ```{r}
 rr <- resample(tsk_iris, at, rsmp_tune)
-rr$aggregate()
+rr$aggregate(acc)
 ```
 
 ### Learning Pipelines
 
 In many cases, we don't only fit a single learner but a whole learning pipeline.
 Common use cases include the preprocessing of the data, e.g., for imputing missing values, scaling the data, or encoding categorical features, but many other operations are possible.
-The `mlr3` extension `mlr3pipelines` is a toolbox for defining such learning pipelines.
+The `mlr3` extension [`mlr3pipelines`](https://mlr3pipelines.mlr-org.com/) is a toolbox for defining such learning pipelines.
 Its core building block is the `PipeOp` that can be constructed using the `po()` function.
 
 ```{r}
@@ -269,16 +249,17 @@ A simple example learner is the `lrn("classif.mlp")` learner, which is a Multi-L
 ```{r, message = FALSE}
 library(mlr3torch)
 lrn_mlp <- lrn("classif.mlp",
-  neurons = c(50, 50), # Two hidden layers with 50 neurons each
-  batch_size = 256, # Number of samples per gradient update
+  neurons = c(50, 50),
+  batch_size = 256,
   epochs = 30, # Number of training epochs
   device = "auto", # Uses GPU if available, otherwise CPU
   shuffle = TRUE, # because iris is sorted
-  optimizer = t_opt("adam") # Adam optimizer
+  optimizer = t_opt("adamw"),
+  loss = t_loss("cross_entropy")
 )
 ```
 
-This multi-layer perceptron can be used just like the classification tree above.
+This MLP can be used just like the classification tree above.
 
 ```{r}
 lrn_mlp$train(tsk_iris, row_ids = split$train)
@@ -299,27 +280,22 @@ predictions <- lrn_mlp$predict(tsk_iris, row_ids = split$test)
 predictions$score(msr("classif.acc"))
 ```
 
-Using the benchmarking facilities of `mlr3`, we can also easily compare the classification tree with our deep learning learner:
+Using the benchmarking facilities of `mlr3`, we can also easily compare the classification tree with our MLP:
 
 ```{r}
-# Define the resampling strategy
 rsmp_cv <- rsmp("cv", folds = 3)
 
-# Create a benchmark grid to compare both learners
 benchmark_grid <- benchmark_grid(
   tasks = tsk_iris,
   learners = list(lrn_tree, lrn_mlp),
   resampling = rsmp_cv
 )
 
-# Run the benchmark
 rr_benchmark <- benchmark(benchmark_grid)
 
-# Aggregate the results
 results_benchmark <- rr_benchmark$aggregate(msr("classif.acc"))
 
-# Print the results
-print(results_benchmark)
+results_benchmark
 ```
 
 ### Validation Performance
@@ -391,7 +367,7 @@ After specifying the architecture, we need to set the remaining parts for the le
 ```{r}
 graph <- ingress %>>% architecture %>>%
   po("torch_loss", loss = "cross_entropy") %>>%
-  po("torch_optimizer", optimizer = t_opt("adam")) %>>%
+  po("torch_optimizer", optimizer = t_opt("adamw")) %>>%
   po("torch_model_classif", epochs = 10, batch_size = 256)
 ```
 
@@ -416,7 +392,7 @@ tsk_cifar
 
 The image below shows some examples from the dataset:
 
-![](images/cifar10.jpg)
+![](assets/cifar10.jpg)
 
 :::{.callout-tip}
 To avoid having to re-download the dataset every time, you can set the `mlr3torch.cache` option to `TRUE`.
@@ -431,7 +407,7 @@ When accessing the data, only the images are represented as `lazy_tensor`s, the 
 tsk_cifar$head()
 ```
 
-A `lazy_tensor` column can be compared to the `torch::dataset` class that we have seen earlier.
+A `lazy_tensor` column is built upon `torch::dataset` class that we have seen earlier.
 This means it does not necessarily store the data in memory, but only stores the information on how to load the data.
 
 ```{r}
@@ -450,7 +426,7 @@ To construct the CIFAR-10 task ourselves, we need to first:
 1. Construct a `torch::dataset` that returns the images as `torch_tensor`s.
 2. Create a `factor()` vector that contains the labels.
 
-We can access the dataset via the `torchvision` package.
+We can access the CIFAR-10 dataset via the `torchvision` package.
 For simplicity, we will only load the training data.
 
 ```{r}
@@ -533,10 +509,10 @@ tsk_cifar
 ```
 
 We will now try to train a simple multi-layer perceptron -- the one we have defined above -- on the images.
-One problem that we have is that the images are of shape `32x32x3`, but the `nn_linear` layer expects a flat input of size `3072` (32 * 32 * 3).
+One problem that we have is that the images are of shape `(3, 32, 32)`, but the `nn_linear` layer expects a flat input of size `3072` ($3 \times 32^2$).
 
 This is where the `lazy_tensor` datatype comes in handy.
-We can use the `PipeOp`s to transform the data before it is loaded.
+We can use preprocessing `PipeOp`s -- in this case `po("trafo_reshape")` -- to transform the data.
 Here, the `-1` in the shape `c(-1, 3072)` indicates that the first dimension (batch dimension) can be of any size.
 
 ```{r}
@@ -545,14 +521,14 @@ tsk_cifar_flat <- reshaper$train(list(tsk_cifar))[[1L]]
 tsk_cifar_flat$head()
 ```
 
-Note that this transformation is not applied eagerly, but only when the data is actually loaded.
+This transformation is not applied eagerly, but only when the data is actually loaded.
 
 :::{.callout-note}
 In this case, as all the images are stored in memory, we could have also applied the transformation directly to the `array` representing the images, but decided not to do this for demonstration purposes.
 :::
 
-We can now use almost the same graph as before on the flattened task.
-We only need to exchange the ingress, as the new task has as data a `lazy_tensor` instead of numeric vectors.
+We can now use almost the same graph that we used for the iris dataset for the flattened CIFAR-10 task.
+The only thing we need to exchange is the ingress operator, as the new task has as data a `lazy_tensor` instead of numeric vectors.
 
 ```{r}
 graph <- po("torch_ingress_ltnsr") %>>% architecture %>>%
@@ -581,7 +557,7 @@ glrn_with_flattening <- as_learner(graph_with_flattening)
 
 This learner can now be applied directly to the (unflattened) task.
 
-```{r}
+```{r, include = FALSE}
 glrn_with_flattening$param_set$set_values(torch_model_classif.epochs = 0)
 ```
 
@@ -601,7 +577,7 @@ glrn_with_flattening$marshal()
 saveRDS(glrn_with_flattening, pth)
 ```
 
-Afterward, we can load the learner again using `readRDS()` and the `$unmarshal()` method.
+Afterward, we can load the learner again using `readRDS()` and then call the `$unmarshal()` method.
 
 ```{r}
 glrn_with_flattening <- readRDS(pth)

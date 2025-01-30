@@ -1,8 +1,16 @@
 ---
+title: "Modules and Data"
+solutions: false
+---
+
+---
 title: "It's a Sin(us)"
 ---
 
-{{< include _setup.qmd >}}
+
+
+
+
 
 **Question 1**: Create a `torch::dataset` class that takes in arguments `n`, `min`, and `max` during initialization where:
 
@@ -29,7 +37,10 @@ Also, check that the shapes of both tensors returned by the dataset are `(n_batc
 ::: {.content-visible when-meta=solutions}
 **Solution**
 
-```{r}
+
+::: {.cell layout-align="center"}
+
+```{.r .cell-code}
 library(torch)
 sin_dataset <- dataset(
   initialize = function(n, min, max) {
@@ -46,8 +57,31 @@ sin_dataset <- dataset(
 ds <- sin_dataset(n = 1000, min = 0, max = 10)
 batch <- ds$.getbatch(1:10)
 batch$x$shape
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] 10  1
+```
+
+
+:::
+
+```{.r .cell-code}
 batch$y$shape
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+[1] 10  1
+```
+
+
+:::
+:::
+
 :::
 
 **Question 2**: Create a `torch::dataloader` that takes in the dataset and returns batches of size 10.
@@ -61,22 +95,23 @@ The functions `coro::loop()` and `torch_cat()` might be helpful.
 ::: {.content-visible when-meta=solutions}
 **Solution**
 
-```{r}
+
+::: {.cell layout-align="center"}
+
+```{.r .cell-code}
 dl <- dataloader(ds, batch_size = 10)
 batches <- list()
 coro::loop(for (batch in dl) {
   batches <- c(batches, list(batch))
 })
 X <- torch_cat(lapply(batches, function(batch) batch$x), dim = 1)
-X$shape
 Y <- torch_cat(lapply(batches, function(batch) batch$y), dim = 1)
-Y$shape
 ```
 :::
 
-**Question 3**: Create a custom torch module that allows modeling the sinus data we have created.
-To test it, apply it to the tensor `X` we have created above and calculate its mean squared error with the tensor `Y`.
-Don't forget to run it without tracking gradients.
+:::
+
+**Question 3**: Create a custom torch module that allows modeling the sinus data we have created. To test it, apply it to the tensor `X` we have created above and calculate its mean squared error with the tensor `Y`.
 
 <details>
 <summary>Hint</summary>
@@ -86,7 +121,10 @@ You can either use `nn_module` to create a custom module generically, or you can
 ::: {.content-visible when-meta=solutions}
 **Solution**
 
-```{r}
+
+::: {.cell layout-align="center"}
+
+```{.r .cell-code}
 nn_sin <- nn_module("nn_sin",
   initialize = function(latent = 200) {
     self$lin1 <- nn_linear(1, latent)
@@ -106,13 +144,27 @@ net <- nn_sin(200)
 Y_pred <- with_no_grad(net(X))
 nnf_mse_loss(Y_pred, Y)
 ```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+torch_tensor
+1.08382
+[ CPUFloatType{} ]
+```
+
+
+:::
 :::
 
-**Question 4**: Train the model on the task for different hyperparameters (`lr` or `epochs`) and visualize the results.
-Play around with the hyperparameters until you get a good fit.
-You can use the following code for that:
+:::
 
-```{r}
+**Question 4**: Train the model on the task for different hyperparameters (`lr` or `epochs`) and visualize the results. Play around with the hyperparameters until you get a good fit. You can use the following code for that:
+
+
+::: {.cell layout-align="center"}
+
+```{.r .cell-code}
 library(ggplot2)
 predict_network <- function(net, dataloader) {
   local_no_grad()
@@ -144,14 +196,15 @@ plot_results <- function(df) {
   ggplot(data = df, aes(x = x)) +
     geom_point(aes(y = y, color = "true")) +
     geom_point(aes(y = pred, color = "pred")) +
-    theme_minimal() +
-    labs(color = "")
+    theme_minimal()
 }
 train_and_plot <- function(net, dataloader, epochs = 10, lr = 0.01) {
   result <- train_network(net, dataloader, epochs = epochs, lr = lr)
   plot_results(result)
 }
 ```
+:::
+
 
 :::{.callout-tip}
 Beware of the reference semantics and make sure that you create a new instance of the network for each run.
@@ -160,15 +213,23 @@ Beware of the reference semantics and make sure that you create a new instance o
 ::: {.content-visible when-meta=solutions}
 **Solution**
 
-```{r}
+
+::: {.cell layout-align="center"}
+
+```{.r .cell-code}
 net <- nn_sin(200)
 train_and_plot(net, dl, epochs = 200, lr = 0.01)
 ```
+
+::: {.cell-output-display}
+![](3-modules-data-exercise-task_files/figure-html/unnamed-chunk-6-1.png){fig-align='center' width=672}
+:::
+:::
+
 :::
 
 **Question 5**: Create a new instance from the sinus dataset class created earlier.
-Now, set the `min` and `max` values to `10` and `20` respectively and visualize the predictions of the previously trained network on this new dataset.
-What do you observe? Can you explain why this is happening and can you fix the network architecture to make it work?
+Now, set the `min` and `max` values to `10` and `20` respectively and visualize the results. What do you observe? Can you explain why this is happening and can you fix the network architecture to make it work?
 
 <details>
 <summary>Hint</summary>
@@ -178,17 +239,28 @@ The sinus function has a phase of $2 \pi$.
 ::: {.content-visible when-meta=solutions}
 **Solution**
 
-```{r}
+
+::: {.cell layout-align="center"}
+
+```{.r .cell-code}
 dl_ood <- dataloader(sin_dataset(n = 1000, min = 0, max = 20), batch_size = 10)
 plot_results(predict_network(net, dl_ood))
 ```
 
-For values in the range `[10, 20]`, the network fails to generalize.
-This is because the network only observed values in the range `[0, 10]` during training.
+::: {.cell-output-display}
+![](3-modules-data-exercise-task_files/figure-html/unnamed-chunk-7-1.png){fig-align='center' width=672}
+:::
+:::
 
-We can fix this by preprocessing the data using the modulo operator, i.e. using the correct *inductive bias* for the problem.
 
-```{r}
+For values out of the range `[0, 10]`, the network fails to generalize. This is because the network only observed values in the range `[0, 10]` during training.
+
+We can fix this by preprocessing the data
+
+
+::: {.cell layout-align="center"}
+
+```{.r .cell-code}
 nn_sin2 <- nn_module("nn_sin2",
   initialize = function(latent = 200) {
     self$lin1 <- nn_linear(1, latent)
@@ -208,4 +280,12 @@ net2 <- nn_sin2(200)
 df <- train_network(net2, dl, epochs = 200, lr = 0.01)
 plot_results(predict_network(net2, dl_ood))
 ```
+
+::: {.cell-output-display}
+![](3-modules-data-exercise-task_files/figure-html/unnamed-chunk-8-1.png){fig-align='center' width=672}
 :::
+:::
+
+:::
+
+

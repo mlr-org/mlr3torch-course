@@ -56,19 +56,7 @@ nn_mlp <- nn_module("nn_mlp",
 )
 ```
 
-The code to compare different optimizer configurations is provided through the (provided) `compare_configs()` function.
-It takes as arguments:
-
-* `epochs`: The number of epochs to train for. Defaults to 30.
-* `batch_size`: The batch size to use for training. Defaults to 16.
-* `lr`: The learning rate to use for training. Defaults to 0.01.
-* `weight_decay`: The weight decay to use for training. Defaults to 0.01.
-* `beta1`: The momentum parameter to use for training. Defaults to 0.9.
-* `beta2`: The adaptive step size parameter to use for training. Defaults to 0.999.
-
-One of the arguments (except for `epochs`) must be a list of values.
-The function will then run the same training configuration for each of the values in the list and visualize the results.
-
+The code to compare different optimizer configurations is provided via the `compare_configs()` function, which you can copy paste.
 <details>
 <summary>Implementation of `compare_configs`</summary>
 
@@ -148,20 +136,32 @@ train_valid <- function(network, ds_train, ds_valid, epochs, batch_size, ...) {
 
 </details>
 
-You can e.g. call the function like below:
+It takes as arguments:
+
+* `epochs`: The number of epochs to train for. Defaults to 30.
+* `batch_size`: The batch size to use for training. Defaults to 16.
+* `lr`: The learning rate to use for training. Defaults to 0.01.
+* `weight_decay`: The weight decay to use for training. Defaults to 0.01.
+* `beta1`: The momentum parameter to use for training. Defaults to 0.9.
+* `beta2`: The adaptive step size parameter to use for training. Defaults to 0.999.
+
+You can, e.g., call the function like below:
 
 ```{r}
 compare_configs(epochs = 30, lr = list(0.1, 0.2), weight_decay = 0.02)
 ```
 
-Explore a few hyperparameter settings and make some observations as to how they affect the trajectory of the validation loss.
+One of the arguments (except for `epochs`) must be a list of values.
+The function will then run the same training configuration for each of the values in the list and visualize the results.
 
+Explore a few hyperparameter settings and make some observations as to how they affect the trajectory of the validation loss.
+The purpose of this exercise is *not* to derive observations that hold in general.
 
 ::: {.content-visible when-meta=solutions}
 **Solution**
 
 There is not really a 'solution' to this exercise.
-We will go through some of the configurations and explain what is happening.
+We will go through some of the configurations and try to explain what is happening.
 
 *Learning rate*
 
@@ -169,38 +169,44 @@ We will go through some of the configurations and explain what is happening.
 compare_configs(epochs = 30, lr = list(1,  0.1, 0.01, 0.001))
 ```
 
+Too large learning rates lead to unstable updates and divergence.
+It is not exactly clear why the small learning rate is so unstable, possibly it gets stuck in a bad region of the loss landscape.
+
+
 *Batch Size*
 
-For this configuration, we can see that larger batch sizes lead to considerably better results as they allow for *more* updates for the given number of epochs.
+For this configuration, we can see that smaller batch sizes lead to considerably better results as they allow for *more* updates for the given number of epochs.
 
-```{r}
+```{r, warning = FALSE}
 compare_configs(epochs = 30, batch_size = list(2, 4, 8, 16, 32, 64))
 ```
 
+Note that this comparison is not entirely fair as the number of epochs is fixed.
+We would rather be interested in the performance of different batch sizes for a fixed amount of *time* and not *epochs*.
+
 *Weight Decay*
 
-For too large values of the weight decay, we see that the network struggles to get a good validation loss.
+For too large values of the weight decay, we see that the network struggles to get a good validation loss at first.
 
 ```{r}
-compare_configs(epochs = 30, weight_decay = list(0.2, 0.1, 0.05, 0.025, 0.0125))
+compare_configs(epochs = 30, weight_decay = list(0.5, 0.25, 0.125, 0.0625, 0.03125))
 ```
 
 *Beta 1*
 
-For the momentum parameter, we can observe that too large values for the momentum parameter lead to oscillations because the local information is not used enough.
+For the momentum parameter, we can observe that too large values for the momentum parameter lead to oscillations, possibly because the local information is not used enough.
+Too small values lead to worse performance.
 
 ```{r}
-compare_configs(epochs = 30, beta1 = list(0.5, 0.85, 0.9, 0.95, 0.99))
+compare_configs(epochs = 30, beta1 = list(0.5, 0.85, 0.9, 0.95, 0.99, 0.999))
 ```
 
 *Beta 2*
 
-For larger values of `beta2`, the loss trajectory is considerably smoother.
-While smaller values will -- in this scenario -- lead to more oscillations, they also lead to a better fit.
-Once the value of `beta2` is getting too small, the performance will also deteriorate.
+For larger values of $\beta_2$, the loss trajectory is considerably smoother.
 
 ```{r}
-compare_configs(epochs = 30, beta2 = list(0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 0.999, 0.9999))
+compare_configs(epochs = 30, beta2 = list(0.99, 0.999, 0.9999))
 ```
 :::
 
@@ -248,16 +254,21 @@ optim_step <- function(x, y, lr, x_momentum, y_momentum, beta) {
 }
 ```
 
-It will receive as arguments, the current values `x` and `y`, as well as the momentum values `x_momentum` and `y_momentum` (all scalar tensors).
+It will receive as arguments, the current values `x` and `y`, the momentum values `x_momentum` and `y_momentum` (all scalar tensors) as well as the learning rate `lr` and the momentum parameter `beta`.
 The function should then:
 
-1. Perform a forward pass by calling the `rosenbrock()` function.
-2. Call `$backward()` on the result of the forward pass.
-3. First multiply both momentum values in-place using `$mul_()` with `beta`, then add (`1 - beta`) times the gradient to the momentum values using `$add_()`.
-4. Update the parameters using `$sub_()` with `lr * x_momentum` and `lr * y_momentum`.
-   Perform this update within `with_no_grad()` as we don't want to track the gradients for the parameters.
+1. Perform a forward pass.
+2. Calculate the gradients.
+3. Update the momentum values in-place.
+4. Update the parameters in-place.
+
+<details>
+<summary>Hint</summary>
 
 To perform in-place updates, you can use the `$mul_()` and `$add_()` methods.
+
+</details>
+
 
 The update rule is given exemplarily for `x`:
 
@@ -274,7 +285,11 @@ x_{t+1} &= x_t - \eta v_{t + 1}
 \end{aligned}
 $$
 
-To test your optimizer, you can use the following code:
+To test your optimizer, you can use the code below.
+Note that you might have to play around with the number of steps and the learning rate to get a good result.
+
+<details>
+<summary>Code to test your optimizer</summary>
 
 ```{r}
 optimize_rosenbrock <- function(steps, lr, beta) {
@@ -300,9 +315,10 @@ optimize_rosenbrock <- function(steps, lr, beta) {
 
   plot_rosenbrock() +
     geom_path(data = trajectory, aes(x = x, y = y, z = NULL), color = "red") +
-    labs(title = "Optimization Path on Rosenbrock Function", x = "X-axis", y = "Y-axis")
+    labs(title = "Optimization Path on Rosenbrock Function", x = "x", y = "y")
 }
 ```
+</details>
 
 ::: {.content-visible when-meta=solutions}
 **Solution**
@@ -328,7 +344,7 @@ optimize_rosenbrock(steps = 500, lr = 0.01, beta = 0.9)
 **Question 3**: Weight Decay
 
 In exercise 2, we have optimized the Rosenbrock function.
-Does it make sense to also use weight decay for this optimization?
+Does it make sense to also use weight decay here?
 
 ::: {.content-visible when-meta=solutions}
 **Solution**

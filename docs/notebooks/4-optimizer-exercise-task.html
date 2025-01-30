@@ -381,16 +381,7 @@ torch_tensor
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The code to compare different optimizer configurations is provided through the (provided) <code>compare_configs()</code> function. It takes as arguments:</p>
-<ul>
-<li><code>epochs</code>: The number of epochs to train for. Defaults to 30.</li>
-<li><code>batch_size</code>: The batch size to use for training. Defaults to 16.</li>
-<li><code>lr</code>: The learning rate to use for training. Defaults to 0.01.</li>
-<li><code>weight_decay</code>: The weight decay to use for training. Defaults to 0.01.</li>
-<li><code>beta1</code>: The momentum parameter to use for training. Defaults to 0.9.</li>
-<li><code>beta2</code>: The adaptive step size parameter to use for training. Defaults to 0.999.</li>
-</ul>
-<p>One of the arguments (except for <code>epochs</code>) must be a list of values. The function will then run the same training configuration for each of the values in the list and visualize the results.</p>
+The code to compare different optimizer configurations is provided via the <code>compare_configs()</code> function, which you can copy paste.
 <details>
 <summary>
 Implementation of <code>compare_configs</code>
@@ -469,7 +460,16 @@ Implementation of <code>compare_configs</code>
 <span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </details>
-<p>You can e.g.&nbsp;call the function like below:</p>
+<p>It takes as arguments:</p>
+<ul>
+<li><code>epochs</code>: The number of epochs to train for. Defaults to 30.</li>
+<li><code>batch_size</code>: The batch size to use for training. Defaults to 16.</li>
+<li><code>lr</code>: The learning rate to use for training. Defaults to 0.01.</li>
+<li><code>weight_decay</code>: The weight decay to use for training. Defaults to 0.01.</li>
+<li><code>beta1</code>: The momentum parameter to use for training. Defaults to 0.9.</li>
+<li><code>beta2</code>: The adaptive step size parameter to use for training. Defaults to 0.999.</li>
+</ul>
+<p>You can, e.g., call the function like below:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_configs</span>(<span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">lr =</span> <span class="fu">list</span>(<span class="fl">0.1</span>, <span class="fl">0.2</span>), <span class="at">weight_decay =</span> <span class="fl">0.02</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -480,7 +480,8 @@ Implementation of <code>compare_configs</code>
 </div>
 </div>
 </div>
-<p>Explore a few hyperparameter settings and make some observations as to how they affect the trajectory of the validation loss.</p>
+<p>One of the arguments (except for <code>epochs</code>) must be a list of values. The function will then run the same training configuration for each of the values in the list and visualize the results.</p>
+<p>Explore a few hyperparameter settings and make some observations as to how they affect the trajectory of the validation loss. The purpose of this exercise is <em>not</em> to derive observations that hold in general.</p>
 <p><strong>Question 2</strong>: Optimization with Momentum</p>
 <p>In this exercise, you will build a gradient descent optimizer with momentum. As a use case, we will minimize the <em>Rosenbrock</em> function. The function is defined as:</p>
 <div class="cell" data-layout-align="center">
@@ -512,12 +513,17 @@ Implementation of <code>compare_configs</code>
 </div>
 <p>It will receive as arguments, the current values <code>x</code> and <code>y</code>, as well as the momentum values <code>x_momentum</code> and <code>y_momentum</code> (all scalar tensors). The function should then:</p>
 <ol type="1">
-<li>Perform a forward pass by calling the <code>rosenbrock()</code> function.</li>
-<li>Call <code>$backward()</code> on the result of the forward pass.</li>
-<li>First multiply both momentum values in-place using <code>$mul_()</code> with <code>beta</code>, then add (<code>1 - beta</code>) times the gradient to the momentum values using <code>$add_()</code>.</li>
-<li>Update the parameters using <code>$sub_()</code> with <code>lr * x_momentum</code> and <code>lr * y_momentum</code>. Perform this update within <code>with_no_grad()</code> as we don’t want to track the gradients for the parameters.</li>
+<li>Perform a forward pass.</li>
+<li>Calculate the gradients.</li>
+<li>Update the momentum values in-place.</li>
+<li>Update the parameters in=-place.</li>
 </ol>
+<details>
+<summary>
+Hint
+</summary>
 <p>To perform in-place updates, you can use the <code>$mul_()</code> and <code>$add_()</code> methods.</p>
+</details>
 <p>The update rule is given exemplarily for <code>x</code>:</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -529,7 +535,11 @@ v_{t + 1} &amp;= \beta v_t + (1 - \beta) \nabla_{x} f(x_t, y_t) \\
 x_{t+1} &amp;= x_t - \eta v_{t + 1}
 \end{aligned}
 \]</span></p>
-<p>To test your optimizer, you can use the following code:</p>
+<p>To test your optimizer, you can use the code below. Note that you might have to play around with the number of steps and the learning rate to get a good result.</p>
+<details>
+<summary>
+Code to test your optimizer
+</summary>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>optimize_rosenbrock <span class="ot">&lt;-</span> <span class="cf">function</span>(steps, lr, beta) {</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
@@ -557,6 +567,7 @@ x_{t+1} &amp;= x_t - \eta v_{t + 1}
 <span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Optimization Path on Rosenbrock Function"</span>, <span class="at">x =</span> <span class="st">"X-axis"</span>, <span class="at">y =</span> <span class="st">"Y-axis"</span>)</span>
 <span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</details>
 <p><strong>Question 3</strong>: Weight Decay</p>
 <p>In exercise 2, we have optimized the Rosenbrock function. Does it make sense to also use weight decay for this optimization?</p>
 
@@ -981,6 +992,19 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>CC BY SA 4.0</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
 
 
 

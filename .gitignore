@@ -1,0 +1,10 @@
+.DS_Store
+renv/library
+notebooks/*_files
+notebooks/*.html/
+data/*
+Rplots.pdf
+notebooks/.quarto/
+notebooks/data
+/.quarto/
+/_site/

@@ -289,19 +289,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>In this exercise, you will train your first neural network with <code>mlr3torch</code>.</p>
 <p>As a task, we will use the ‘Indian Liver Patient’ dataset where the goal is to predict whether a patient has liver disease or not.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3verse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: mlr3</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3torch)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: mlr3pipelines</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: torch</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ilpd <span class="ot">&lt;-</span> <span class="fu">tsk</span>(<span class="st">"ilpd"</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ilpd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3verse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3torch)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>ilpd <span class="ot">&lt;-</span> <span class="fu">tsk</span>(<span class="st">"ilpd"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>ilpd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;TaskClassif:ilpd&gt; (583 x 11): Indian Liver Patient Data
 * Target: diseased
@@ -311,7 +302,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   - int (4): age, alanine_transaminase, alkaline_phosphatase, aspartate_transaminase
   - fct (1): gender</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(ilpd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(ilpd)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -320,31 +311,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>We remove the <em>gender</em> column from the task, so we need to deal with numeric features for now.</p>
+<p>We remove the <em>gender</em> column from the task, so we need to only deal with numeric features for now.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ilpd_num <span class="ot">=</span> ilpd<span class="sc">$</span><span class="fu">clone</span>(<span class="at">deep =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ilpd_num<span class="sc">$</span><span class="fu">select</span>(<span class="fu">setdiff</span>(ilpd_num<span class="sc">$</span>feature_names, <span class="st">"gender"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ilpd_num <span class="ot">=</span> ilpd<span class="sc">$</span><span class="fu">clone</span>(<span class="at">deep =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ilpd_num<span class="sc">$</span><span class="fu">select</span>(<span class="fu">setdiff</span>(ilpd_num<span class="sc">$</span>feature_names, <span class="st">"gender"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Train a simple multi layer perceptron (<code>lrn("classif.mlp")</code>) with 2 hidden layers with 100 neurons each. Set the batch size to 32, the learning rate to 0.001 and the number of epochs to 20. Then, resample the learner on the task with a cross-validation with 5 folds and evaluate the results using classification error and false positive rate (FPR). Is the result good?</p>
+<p>Your task is to train a simple multi layer perceptron (<code>lrn("classif.mlp")</code>) with 2 hidden layers with 100 neurons each. Set the batch size to 32, the learning rate to 0.001 and the number of epochs to 20. Then, resample the learner on the task with a cross-validation with 5 folds and evaluate the results using classification error and false positive rate (FPR). Is the result good?</p>
 <details>
 <summary>
 Hint
 </summary>
-<ul>
-<li>The parameter for the learning rate is <code>opt.lr</code></li>
-<li>Probability predictions are made by setting the <code>predict_type</code> field to <code>"prob"</code>.</li>
-</ul>
+The parameter for the learning rate is <code>opt.lr</code>
 </details>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mlp <span class="ot">&lt;-</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>,</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">neurons =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">100</span>),</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">32</span>,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">20</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">opt.lr =</span> <span class="fl">0.001</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>cv10 <span class="ot">&lt;-</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">10</span>)</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>rr1 <span class="ot">&lt;-</span> <span class="fu">resample</span>(<span class="at">task =</span> ilpd_num, <span class="at">learner =</span> mlp, <span class="at">resampling =</span> cv10)</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>rr1<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msrs</span>(<span class="fu">c</span>(<span class="st">"classif.ce"</span>, <span class="st">"classif.fpr"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mlp <span class="ot">&lt;-</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">neurons =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">100</span>),</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">32</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">20</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">opt.lr =</span> <span class="fl">0.001</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>cv10 <span class="ot">&lt;-</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">10</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>rr1 <span class="ot">&lt;-</span> <span class="fu">resample</span>(<span class="at">task =</span> ilpd_num, <span class="at">learner =</span> mlp, <span class="at">resampling =</span> cv10)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>rr1<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msrs</span>(<span class="fu">c</span>(<span class="st">"classif.ce"</span>, <span class="st">"classif.fpr"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> classif.ce classif.fpr 
   0.3706312   0.5849387 </code></pre>
@@ -352,7 +340,7 @@ Hint
 </div>
 <p>While the classification error is low, this is not a good measure due to the imbalanced class distribution. This is confirmed by the FPR, which is relatively high.</p>
 <p><strong>Question 2:</strong> Preprocessing</p>
-<p>In the previous task, we have operated on the <code>ilpd_num</code> task where we excluded the categorical <code>gender</code> column. This was done because the MLP learner operates on numeric features only. We will now create a more complex <code>GraphLearner</code> that also incudes one-hot encoding of the <code>gender</code> column. Resample this learner on the original <code>ilpd</code> task and evaluate the results using the same measures as before.</p>
+<p>In the previous question, we have operated on the <code>ilpd_num</code> task where we excluded the categorical <code>gender</code> column. This was done because the MLP learner operates on numeric features only. You will now create a more complex <code>GraphLearner</code> that also incudes one-hot encoding of the <code>gender</code> column before applying the MLP. Resample this learner on the original <code>ilpd</code> task and evaluate the results using the same measures as before.</p>
 <details>
 <summary>
 Hint
@@ -360,17 +348,17 @@ Hint
 Concatenate <code>po("encode")</code> with a <code>lrn("classif.mlp")</code> using <code>%&gt;&gt;%</code> to create the <code>GraphLearner</code>. For available options on the encoding, see <code>po("encode")$help()</code>.
 </details>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>encoder <span class="ot">&lt;-</span> <span class="fu">po</span>(<span class="st">"encode"</span>, <span class="at">method =</span> <span class="st">"one-hot"</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>glrn <span class="ot">&lt;-</span> <span class="fu">as_learner</span>(encoder <span class="sc">%&gt;&gt;%</span> mlp)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>rr2 <span class="ot">&lt;-</span> <span class="fu">resample</span>(ilpd, glrn, cv10)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>rr2<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msrs</span>(<span class="fu">c</span>(<span class="st">"classif.ce"</span>, <span class="st">"classif.fpr"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>encoder <span class="ot">&lt;-</span> <span class="fu">po</span>(<span class="st">"encode"</span>, <span class="at">method =</span> <span class="st">"one-hot"</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>glrn <span class="ot">&lt;-</span> <span class="fu">as_learner</span>(encoder <span class="sc">%&gt;&gt;%</span> mlp)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>rr2 <span class="ot">&lt;-</span> <span class="fu">resample</span>(ilpd, glrn, cv10)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>rr2<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msrs</span>(<span class="fu">c</span>(<span class="st">"classif.ce"</span>, <span class="st">"classif.fpr"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> classif.ce classif.fpr 
   0.3137347   0.8365021 </code></pre>
 </div>
 </div>
 <p><strong>Question 3</strong>: Benchmarking</p>
-<p>Instead of resampling a single learner, we now want to compare the performance of our MLP with a simple classification tree Create a benchmark design and compare the performance of the two learners.</p>
+<p>Instead of resampling a single learner, the goal is now to compare the performance of the MLP with a simple classification tree. Create a benchmark design and compare the performance of the two learners.</p>
 <details>
 <summary>
 Hint
@@ -378,13 +366,13 @@ Hint
 Create a classification tree via <code>lrn("classif.rpart")</code>. A benchmark design can be created via <code>benchmark_grid()</code>. To run a benchmark, pass the design to <code>benchmark()</code>.
 </details>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">benchmark_grid</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> ilpd,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> <span class="fu">list</span>(glrn, <span class="fu">lrn</span>(<span class="st">"classif.rpart"</span>, <span class="at">predict_type =</span> <span class="st">"prob"</span>)),</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> cv10</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>bmr <span class="ot">&lt;-</span> <span class="fu">benchmark</span>(design)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>bmr<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msrs</span>(<span class="fu">c</span>(<span class="st">"classif.ce"</span>, <span class="st">"classif.tpr"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">benchmark_grid</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> ilpd,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> <span class="fu">list</span>(glrn, <span class="fu">lrn</span>(<span class="st">"classif.rpart"</span>, <span class="at">predict_type =</span> <span class="st">"prob"</span>)),</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> cv10</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>bmr <span class="ot">&lt;-</span> <span class="fu">benchmark</span>(design)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>bmr<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msrs</span>(<span class="fu">c</span>(<span class="st">"classif.ce"</span>, <span class="st">"classif.tpr"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      nr task_id         learner_id resampling_id iters classif.ce classif.tpr
    &lt;int&gt;  &lt;char&gt;             &lt;char&gt;        &lt;char&gt; &lt;int&gt;      &lt;num&gt;       &lt;num&gt;
@@ -392,6 +380,51 @@ Create a classification tree via <code>lrn("classif.rpart")</code>. A benchmark 
 2:     2    ilpd      classif.rpart            cv    10  0.3035652   0.8301628
 Hidden columns: resample_result</code></pre>
 </div>
+</div>
+<p><strong>Question 4:</strong> Iris as a Lazy Tensor</p>
+<p>Create a version of the iris task where the 4 features are represented as a single lazy tensor column.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(iris[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dt_class <span class="ot">&lt;-</span> <span class="fu">dataset</span>(<span class="st">"iris"</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(x)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getbatch =</span> <span class="cf">function</span>(index) {</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">x =</span> self<span class="sc">$</span>x[index, , <span class="at">drop =</span> <span class="cn">FALSE</span>])</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nrow</span>(self<span class="sc">$</span>x)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>dt <span class="ot">&lt;-</span> <span class="fu">dt_class</span>(X)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>lt <span class="ot">&lt;-</span> <span class="fu">as_lazy_tensor</span>(dt, <span class="at">dataset_shapes =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">4</span>)))</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>dt <span class="ot">&lt;-</span> <span class="fu">data.table</span>(</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> lt,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">Species =</span> iris<span class="sc">$</span>Species</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>task <span class="ot">&lt;-</span> <span class="fu">as_task_classif</span>(dt, <span class="at">target =</span> <span class="st">"Species"</span>)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>task</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;TaskClassif:dt&gt; (150 x 2)
+* Target: Species
+* Properties: multiclass
+* Features (1):
+  - lt (1): x</code></pre>
+</div>
+</div>
+<p><strong>Question 5:</strong> Custom Architecture</p>
+<p>Create a network with one hidden layer with 100 neurons and a sigmoid activation function by assempling <code>PipeOp</code>s in a <code>Graph</code>. Convert the <code>Graph</code> to a <code>Learner</code> and train the network for 10 epochs using Adam with a learning rate of 0.001 and a batch size of 32.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>graph <span class="ot">&lt;-</span> <span class="fu">po</span>(<span class="st">"torch_ingress_ltnsr"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_linear"</span>, <span class="at">out_features =</span> <span class="dv">100</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_sigmoid"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_head"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"torch_loss"</span>, <span class="fu">t_loss</span>(<span class="st">"cross_entropy"</span>)) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"torch_optimizer"</span>, <span class="at">optimizer =</span> <span class="fu">t_opt</span>(<span class="st">"adam"</span>), <span class="at">lr =</span> <span class="fl">0.001</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"torch_model_classif"</span>, <span class="at">batch_size =</span> <span class="dv">32</span>, <span class="at">epochs =</span> <span class="dv">10</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>glrn <span class="ot">&lt;-</span> <span class="fu">as_learner</span>(graph)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>glrn<span class="sc">$</span><span class="fu">train</span>(task)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
@@ -815,6 +848,19 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>CC BY SA 4.0</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
 
 
 

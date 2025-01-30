@@ -381,16 +381,7 @@ torch_tensor
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>The code to compare different optimizer configurations is provided through the (provided) <code>compare_configs()</code> function. It takes as arguments:</p>
-<ul>
-<li><code>epochs</code>: The number of epochs to train for. Defaults to 30.</li>
-<li><code>batch_size</code>: The batch size to use for training. Defaults to 16.</li>
-<li><code>lr</code>: The learning rate to use for training. Defaults to 0.01.</li>
-<li><code>weight_decay</code>: The weight decay to use for training. Defaults to 0.01.</li>
-<li><code>beta1</code>: The momentum parameter to use for training. Defaults to 0.9.</li>
-<li><code>beta2</code>: The adaptive step size parameter to use for training. Defaults to 0.999.</li>
-</ul>
-<p>One of the arguments (except for <code>epochs</code>) must be a list of values. The function will then run the same training configuration for each of the values in the list and visualize the results.</p>
+The code to compare different optimizer configurations is provided via the <code>compare_configs()</code> function, which you can copy paste.
 <details>
 <summary>
 Implementation of <code>compare_configs</code>
@@ -469,7 +460,16 @@ Implementation of <code>compare_configs</code>
 <span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </details>
-<p>You can e.g.&nbsp;call the function like below:</p>
+<p>It takes as arguments:</p>
+<ul>
+<li><code>epochs</code>: The number of epochs to train for. Defaults to 30.</li>
+<li><code>batch_size</code>: The batch size to use for training. Defaults to 16.</li>
+<li><code>lr</code>: The learning rate to use for training. Defaults to 0.01.</li>
+<li><code>weight_decay</code>: The weight decay to use for training. Defaults to 0.01.</li>
+<li><code>beta1</code>: The momentum parameter to use for training. Defaults to 0.9.</li>
+<li><code>beta2</code>: The adaptive step size parameter to use for training. Defaults to 0.999.</li>
+</ul>
+<p>You can, e.g., call the function like below:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_configs</span>(<span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">lr =</span> <span class="fu">list</span>(<span class="fl">0.1</span>, <span class="fl">0.2</span>), <span class="at">weight_decay =</span> <span class="fl">0.02</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -480,9 +480,10 @@ Implementation of <code>compare_configs</code>
 </div>
 </div>
 </div>
-<p>Explore a few hyperparameter settings and make some observations as to how they affect the trajectory of the validation loss.</p>
+<p>One of the arguments (except for <code>epochs</code>) must be a list of values. The function will then run the same training configuration for each of the values in the list and visualize the results.</p>
+<p>Explore a few hyperparameter settings and make some observations as to how they affect the trajectory of the validation loss. The purpose of this exercise is <em>not</em> to derive observations that hold in general.</p>
 <p><strong>Solution</strong></p>
-<p>There is not really a ‘solution’ to this exercise. We will go through some of the configurations and explain what is happening.</p>
+<p>There is not really a ‘solution’ to this exercise. We will go through some of the configurations and try to explain what is happening.</p>
 <p><em>Learning rate</em></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_configs</span>(<span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">lr =</span> <span class="fu">list</span>(<span class="dv">1</span>,  <span class="fl">0.1</span>, <span class="fl">0.01</span>, <span class="fl">0.001</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -494,13 +495,11 @@ Implementation of <code>compare_configs</code>
 </div>
 </div>
 </div>
+<p>Too large learning rates lead to unstable updates and divergence. It is not exactly clear why the small learning rate is so unstable, possibly it gets stuck in a bad region of the loss landscape.</p>
 <p><em>Batch Size</em></p>
-<p>For this configuration, we can see that larger batch sizes lead to considerably better results as they allow for <em>more</em> updates for the given number of epochs.</p>
+<p>For this configuration, we can see that smaller batch sizes lead to considerably better results as they allow for <em>more</em> updates for the given number of epochs.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_configs</span>(<span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">batch_size =</span> <span class="fu">list</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">8</span>, <span class="dv">16</span>, <span class="dv">32</span>, <span class="dv">64</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 4 rows containing missing values or values outside the scale range (`geom_line()`).</code></pre>
-</div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -509,10 +508,11 @@ Implementation of <code>compare_configs</code>
 </div>
 </div>
 </div>
+<p>Note that this comparison is not entirely fair as the number of epochs is fixed. We would rather be interested in the performance of different batch sizes for a fixed amount of <em>time</em> and not <em>epochs</em>.</p>
 <p><em>Weight Decay</em></p>
-<p>For too large values of the weight decay, we see that the network struggles to get a good validation loss.</p>
+<p>For too large values of the weight decay, we see that the network struggles to get a good validation loss at first.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_configs</span>(<span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">weight_decay =</span> <span class="fu">list</span>(<span class="fl">0.2</span>, <span class="fl">0.1</span>, <span class="fl">0.05</span>, <span class="fl">0.025</span>, <span class="fl">0.0125</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_configs</span>(<span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">weight_decay =</span> <span class="fu">list</span>(<span class="fl">0.5</span>, <span class="fl">0.25</span>, <span class="fl">0.125</span>, <span class="fl">0.0625</span>, <span class="fl">0.03125</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -521,10 +521,10 @@ Implementation of <code>compare_configs</code>
 </div>
 </div>
 </div>
-<p><em>Beta 1</em></p>
-<p>For the momentum parameter, we can observe that too large values for the momentum parameter lead to oscillations because the local information is not used enough.</p>
+<p><em><span class="math inline">\(\beta_1\)</span></em></p>
+<p>For the momentum parameter, we can observe that too large values for the momentum parameter lead to oscillations because the local information is not used enough. Too small values lead to worse performance.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_configs</span>(<span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">beta1 =</span> <span class="fu">list</span>(<span class="fl">0.5</span>, <span class="fl">0.85</span>, <span class="fl">0.9</span>, <span class="fl">0.95</span>, <span class="fl">0.99</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_configs</span>(<span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">beta1 =</span> <span class="fu">list</span>(<span class="fl">0.5</span>, <span class="fl">0.85</span>, <span class="fl">0.9</span>, <span class="fl">0.95</span>, <span class="fl">0.99</span>, <span class="fl">0.999</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -533,10 +533,10 @@ Implementation of <code>compare_configs</code>
 </div>
 </div>
 </div>
-<p><em>Beta 2</em></p>
-<p>For larger values of <code>beta2</code>, the loss trajectory is considerably smoother. While smaller values will – in this scenario – lead to more oscillations, they also lead to a better fit. Once the value of <code>beta2</code> is getting too small, the performance will also deteriorate.</p>
+<p><em><span class="math inline">\(\beta_2\)</span></em></p>
+<p>For larger values of <span class="math inline">\(\beta_2\)</span>, the loss trajectory is considerably smoother.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_configs</span>(<span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">beta2 =</span> <span class="fu">list</span>(<span class="fl">0.5</span>, <span class="fl">0.6</span>, <span class="fl">0.7</span>, <span class="fl">0.8</span>, <span class="fl">0.9</span>, <span class="fl">0.99</span>, <span class="fl">0.999</span>, <span class="fl">0.9999</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_configs</span>(<span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">beta2 =</span> <span class="fu">list</span>(<span class="fl">0.99</span>, <span class="fl">0.999</span>, <span class="fl">0.9999</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -548,10 +548,10 @@ Implementation of <code>compare_configs</code>
 <p><strong>Question 2</strong>: Optimization with Momentum</p>
 <p>In this exercise, you will build a gradient descent optimizer with momentum. As a use case, we will minimize the <em>Rosenbrock</em> function. The function is defined as:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>rosenbrock <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) {</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  (<span class="dv">1</span> <span class="sc">-</span> x)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> (y <span class="sc">-</span> x<span class="sc">^</span><span class="dv">2</span>)<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rosenbrock</span>(<span class="fu">torch_tensor</span>(<span class="sc">-</span><span class="dv">1</span>), <span class="fu">torch_tensor</span>(<span class="sc">-</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>rosenbrock <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) {</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  (<span class="dv">1</span> <span class="sc">-</span> x)<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> (y <span class="sc">-</span> x<span class="sc">^</span><span class="dv">2</span>)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rosenbrock</span>(<span class="fu">torch_tensor</span>(<span class="sc">-</span><span class="dv">1</span>), <span class="fu">torch_tensor</span>(<span class="sc">-</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  12
@@ -570,18 +570,23 @@ Implementation of <code>compare_configs</code>
 </div>
 <p>The task is to implement the <code>optim_step()</code> function.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>optim_step <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y, lr, x_momentum, y_momentum, beta) {</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  ...</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>optim_step <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y, lr, x_momentum, y_momentum, beta) {</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  ...</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>It will receive as arguments, the current values <code>x</code> and <code>y</code>, as well as the momentum values <code>x_momentum</code> and <code>y_momentum</code> (all scalar tensors). The function should then:</p>
 <ol type="1">
-<li>Perform a forward pass by calling the <code>rosenbrock()</code> function.</li>
-<li>Call <code>$backward()</code> on the result of the forward pass.</li>
-<li>First multiply both momentum values in-place using <code>$mul_()</code> with <code>beta</code>, then add (<code>1 - beta</code>) times the gradient to the momentum values using <code>$add_()</code>.</li>
-<li>Update the parameters using <code>$sub_()</code> with <code>lr * x_momentum</code> and <code>lr * y_momentum</code>. Perform this update within <code>with_no_grad()</code> as we don’t want to track the gradients for the parameters.</li>
+<li>Perform a forward pass.</li>
+<li>Calculate the gradients.</li>
+<li>Update the momentum values in-place.</li>
+<li>Update the parameters in=-place.</li>
 </ol>
+<details>
+<summary>
+Hint
+</summary>
 <p>To perform in-place updates, you can use the <code>$mul_()</code> and <code>$add_()</code> methods.</p>
+</details>
 <p>The update rule is given exemplarily for <code>x</code>:</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -593,50 +598,55 @@ v_{t + 1} &amp;= \beta v_t + (1 - \beta) \nabla_{x} f(x_t, y_t) \\
 x_{t+1} &amp;= x_t - \eta v_{t + 1}
 \end{aligned}
 \]</span></p>
-<p>To test your optimizer, you can use the following code:</p>
+<p>To test your optimizer, you can use the code below. Note that you might have to play around with the number of steps and the learning rate to get a good result.</p>
+<details>
+<summary>
+Code to test your optimizer
+</summary>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>optimize_rosenbrock <span class="ot">&lt;-</span> <span class="cf">function</span>(steps, lr, beta) {</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="dv">2</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  momentum_x <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="dv">0</span>)</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  momentum_y <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="dv">0</span>)</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  trajectory <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">numeric</span>(steps <span class="sc">+</span> <span class="dv">1</span>),</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">numeric</span>(steps <span class="sc">+</span> <span class="dv">1</span>),</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="fu">numeric</span>(steps <span class="sc">+</span> <span class="dv">1</span>)</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (step <span class="cf">in</span> <span class="fu">seq_len</span>(steps)){</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">optim_step</span>(x, y, lr, momentum_x, momentum_y, beta)</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    x<span class="sc">$</span>grad<span class="sc">$</span><span class="fu">zero_</span>()</span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    y<span class="sc">$</span>grad<span class="sc">$</span><span class="fu">zero_</span>()</span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    trajectory<span class="sc">$</span>x[step] <span class="ot">&lt;-</span> x<span class="sc">$</span><span class="fu">item</span>()</span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>    trajectory<span class="sc">$</span>y[step] <span class="ot">&lt;-</span> y<span class="sc">$</span><span class="fu">item</span>()</span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  trajectory<span class="sc">$</span>x[steps <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> x<span class="sc">$</span><span class="fu">item</span>()</span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>  trajectory<span class="sc">$</span>y[steps <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> y<span class="sc">$</span><span class="fu">item</span>()</span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_rosenbrock</span>() <span class="sc">+</span></span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_path</span>(<span class="at">data =</span> trajectory, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">z =</span> <span class="cn">NULL</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Optimization Path on Rosenbrock Function"</span>, <span class="at">x =</span> <span class="st">"X-axis"</span>, <span class="at">y =</span> <span class="st">"Y-axis"</span>)</span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>optimize_rosenbrock <span class="ot">&lt;-</span> <span class="cf">function</span>(steps, lr, beta) {</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  y <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="dv">2</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  momentum_x <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="dv">0</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  momentum_y <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="dv">0</span>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  trajectory <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">numeric</span>(steps <span class="sc">+</span> <span class="dv">1</span>),</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">numeric</span>(steps <span class="sc">+</span> <span class="dv">1</span>),</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">value =</span> <span class="fu">numeric</span>(steps <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (step <span class="cf">in</span> <span class="fu">seq_len</span>(steps)){</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">optim_step</span>(x, y, lr, momentum_x, momentum_y, beta)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>    x<span class="sc">$</span>grad<span class="sc">$</span><span class="fu">zero_</span>()</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    y<span class="sc">$</span>grad<span class="sc">$</span><span class="fu">zero_</span>()</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>    trajectory<span class="sc">$</span>x[step] <span class="ot">&lt;-</span> x<span class="sc">$</span><span class="fu">item</span>()</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    trajectory<span class="sc">$</span>y[step] <span class="ot">&lt;-</span> y<span class="sc">$</span><span class="fu">item</span>()</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  trajectory<span class="sc">$</span>x[steps <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> x<span class="sc">$</span><span class="fu">item</span>()</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  trajectory<span class="sc">$</span>y[steps <span class="sc">+</span> <span class="dv">1</span>] <span class="ot">&lt;-</span> y<span class="sc">$</span><span class="fu">item</span>()</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_rosenbrock</span>() <span class="sc">+</span></span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_path</span>(<span class="at">data =</span> trajectory, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">z =</span> <span class="cn">NULL</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Optimization Path on Rosenbrock Function"</span>, <span class="at">x =</span> <span class="st">"X-axis"</span>, <span class="at">y =</span> <span class="st">"Y-axis"</span>)</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</details>
 <p><strong>Solution</strong></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>optim_step <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y, lr, x_momentum, y_momentum, beta) {</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  value <span class="ot">&lt;-</span> <span class="fu">rosenbrock</span>(x, y)</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  value<span class="sc">$</span><span class="fu">backward</span>()</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  x_momentum<span class="sc">$</span><span class="fu">mul_</span>(beta)</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  x_momentum<span class="sc">$</span><span class="fu">add_</span>((<span class="dv">1</span> <span class="sc">-</span> beta) <span class="sc">*</span> x<span class="sc">$</span>grad)</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  y_momentum<span class="sc">$</span><span class="fu">mul_</span>(beta)</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  y_momentum<span class="sc">$</span><span class="fu">add_</span>((<span class="dv">1</span> <span class="sc">-</span> beta) <span class="sc">*</span> y<span class="sc">$</span>grad)</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">with_no_grad</span>({</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    x<span class="sc">$</span><span class="fu">sub_</span>(lr <span class="sc">*</span> x_momentum)</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    y<span class="sc">$</span><span class="fu">sub_</span>(lr <span class="sc">*</span> y_momentum)</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  value<span class="sc">$</span><span class="fu">item</span>()</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="fu">optimize_rosenbrock</span>(<span class="at">steps =</span> <span class="dv">500</span>, <span class="at">lr =</span> <span class="fl">0.01</span>, <span class="at">beta =</span> <span class="fl">0.9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>optim_step <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y, lr, x_momentum, y_momentum, beta) {</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  value <span class="ot">&lt;-</span> <span class="fu">rosenbrock</span>(x, y)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  value<span class="sc">$</span><span class="fu">backward</span>()</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  x_momentum<span class="sc">$</span><span class="fu">mul_</span>(beta)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  x_momentum<span class="sc">$</span><span class="fu">add_</span>((<span class="dv">1</span> <span class="sc">-</span> beta) <span class="sc">*</span> x<span class="sc">$</span>grad)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  y_momentum<span class="sc">$</span><span class="fu">mul_</span>(beta)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  y_momentum<span class="sc">$</span><span class="fu">add_</span>((<span class="dv">1</span> <span class="sc">-</span> beta) <span class="sc">*</span> y<span class="sc">$</span>grad)</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">with_no_grad</span>({</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    x<span class="sc">$</span><span class="fu">sub_</span>(lr <span class="sc">*</span> x_momentum)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    y<span class="sc">$</span><span class="fu">sub_</span>(lr <span class="sc">*</span> y_momentum)</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  value<span class="sc">$</span><span class="fu">item</span>()</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="fu">optimize_rosenbrock</span>(<span class="at">steps =</span> <span class="dv">500</span>, <span class="at">lr =</span> <span class="fl">0.01</span>, <span class="at">beta =</span> <span class="fl">0.9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1070,6 +1080,19 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>CC BY SA 4.0</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
 
 
 

@@ -4,7 +4,7 @@ title: "Resources"
 
 * The `torch` website: [https://torch.mlverse.org/](https://torch.mlverse.org/docs/)
 * The `torch` package website: [https://torch.mlverse.org/docs/](https://torch.mlverse.org/)
-* Book by Sigrid Keydana: [Deep Learning and Scientific Computing with R torch](https://skeydan.github.io/Deep-Learning-and-Scientific-Computing-with-R-torch/) on which part of this is based.
+* Book by Sigrid Keydana: [Deep Learning and Scientific Computing with R torch](https://skeydan.github.io/Deep-Learning-and-Scientific-Computing-with-R-torch/) on which parts of this course are based.
 * `mlr3torch` package website: [https://mlr3torch.mlr-org.com/](https://mlr3torch.mlr-org.com/)
 * `mlr3` book: [https://mlr3book.mlr-org.com/](https://mlr3book.mlr-org.com/)
 * `mlr3` website: [https://mlr-org.com/](https://mlr-org.com/)

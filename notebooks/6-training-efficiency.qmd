@@ -6,8 +6,8 @@ title: "Training Efficiency"
 
 Methods for increasing training efficiency can be roughly split into:
 
-1. Computational methods such as JIT compilation, using GPU, parallel data loading, etc., that allow doing the same thing **faster**.
-2. Methodological approaches that change how we approach modeling to achieve either better results or faster training.
+1. Computational methods such as JIT compilation, using GPU, parallel data loading, etc., that allow doing the same thing faster.
+2. Methodological approaches that change how we approach modeling to achieve either better results or the same results faster.
 
 # Computational Approaches
 
@@ -56,7 +56,7 @@ bench::mark(
 
 Training large networks on a CPU is not a recommended approach, but it can be useful for smaller networks or when you don't have a GPU.
 You can still use multiple threads to speed up the execution of operations.
-Note that the code below will not run on macOS, as it is not possible to set the number of threads on macOS.
+Please be aware that the code below will not execute on macOS, as setting the number of threads is not supported on this operating system.
 
 ```{r eval = (Sys.info()["sysname"] != "Darwin")}
 # this will be skipped on macOS
@@ -99,7 +99,7 @@ There are various ways to improve data loading speed:
 
 1. Improve the implementation of the `dataset` class
 2. Parallelize the data loading process
-3. Move data to the GPU
+3. Increase speed of data transfer to the GPU
 
 These approaches will now be discussed.
 
