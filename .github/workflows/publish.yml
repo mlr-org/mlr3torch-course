@@ -19,5 +19,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'deploy website'
           branch: gh-pages
-          folder: .
+          folder: docs
           single-commit: true
