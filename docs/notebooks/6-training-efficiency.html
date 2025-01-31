@@ -316,8 +316,8 @@ window.Quarto = {
 
 <p>Methods for increasing training efficiency can be roughly split into:</p>
 <ol type="1">
-<li>Computational methods such as JIT compilation, using GPU, parallel data loading, etc., that allow doing the same thing <strong>faster</strong>.</li>
-<li>Methodological approaches that change how we approach modeling to achieve either better results or faster training.</li>
+<li>Computational methods such as JIT compilation, using GPUs, parallel data loading, etc., that allow doing the same thing faster.</li>
+<li>Methodological approaches that change how we approach modeling to achieve either better results or the same results faster.</li>
 </ol>
 <section id="computational-approaches" class="level1">
 <h1>Computational Approaches</h1>
@@ -325,7 +325,7 @@ window.Quarto = {
 <h2 class="anchored" data-anchor-id="parallel-processing">Parallel Processing</h2>
 <section id="graphical-processing-unit-gpu" class="level3">
 <h3 class="anchored" data-anchor-id="graphical-processing-unit-gpu">Graphical Processing Unit (GPU)</h3>
-<p>Using a GPU is crucial when training relatively large neural networks because GPUs are specifically designed to handle the parallel processing required for complex computations. To use a GPU in mlr3torch, we can set the device parameter to “cuda”. By default, it is set to “auto”, which will use a GPU if it is available and otherwise fall back to the CPU.</p>
+<p>Using a GPU is crucial when training relatively large neural networks because GPUs are specifically designed to handle the parallel processing required for complex computations. To use a GPU in <code>mlr3torch</code>, we can set the device parameter to “cuda”. By default, it is set to “auto”, which will use a GPU if available and otherwise fall back to the CPU.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -370,7 +370,7 @@ Tip
 </section>
 <section id="cpu-threads" class="level3">
 <h3 class="anchored" data-anchor-id="cpu-threads">CPU Threads</h3>
-<p>Training large networks on a CPU is not a recommended approach, but it can be useful for smaller networks or when you don’t have a GPU. You can still use multiple threads to speed up the execution of operations. Note that the code below will not run on macOS, as it is not possible to set the number of threads on macOS.</p>
+<p>Training large networks on a CPU is not a recommended approach, but it can be a viable option for smaller networks. You can still use multiple threads to speed up the execution of operations. Please be aware that the code below will not execute on macOS, as setting the number of threads is not supported on this operating system.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># this will be skipped on macOS</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
@@ -414,11 +414,11 @@ The optimal number of threads is a trade-off between these two effects.
 </section>
 <section id="efficient-data-loading" class="level2">
 <h2 class="anchored" data-anchor-id="efficient-data-loading">Efficient Data Loading</h2>
-<p>Besides speeding up the computation of operations in the forward and backward pass, another possible bottleneck is the loading of data. There are various ways to improve data loading speed:</p>
+<p>Besides parallelizing the computation of operations in the forward and backward pass, another possible bottleneck is the loading of data. There are various ways to improve data loading speed:</p>
 <ol type="1">
 <li>Improve the implementation of the <code>dataset</code> class</li>
 <li>Parallelize the data loading process</li>
-<li>Move data to the GPU</li>
+<li>Increase the speed of data transfer to the GPU</li>
 </ol>
 <p>These approaches will now be discussed.</p>
 <section id="efficient-dataset-implementation" class="level3">
@@ -438,7 +438,7 @@ Quiz: Data Loading
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The <em>tiny imagenet</em> dataset is a dataset of 100,000 images of size 64x64x3. It is a subset of the famous <em>imagenet</em> dataset. Below, we show some examples from the dataset:</p>
+<p>The <em>tiny imagenet</em> dataset is a dataset of 100,000 images of size 64x64. It is a subset of the famous <em>imagenet</em> dataset. Below, we show some examples from it:</p>
 <p><img src="../assets/tiny-imagenet.png" class="img-fluid"></p>
 <p>We will now consider different ways to write a <code>torch::dataset</code> implementation for this data. Assume we have some image paths stored in a character vector as well as in an array where they are already loaded into memory.</p>
 <div class="cell" data-layout-align="center">
@@ -482,7 +482,7 @@ Quiz: Data Loading
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_array) {</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>image_array <span class="ot">=</span> image_array</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getbatch =</span> <span class="cf">function</span>(i) {</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
 <span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">torch_tensor</span>(self<span class="sc">$</span>image_array[i, , , ])</span>
 <span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  },</span>
 <span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
@@ -506,33 +506,36 @@ Click for answer
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">disk =</span> <span class="fu">iter</span>(ds_disk),</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">ram =</span> <span class="fu">iter</span>(ds_ram),</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">disk =</span> <span class="fu">iter</span>(ds_disk, <span class="at">epochs =</span> <span class="dv">10</span>),</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">ram =</span> <span class="fu">iter</span>(ds_ram, <span class="at">epochs =</span> <span class="dv">10</span>),</span>
 <span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
 <span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Some expressions had a GC in every iteration; so filtering is disabled.</code></pre>
+</div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 disk           18ms  20.01ms      47.6      14MB     14.0
-2 ram           8.4ms   9.06ms     110.      9.4MB     26.0</code></pre>
+1 disk          228ms    258ms      3.88     109MB     9.69
+2 ram           183ms    184ms      5.33    94.4MB    10.7 </code></pre>
 </div>
 </div>
 </details>
 <p><strong>Question 2:</strong> (Don’t) Copy that</p>
 <p>Consider now the next dataset implementation:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ds_tensor <span class="ot">=</span> <span class="fu">dataset</span>(<span class="st">"tensor"</span>,</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_array) {</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor <span class="ot">=</span> <span class="fu">torch_tensor</span>(image_array)</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor[i, ..]</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nrow</span>(self<span class="sc">$</span>tensor)</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>)(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>ds_tensor <span class="ot">=</span> <span class="fu">dataset</span>(<span class="st">"tensor"</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_array) {</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor <span class="ot">=</span> <span class="fu">torch_tensor</span>(image_array)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor[i, ..]</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nrow</span>(self<span class="sc">$</span>tensor)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>)(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Do you think this implementation is faster or slower than the <code>ds_ram</code> implementation? Explain why.</p>
 <details>
@@ -541,34 +544,34 @@ Click for answer
 </summary>
 <p>This implementation is faster than the <code>ds_ram</code> implementation. This is because the <code>ds_tensor</code> implementation copies the R array to a torch tensor only once, whereas the <code>ds_ram</code> implementation copies the R array to a torch tensor for each item.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">tensor =</span> <span class="fu">iter</span>(ds_tensor),</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">array =</span> <span class="fu">iter</span>(ds_ram),</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">tensor =</span> <span class="fu">iter</span>(ds_tensor),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">array =</span> <span class="fu">iter</span>(ds_ram),</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 tensor       4.62ms   5.06ms      196.   96.08KB     6.77
-2 array        8.03ms   9.28ms      107.    9.38MB    27.6 </code></pre>
+1 tensor       4.52ms   4.82ms     206.    96.08KB     6.71
+2 array       14.94ms  16.26ms      62.0    9.44MB    16.9 </code></pre>
 </div>
 </div>
 </details>
 <p><strong>Question 3</strong>: <code>$.getbatch()</code> vs <code>$.getitem()</code></p>
 <p>Which implementation is faster? Explain why.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ds_tensor_batch <span class="ot">=</span> <span class="fu">dataset</span>(<span class="st">"tensor_batch"</span>,</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_array) {</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor <span class="ot">=</span> <span class="fu">torch_tensor</span>(image_array)</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getbatch =</span> <span class="cf">function</span>(i) {</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor[i, ..]</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nrow</span>(self<span class="sc">$</span>tensor)</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>)(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ds_tensor_batch <span class="ot">=</span> <span class="fu">dataset</span>(<span class="st">"tensor_batch"</span>,</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_array) {</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor <span class="ot">=</span> <span class="fu">torch_tensor</span>(image_array)</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getbatch =</span> <span class="cf">function</span>(i) {</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor[i, .., drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nrow</span>(self<span class="sc">$</span>tensor)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>)(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <details>
 <summary>
@@ -576,17 +579,17 @@ Click for answer
 </summary>
 <p>The <code>$.getbatch()</code> implementation is faster than the <code>$.getitem()</code> implementation. This is because when using the <code>$.getitem()</code> method, the batch for indices <code>ids</code> is obtained by calling <code>$.getitem(id)</code> for each index in <code>ids</code> and then stacking them together, which requires a new tensor allocation. Slicing the tensor, however, avoids this allocation when <code>shuffle = TRUE</code> (which is also the default).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">getbatch =</span> <span class="fu">iter</span>(ds_tensor_batch),</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">getitem =</span> <span class="fu">iter</span>(ds_tensor),</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">getbatch =</span> <span class="fu">iter</span>(ds_tensor_batch),</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">getitem =</span> <span class="fu">iter</span>(ds_tensor),</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 getbatch     1.69ms   1.99ms      466.    3.83KB     4.25
-2 getitem      4.48ms   4.85ms      204.   54.69KB     7.19</code></pre>
+1 getbatch     1.75ms   1.94ms      502.      23KB     4.69
+2 getitem      4.61ms   4.94ms      198.    54.7KB     7.54</code></pre>
 </div>
 </div>
 </details>
@@ -608,26 +611,26 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Note that there is some communication overhead that results from sending the batches from the worker to the main process. This will hopefully be reduced in the future, but is currently there. For this reason, parallel data loading is therefore – currently – only beneficial when it is slow, e.g., because of loading the data from disk or because of expensive preprocessing.</p>
+<p>Note that in the current implementation, parallel data loading is only beneficial when it is slow, e.g., because of loading the data from disk or because of expensive preprocessing. This will hopefully be improved in the future (by a faster implementation of the parallel dataloader).</p>
 </div>
 </div>
 </section>
 <section id="moving-data-to-the-gpu" class="level3">
 <h3 class="anchored" data-anchor-id="moving-data-to-the-gpu">Moving Data to the GPU</h3>
-<p>One thing we have ignored so far is that when training using a GPU, the data needs to be moved to the GPU. This is because a GPU has its own memory (VRAM), and the data needs to be moved to this memory before it can be used for training. The moving of the data to the GPU cannot be done on the processes that are loading the data but must be done in the main process, i.e., after the batch was received from (possibly parallelized) dataloader. One way to speed up the data loading process is to pin the memory of the data to the GPU. Before a tensor can be moved from RAM to VRAM, it needs to be in so-called page-locked memory, which can be done using the <code>pin_memory</code> parameter.</p>
+<p>One thing we have ignored so far is that when training using a GPU, the data needs to be moved from RAM to the GPU. This is because a GPU has its own memory (VRAM), and the data needs to be moved to this memory before it can be used for training. The moving of the data to the GPU cannot be done on the processes that are loading the data but must be done in the main process, i.e., after the batch was received from (possibly parallelized) dataloader. One way to speed up the data loading process is to pin the memory of the data to the GPU. Before a tensor can be moved from RAM to VRAM, it needs to be in so-called page-locked memory, which can be enabled using the <code>pin_memory</code> parameter of <code>dataloader()</code>..</p>
 <p><img src="../assets/pinned-memory.png" class="img-fluid"></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>iter_cuda <span class="ot">=</span> <span class="cf">function</span>(ds, <span class="at">pin_memory =</span> <span class="cn">TRUE</span>) {</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  dl <span class="ot">=</span> torch<span class="sc">::</span><span class="fu">dataloader</span>(ds, <span class="at">batch_size =</span> <span class="dv">16</span>, <span class="at">pin_memory =</span> pin_memory)</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> dl) {</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    batch<span class="sc">$</span><span class="fu">cuda</span>()</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">not_pinned =</span> <span class="fu">iter_cuda</span>(ds_disk, <span class="at">pin_memory =</span> <span class="cn">FALSE</span>),</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">pinned =</span> <span class="fu">iter_cuda</span>(ds_disk, <span class="at">pin_memory =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>iter_cuda <span class="ot">=</span> <span class="cf">function</span>(ds, <span class="at">pin_memory =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  dl <span class="ot">=</span> torch<span class="sc">::</span><span class="fu">dataloader</span>(ds, <span class="at">batch_size =</span> <span class="dv">16</span>, <span class="at">pin_memory =</span> pin_memory)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> dl) {</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    batch<span class="sc">$</span><span class="fu">cuda</span>()</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">not_pinned =</span> <span class="fu">iter_cuda</span>(ds_disk, <span class="at">pin_memory =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">pinned =</span> <span class="fu">iter_cuda</span>(ds_disk, <span class="at">pin_memory =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -641,22 +644,7 @@ Note
 <div class="callout-body-container callout-body">
 <p>In order to use parallel data loading or memory pinning with <code>mlr3torch</code>, these parameters can simply be specified in the learner:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>, <span class="at">num_workers =</span> <span class="dv">8</span>L, <span class="at">pin_memory =</span> <span class="cn">TRUE</span>, <span class="at">device =</span> <span class="st">"cuda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;LearnerTorchMLP[classif]:classif.mlp&gt;: My Little Powny
-* Model: -
-* Parameters: device=cuda, num_threads=1, num_interop_threads=1, seed=random, jit_trace=FALSE, eval_freq=1,
-  measures_train=&lt;list&gt;, measures_valid=&lt;list&gt;, patience=0, min_delta=0, num_workers=8, pin_memory=TRUE,
-  neurons=integer(0), p=0.5, activation=&lt;nn_relu&gt;, activation_args=&lt;list&gt;
-* Validate: NULL
-* Packages: mlr3, mlr3torch, torch
-* Predict Types:  [response], prob
-* Feature Types: integer, numeric, lazy_tensor
-* Properties: internal_tuning, marshal, multiclass, twoclass, validation
-* Optimizer: adam
-* Loss: cross_entropy
-* Callbacks: -</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>, <span class="at">num_workers =</span> <span class="dv">8</span>L, <span class="at">pin_memory =</span> <span class="cn">TRUE</span>, <span class="at">device =</span> <span class="st">"cuda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -678,7 +666,7 @@ Note
     loop_fun: function (group, param, g, p) 
     step: function (closure = NULL) 
     clone: function (deep = FALSE) 
-  Parent env: &lt;environment: 0x143916d88&gt;
+  Parent env: &lt;environment: 0x12cfbcbc8&gt;
   Locked objects: FALSE
   Locked class: FALSE
   Portable: TRUE</code></pre>
@@ -702,13 +690,13 @@ Note
     .set_param_group_options: function (opt, list) 
     .zero_grad: function (opt) 
     .get_param_groups: function (ptr) 
-  Parent env: &lt;environment: 0x117450168&gt;
+  Parent env: &lt;environment: 0x12cae2478&gt;
   Locked objects: FALSE
   Locked class: FALSE
   Portable: TRUE</code></pre>
 </div>
 </div>
-<p>The ‘ignite’ indicates that the optimizer is a version that is optimized for performance. Not for all optimizers does an ignite version exist, but for the most common ones, it does.</p>
+<p>The ‘ignite’ indicates that the optimizer is a version that is optimized for performance. Not for all optimizers does an ignite version exist, but for the most common ones, there does.</p>
 <p>Below, we compare the performance of the default optimizer and the ignite optimizer and see that the latter is considerably faster.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>adamw <span class="ot">=</span> <span class="fu">as_torch_optimizer</span>(torch<span class="sc">::</span>optim_adamw)</span>
@@ -734,8 +722,8 @@ Note
 <pre><code># A tibble: 2 × 6
   expression                            min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt;                       &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 learner$train(task_sonar)           667ms    667ms      1.50    15.7MB     4.49
-2 learner_ignite$train(task_sonar)    202ms    211ms      4.78    10.7MB     4.78</code></pre>
+1 learner$train(task_sonar)           588ms    588ms      1.70    15.7MB     5.10
+2 learner_ignite$train(task_sonar)    204ms    208ms      4.77    10.7MB     4.77</code></pre>
 </div>
 </div>
 </section>
@@ -767,7 +755,7 @@ Note
 <pre><code>Float [1:10, 1:1]</code></pre>
 </div>
 </div>
-<p>Besides syntax, there are some important differences between TorchScript and R:</p>
+<p>Besides syntax, there are some notable differences between TorchScript and R to be aware of:</p>
 <ol type="1">
 <li>In TorchScript, indexing tensors is 0-based, and</li>
 <li>TorchScript is statically typed, so you need to specify the types of the arguments, unless they are tensors, which is the default.</li>
@@ -806,7 +794,7 @@ Note
 <pre><code>[1] TRUE</code></pre>
 </div>
 </div>
-<p>An advantage of trace-compilation is that it even allows you to JIT-compile modules, which is currently not possible with <code>jit_compile</code>.</p>
+<p>An advantage of trace-compilation is that it can be applied to modules, which is currently not possible with <code>jit_compile</code>.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>net <span class="ot">=</span> <span class="fu">nn_sequential</span>(</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_linear</span>(<span class="dv">10</span>, <span class="dv">100</span>),</span>
@@ -820,7 +808,7 @@ Note
 <pre><code>[1] TRUE</code></pre>
 </div>
 </div>
-<p>Trace-compilation is restrictive because it only records operations applied to torch tensors and is unaware of R control flow, so you need to be careful when using it. Furthermore, it only accepts torch tensors as arguments. Unless you have dynamic inputs and outputs or modify the configuration of the module, trace-compilation should usually work. You can also check this by running the original and trace-jitted module on some example inputs and see if they return the same result.</p>
+<p>However, trace-compilation is restrictive because it only records operations applied to torch tensors and is unaware of R control flow, so you need to be careful when using it. Furthermore, it only accepts torch tensors as arguments. For many simple modules, trace-compilation should usually work. You can also check this by running the original and trace-jitted module on some example inputs and see if they return the same result.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -884,47 +872,64 @@ Quiz: Just In Time
 <span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>fjit <span class="ot">=</span> <span class="fu">jit_trace</span>(f, <span class="fu">torch_tensor</span>(<span class="dv">1</span>), <span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
 <span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<details>
+<summary>
+Click for answer
+</summary>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  6
 [ CPUFloatType{1} ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  6
 [ CPUFloatType{1} ]</code></pre>
 </div>
 </div>
+</details>
 <p><strong>Question 2</strong>: Answer the same question for the following function:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="cf">function</span>(a, b, multiply) {</span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">torch_where</span>(multiply, a <span class="sc">*</span> b, a <span class="sc">+</span> b)</span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>fjit <span class="ot">=</span> <span class="fu">jit_trace</span>(f, <span class="fu">torch_tensor</span>(<span class="dv">1</span>), <span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="cf">function</span>(a, b, multiply) {</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">torch_where</span>(multiply, a <span class="sc">*</span> b, a <span class="sc">+</span> b)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>fjit <span class="ot">=</span> <span class="fu">jit_trace</span>(f, <span class="fu">torch_tensor</span>(<span class="dv">1</span>), <span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<details>
+<summary>
+Click for answer
+</summary>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  6
 [ CPUFloatType{1} ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  5
 [ CPUFloatType{1} ]</code></pre>
 </div>
 </div>
+</details>
 </div>
 </div>
 </section>
 </section>
 <section id="mixed-precision-training" class="level3">
 <h3 class="anchored" data-anchor-id="mixed-precision-training">Mixed Precision Training</h3>
-<p>Another way to speed up the training process is to use mixed precision training. This technique involves training the model using both 16-bit and 32-bit floating point numbers. This allows reducing the memory footprint of the model and speeding up the training process.</p>
-<p>We won’t cover this here, but refer to the <a href="https://torch.mlverse.org/docs/articles/amp">torch documentation</a> that explains how to do this.</p>
+<p>Another way to speed up the training process is to use mixed precision training. This technique involves training the model using both 16-bit and 32-bit floating point numbers. This allows reducing the memory footprint of the model and speeding up the training process. We won’t cover this here, but refer to the <a href="https://torch.mlverse.org/docs/articles/amp">torch documentation</a> that explains how to do this.</p>
 </section>
 </section>
 <section id="methodological-approaches" class="level2">
@@ -936,49 +941,27 @@ Quiz: Just In Time
 <p>In <code>mlr3torch</code>, we can track the performance of the model on a validation set by specifying:</p>
 <ul>
 <li><code>validate</code>, which is the ratio of the data that is used for validation</li>
-<li><code>measures_valid</code>, which is a list of measures to use for validation</li>
+<li><code>measures_valid</code>, which is a list of measures to evaluate the validation performance</li>
 <li><code>eval_freq</code>, which is the frequency at which the validation is performed</li>
-<li><code>callbacks</code>, which is a list of callbacks to use during training, in this case, we use the <code>history</code> callback, which records the performance of the model on the validation set at regular intervals, enabling us to monitor and analyze the model’s performance over time.</li>
+<li><code>callbacks</code>, which is a list of callbacks to use during training, in this case, we use the <code>t_clbk("history")</code> callback, which records the performance of the model on the validation set at regular intervals, enabling us to monitor and analyze the model’s performance over time.</li>
 </ul>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>While <code>mlr3torch</code> comes with predefined callbacks, it is also possible to define custom callbacks that modify the training process.</p>
-</div>
-</div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>task <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"sonar"</span>)</span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>mlp_learner <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>,</span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">neurons =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">50</span>), <span class="at">batch_size =</span> <span class="dv">256</span>, <span class="at">epochs =</span> <span class="dv">400</span>,</span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">t_opt</span>(<span class="st">"adam"</span>, <span class="at">lr =</span> <span class="fl">0.003</span>),</span>
-<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">predict_type =</span> <span class="st">"prob"</span>, <span class="at">jit_trace =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Validation / Performance Monitoring</span></span>
-<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">validate =</span> <span class="fl">0.3</span>, <span class="co"># how much data to use for validation</span></span>
-<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_valid =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>), <span class="co"># how to evaluate train performance</span></span>
-<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_train =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>), <span class="co"># how to evaluate validation performance</span></span>
-<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> <span class="fu">t_clbk</span>(<span class="st">"history"</span>), <span class="co"># history callbacks save train and validation performance</span></span>
-<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">eval_freq =</span> <span class="dv">10</span> <span class="co"># after how many training epochs to perform validation</span></span>
-<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span><span class="fu">train</span>(task)</span>
-<span id="cb55-15"><a href="#cb55-15" aria-hidden="true" tabindex="-1"></a>history <span class="ot">=</span> mlp_learner<span class="sc">$</span>model<span class="sc">$</span>callbacks<span class="sc">$</span>history</span>
-<span id="cb55-16"><a href="#cb55-16" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Classes 'data.table' and 'data.frame':  40 obs. of  3 variables:
- $ epoch                : num  10 20 30 40 50 60 70 80 90 100 ...
- $ train.classif.logloss: num  0.678 0.643 0.569 0.515 0.478 ...
- $ valid.classif.logloss: num  0.667 0.618 0.536 0.469 0.436 ...
- - attr(*, ".internal.selfref")=&lt;externalptr&gt; 
- - attr(*, "sorted")= chr "epoch"</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>task <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"sonar"</span>)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>mlp_learner <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>,</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">neurons =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">50</span>), <span class="at">batch_size =</span> <span class="dv">256</span>, <span class="at">epochs =</span> <span class="dv">400</span>,</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">t_opt</span>(<span class="st">"adam"</span>, <span class="at">lr =</span> <span class="fl">0.003</span>),</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">predict_type =</span> <span class="st">"prob"</span>, <span class="at">jit_trace =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Validation / Performance Monitoring</span></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">validate =</span> <span class="fl">0.3</span>, <span class="co"># how much data to use for validation</span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_valid =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>), <span class="co"># how to evaluate train performance</span></span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_train =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>), <span class="co"># how to evaluate validation performance</span></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> <span class="fu">t_clbk</span>(<span class="st">"history"</span>), <span class="co"># history callbacks save train and validation performance</span></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">eval_freq =</span> <span class="dv">10</span> <span class="co"># after how many training epochs to perform validation</span></span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span><span class="fu">train</span>(task)</span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>history <span class="ot">=</span> mlp_learner<span class="sc">$</span>model<span class="sc">$</span>callbacks<span class="sc">$</span>history</span>
+<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Key: &lt;epoch&gt;
    epoch train.classif.logloss valid.classif.logloss
@@ -996,19 +979,19 @@ Tip
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="6-training-efficiency_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+<p><img src="6-training-efficiency_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Instead of only monitoring the validation loss (and watching it get worse and worse), we can also stop the training process dynamically when the validation loss begins to increase. This regularization technique is called early stopping, and it prevents overfitting during the training of iteratively trained machine learning models. It involves monitoring the validation loss during training and stopping the training process when the validation loss begins to increase, indicating that the model is starting to overfit the training data.</p>
-<p>The key configuration option for early stopping is the <code>patience</code> parameter, which defines the number of epochs to wait after the last improvement in validation loss before stopping the training. For example, if patience is set to 10, the training will continue for 10 additional epochs after the last observed improvement in validation loss. If no improvement is seen during this period, training will be halted.</p>
+<p>Instead of only monitoring the validation loss (and watching it get worse and worse), we can also stop the training process dynamically when the validation loss begins to increase. This regularization technique is called <strong>early stopping</strong>, and it prevents overfitting during the training of iteratively trained machine learning models.</p>
+<p>The key configuration option for early stopping is the <code>patience</code> parameter, which defines the number of epochs to wait after the last improvement in validation loss before stopping the training. For example, if the patience is set to 5, the training will continue for 5 additional epochs after the last observed improvement in validation loss. If no improvement is seen during this period, training will be halted.</p>
 <p>Advantages of early stopping include:</p>
 <ul>
 <li><strong>Prevention of Overfitting</strong>: By stopping training when the model starts to overfit, we can achieve better generalization on unseen data.</li>
 <li><strong>Resource Efficiency</strong>: It saves computational resources by avoiding unnecessary training epochs once the model performance has plateaued.</li>
 </ul>
-<p>Now, let’s train the learner again using early stopping with a patience of 10 epochs:</p>
+<p>Now, let’s train the learner again using early stopping with a patience of 5 epochs:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span>param_set<span class="sc">$</span><span class="fu">set_values</span>(</span>
 <span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">patience =</span> <span class="dv">5</span></span>
@@ -1019,7 +1002,7 @@ Tip
 <pre><code>[1] 160</code></pre>
 </div>
 </div>
-<p>Beyond only tuning the number of epochs, <code>mlr3</code>’s internal tuning mechanism also allows tuning the number of epochs internally while using an offline tuning method to optimize other hyperparameters. To use this, we can set the parameters we want to tune <code>TuneTokens</code>:</p>
+<p>Beyond only tuning the number of epochs, <code>mlr3</code>’s internal tuning mechanism also allows tuning the number of epochs internally while using an offline tuning method to optimize other hyperparameters. To use this, we can set the parameters we want to tune using <code>to_tune()</code>, but need to set <code>internal = TRUE</code> for the <code>epochs</code> parameter.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3tuning)</span>
 <span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span>param_set<span class="sc">$</span><span class="fu">set_values</span>(</span>
@@ -1027,12 +1010,12 @@ Tip
 <span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">opt.lr =</span> <span class="fu">to_tune</span>(<span class="at">lower =</span> <span class="fl">1e-4</span>, <span class="at">upper =</span> <span class="fl">1e-1</span>, <span class="at">logscale =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We could now pass this learner to a tuner, where the tuner would only optimize the learning rate, while the learner optimizes the epochs internally.</p>
+<p>We could now pass this learner to a tuner as usual.</p>
 </section>
 </section>
 <section id="architecture-design" class="level2">
 <h2 class="anchored" data-anchor-id="architecture-design">Architecture Design</h2>
-<p>Another essential aspect of training neural networks efficiently and effectively is the design of the network architecture, which can be a challenging task. However, for many tasks, there are well-known architectures that perform well and can be used as a starting point. Unless there is a specific reason to design a new architecture, it is recommended to use such an architecture.</p>
+<p>Another essential aspect of training neural networks efficiently and effectively is the design of the network architecture, which can be a challenging task. However, for many problems, there are predefined architectures that perform well and can be used. Unless there is a specific reason to design a new architecture, it is recommended to use such an architecture.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1043,7 +1026,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Because the Python deep learning ecosystem is so large, many more architectures are implemented in Python than in R. One way to use them in R is to simply translate the PyTorch code to (R-)torch. While PyTorch and (R-)torch are quite similar, there are some differences, e.g., 1-based and 0-based indexing. The <code>torch</code> website contains a <a href="https://torch.mlverse.org/docs/articles/python-to-r">brief tutorial</a> on how to do this.</p>
+<p>Because the Python deep learning ecosystem is so large, many more architectures are implemented in Python than in R. One way to use them in R is to simply translate the PyTorch code to (R-)torch. While PyTorch and (R-)torch are quite similar, there are some differences, e.g., 1-based and 0-based indexing. The <code>torch</code> website contains a <a href="https://torch.mlverse.org/docs/articles/python-to-r">brief tutorial</a> on this topic.</p>
 </div>
 </div>
 <p>Nonetheless, we will cover important techniques that can be used to speed up the training process, namely <em>batch normalization</em> and <em>dropout</em>.</p>
@@ -1063,7 +1046,7 @@ Note
 <li><span class="math inline">\(\epsilon\)</span> is a small constant added for numerical stability.</li>
 </ul>
 <p>During inference, the module uses the running mean and variance of the training data to normalize the input.</p>
-<p>In <code>torch</code>, different versions of batch normalization exist for different dimensions of the input tensor. Below, we illustrate the batch normalization module using a 1D input tensor (the batch dimension does not count here)</p>
+<p>In <code>torch</code>, different versions of batch normalization exist for different dimensions of the input tensor. Below, we illustrate the batch normalization module using a 1D input tensor (the batch dimension does not count here):</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">torch_randn</span>(<span class="dv">10</span>, <span class="dv">5</span>)</span>
 <span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>bn <span class="ot">=</span> <span class="fu">nn_batch_norm1d</span>(<span class="at">num_features =</span> <span class="dv">5</span>)</span>
@@ -1093,14 +1076,14 @@ Quiz: Batch Normalization
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Question 1</strong>: Earlier we have learned that <code>nn_module</code>s have buffers and parameters, where the latter are learned with gradient descent. Do you think the mean and variance are parameters or buffers?</p>
+<p><strong>Question 1</strong>: Earlier we have learned that <code>nn_module</code>s have buffers and parameters, where only the latter are learned with gradient descent. Do you think the mean and variance are parameters or buffers?</p>
 <details>
 <summary>
 Click for answer
 </summary>
 They are both buffers as they only store the variance and running mean of all training samples seen, i.e., they are not updated using gradient information.
 </details>
-<p><strong>Question 2</strong>: Training vs.&nbsp;Evaluation Mode: While many <code>nn_module</code>s behave the same way irrespective of their mode, batch normalization is an example of a module that behaves differently during training and evaluation, i.e., during training, the module uses the mean and variance of the current batch, while during evaluation, it uses the running mean and variance of all training samples seen.</p>
+<p><strong>Question 2</strong>: Training vs.&nbsp;Evaluation Mode: While many <code>nn_module</code>s behave the same way irrespective of their mode, batch normalization is an example of a module that behaves differently during training and evaluation. During training, the module uses the mean and variance of the current batch, while during evaluation, it uses the running mean and variance of all training samples seen.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bn</span>(x[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, ])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1145,8 +1128,8 @@ The first statement is true because, in evaluation mode, the module uses the run
 </details>
 </div>
 </div>
-<p>To illustrate its effectiveness, we will define a simple CNN, with and without batch normalization, train it on CIFAR-10, and compare their performance.</p>
-<p>To build the neural networks, we will use <code>mlr3torch</code>, which allows building architectures from <code>PipeOp</code>s. This makes the creation of network architectures easier, as we, e.g., don’t have to specify auxiliary parameters (such as the input dimension of a linear layer). Recall that the <code>po("torch_ingress_ltnsr")</code> is a special <code>PipeOp</code> that marks the input of the neural network. Note that <code>po("nn_relu_1")</code> is equivalent to <code>po("nn_relu", id = "nn_relu_1")</code>. We need to specify unique ID parameters as this is required in <code>mlr3pipelines</code>.</p>
+<p>To illustrate its effectiveness, we will define a simple CNN, with and without batch normalization, train it on CIFAR-10, and compare their performances.</p>
+<p>To build the neural networks, we will use <code>mlr3torch</code>, which allows building architectures from <code>PipeOp</code>s. Recall that the <code>po("torch_ingress_ltnsr")</code> is a special <code>PipeOp</code> that marks the input of the neural network. Note that <code>po("nn_relu_1")</code> is equivalent to <code>po("nn_relu", id = "nn_relu_1")</code>. We need to specify unique IDs for each <code>PipeOp</code> as this is required in mlr3pipelines graphs.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>cnn_bn <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"torch_ingress_ltnsr"</span>) <span class="sc">%&gt;&gt;%</span></span>
 <span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_conv2d_1"</span>, <span class="at">out_channels =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">stride =</span> <span class="dv">1</span>, <span class="at">padding =</span> <span class="dv">1</span>) <span class="sc">%&gt;&gt;%</span></span>
@@ -1210,13 +1193,13 @@ The first statement is true because, in evaluation mode, the module uses the run
 </section>
 <section id="dropout" class="level2">
 <h2 class="anchored" data-anchor-id="dropout">Dropout</h2>
-<p>Dropout is a regularization technique used to prevent overfitting in neural networks by randomly setting a fraction of input units to zero during training. This encourages the network to learn more robust features that are not reliant on specific neurons, thereby improving its generalization capabilities. During each training iteration, dropout randomly “drops” a subset of neurons by setting their activations to zero with a specified probability (commonly between 20% to 50%). This forces the network to distribute the learned representations more evenly across neurons, reducing the reliance on any single neuron and mitigating overfitting. Dropout is more commonly used in the context of fully connected layers.</p>
+<p>Dropout is a regularization technique used to prevent overfitting in neural networks. During each training iteration, dropout randomly “drops” a subset of neurons by setting their activations to zero with a specified probability (commonly between 20% to 50%). This forces the network to distribute the learned representations more evenly across neurons. Dropout is most commonly used in the context of fully connected layers.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../assets/dropout.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
 </figure>
 </div>
-<p>Source: https://medium.com/konvergen/understanding-dropout-ddb60c9f98aa</p>
+<p><a href="https://medium.com/konvergen/understanding-dropout-ddb60c9f98aa">Source</a></p>
 <p>Just like batch normalization, it also has different behavior during training and evaluation.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>dropout <span class="ot">=</span> <span class="fu">nn_dropout</span>(<span class="at">p =</span> <span class="fl">0.5</span>)</span>
@@ -1252,7 +1235,7 @@ The first statement is true because, in evaluation mode, the module uses the run
 [ CPUFloatType{10,5} ]</code></pre>
 </div>
 </div>
-<p>To look at the effects, we will create a second classification head with dropout and then define new learners</p>
+<p>To look at the effects, we will create a second classification head with dropout and then define new learners.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>head_dropout <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"nn_flatten"</span>) <span class="sc">%&gt;&gt;%</span></span>
 <span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_linear"</span>, <span class="at">out_features =</span> <span class="dv">128</span>) <span class="sc">%&gt;&gt;%</span></span>
@@ -1292,7 +1275,7 @@ Quiz: Dropout
 <summary>
 Click for answer
 </summary>
-Not necessarily, as dropout is a regularization technique that prevents overfitting. It’s goal is to reduce the generalization performance of the model.
+Not necessarily, as dropout is a regularization technique that prevents overfitting. Its goal is to reduce the generalization performance of the model and not to improve training performance.
 </details>
 </div>
 </div>
@@ -1309,8 +1292,8 @@ Not necessarily, as dropout is a regularization technique that prevents overfitt
 <p>When the model is then trained on a new task, only the last layer is replaced with a new output layer to adjust for the new task.</p>
 <p>This is visualized below:</p>
 <p><img src="../assets/transfer-learning.svg" class="img-fluid"></p>
-<p>Source: https://en.wikipedia.org/wiki/Transfer_learning</p>
-<p><code>mlr3torch</code> connects various pretrained image networks that are available in the <a href="https://torchvision.mlverse.org/"><code>torchvision</code> package</a>. The ResNet-18 model is a popular pre-trained model that was pretrained on ImageNet. We can use the pretrained weights by setting the <code>pretrained</code> parameter to <code>TRUE</code>.</p>
+<p><a href="https://en.wikipedia.org/wiki/Transfer_learning">Source</a></p>
+<p><code>mlr3torch</code> offers various pretrained image networks that are available through the <a href="https://torchvision.mlverse.org/"><code>torchvision</code> package</a>. The ResNet-18 model is a popular pre-trained model that was pretrained on ImageNet. We can use the pretrained weights by setting the <code>pretrained</code> parameter to <code>TRUE</code>.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>resnet <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.resnet18"</span>,</span>
 <span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">pretrained =</span> <span class="cn">TRUE</span>,</span>
@@ -1337,13 +1320,8 @@ Not necessarily, as dropout is a regularization technique that prevents overfitt
 <span id="cb79-23"><a href="#cb79-23" aria-hidden="true" tabindex="-1"></a>bmr <span class="ot">=</span> <span class="fu">benchmark</span>(grid, <span class="at">store_models =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb79-24"><a href="#cb79-24" aria-hidden="true" tabindex="-1"></a>bmr<span class="sc">$</span><span class="fu">aggregate</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>When fine-tuning a pretrained model like ResNet-18, it’s common to observe instabilities in gradients, which can manifest as fluctuating validation performance. This can e.g.&nbsp;be because the learning rate is too high (compared to the learning rate that was used during pretraining).</p>
-<p>To address this, one can:</p>
-<ol type="1">
-<li>Use a smaller learning rate for the pretrained layers than for the new output head.</li>
-<li>Freeze the pretrained layers (for some epochs) and only train the new output head.</li>
-</ol>
-<p>In <code>mlr3torch</code> this can be achieved via the callback mechanism. For the unfreezing, there even exists a predefined callback <code>t_clbk("unfreeze")</code>. To create a custom callback, the <code>torch_callback()</code> function can be used. A tutorial on this can be found on the <a href="https://mlr3torch.mlr-org.com/index.html"><code>mlr3torch</code> package website</a>.</p>
+<p>When fine-tuning a pretrained model like ResNet-18, it’s common to observe instabilities in gradients, which can manifest as fluctuating validation performance.</p>
+<p>To address this, one can for example freeze the pretrained layers (for some epochs) and only train the new output head. In <code>mlr3torch</code>, this can be achieved by using the <code>t_clbk("unfreeze")</code> callback.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1354,7 +1332,7 @@ In-Context Learning
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Large foundation models (such as GPT-4) even allow to perform tasks on which they were not pretrained on without any finetuning. This is referred to as in-context learning or zero-shot learning. There, the task is fed into the model during inference: “Hey ChatGPT, is What is the sentiment of this sentence. Return -1 for sad, 0 for neutral, 1 for happy: <sentence>”</sentence></p>
+<p>Large foundation models (such as GPT-4) even allow performing tasks on which they were not pretrained on without any finetuning. This is referred to as in-context learning or zero-shot learning. There, the task is fed into the model during inference: “Hey ChatGPT, is What is the sentiment of this sentence. Return -1 for sad, 0 for neutral, 1 for happy: <sentence>”</sentence></p>
 </div>
 </div>
 </section>
@@ -1367,13 +1345,13 @@ In-Context Learning
 <li>If the goal is to predict whether there is a mark somewhere in the image, it would be admissible.</li>
 </ul>
 <p>In other words, the data augmentation must be compatible with the invariances of the task.</p>
-<p>In <code>mlr3torch</code>, data augmentation is available via <code>PipeOp</code>s of the form <code>po("augment_")</code>. Currently, only augemntation operators from the <code>torchvision</code> package are available, but you can also add your own.</p>
+<p>In <code>mlr3torch</code>, data augmentation is available via <code>PipeOp</code>s of the form <code>po("augment_")</code>. Currently, only augmentation operators from the <code>torchvision</code> package are available, but you can also add your own.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>augment <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"augment_random_resized_crop"</span>) <span class="sc">%&gt;&gt;%</span></span>
 <span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"augment_random_horizontal_flip"</span>) <span class="sc">%&gt;&gt;%</span></span>
 <span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"augment_random_vertical_flip"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We can just create a new <code>GraphLearner</code> that includes the augemntation steps as well as the learner from above:</p>
+<p>We can just create a new <code>GraphLearner</code> that includes the augmentation steps as well as the learner from above:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>resnet_augmented <span class="ot">=</span> <span class="fu">as_learner</span>(augment <span class="sc">%&gt;&gt;%</span> resnet)</span>
 <span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>resnet_augmented<span class="sc">$</span>id <span class="ot">=</span> <span class="st">"resnet_augmented"</span></span>

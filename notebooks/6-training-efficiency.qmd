@@ -6,7 +6,7 @@ title: "Training Efficiency"
 
 Methods for increasing training efficiency can be roughly split into:
 
-1. Computational methods such as JIT compilation, using GPU, parallel data loading, etc., that allow doing the same thing faster.
+1. Computational methods such as JIT compilation, using GPUs, parallel data loading, etc., that allow doing the same thing faster.
 2. Methodological approaches that change how we approach modeling to achieve either better results or the same results faster.
 
 # Computational Approaches
@@ -16,7 +16,7 @@ Methods for increasing training efficiency can be roughly split into:
 ### Graphical Processing Unit (GPU)
 
 Using a GPU is crucial when training relatively large neural networks because GPUs are specifically designed to handle the parallel processing required for complex computations.
-To use a GPU in mlr3torch, we can set the device parameter to "cuda". By default, it is set to "auto", which will use a GPU if it is available and otherwise fall back to the CPU.
+To use a GPU in `mlr3torch`, we can set the device parameter to "cuda". By default, it is set to "auto", which will use a GPU if available and otherwise fall back to the CPU.
 
 :::{.callout-tip}
 To check if a GPU is available, we can use the `torch::cuda_is_available()` function.
@@ -54,7 +54,7 @@ bench::mark(
 
 ### CPU Threads
 
-Training large networks on a CPU is not a recommended approach, but it can be useful for smaller networks or when you don't have a GPU.
+Training large networks on a CPU is not a recommended approach, but it can be a viable option for smaller networks.
 You can still use multiple threads to speed up the execution of operations.
 Please be aware that the code below will not execute on macOS, as setting the number of threads is not supported on this operating system.
 
@@ -94,12 +94,12 @@ The optimal number of threads is a trade-off between these two effects.
 
 ## Efficient Data Loading
 
-Besides speeding up the computation of operations in the forward and backward pass, another possible bottleneck is the loading of data.
+Besides parallelizing the computation of operations in the forward and backward pass, another possible bottleneck is the loading of data.
 There are various ways to improve data loading speed:
 
 1. Improve the implementation of the `dataset` class
 2. Parallelize the data loading process
-3. Increase speed of data transfer to the GPU
+3. Increase the speed of data transfer to the GPU
 
 These approaches will now be discussed.
 
@@ -113,9 +113,9 @@ When implementing a dataset, we need to define:
 :::{.callout-note}
 ## Quiz: Data Loading
 
-The *tiny imagenet* dataset is a dataset of 100,000 images of size 64x64x3.
+The *tiny imagenet* dataset is a dataset of 100,000 images of size 64x64.
 It is a subset of the famous *imagenet* dataset.
-Below, we show some examples from the dataset:
+Below, we show some examples from it:
 
 ![](../assets/tiny-imagenet.png)
 
@@ -168,7 +168,7 @@ Which of the following is the faster way to load the images? Explain why.
      initialize = function(image_array) {
        self$image_array = image_array
      },
-     .getbatch = function(i) {
+     .getitem = function(i) {
        torch_tensor(self$image_array[i, , , ])
      },
      .length = function() {
@@ -194,8 +194,8 @@ iter = function(ds, ..., epochs = 1) {
   }
 }
 bench::mark(
-  disk = iter(ds_disk),
-  ram = iter(ds_ram),
+  disk = iter(ds_disk, epochs = 10),
+  ram = iter(ds_ram, epochs = 10),
   check = FALSE
 )
 ```
@@ -247,7 +247,7 @@ ds_tensor_batch = dataset("tensor_batch",
     self$tensor = torch_tensor(image_array)
   },
   .getbatch = function(i) {
-    self$tensor[i, ..]
+    self$tensor[i, .., drop = FALSE]
   },
   .length = function() {
     nrow(self$tensor)
@@ -285,18 +285,18 @@ The image below visualizes this process:
 Creating such a parallel dataloader is as easy as setting the `num_workers` parameter to a value greater than 0.
 
 :::{.callout-note}
-Note that there is some communication overhead that results from sending the batches from the worker to the main process.
-This will hopefully be reduced in the future, but is currently there.
-For this reason, parallel data loading is therefore -- currently -- only beneficial when it is slow, e.g., because of loading the data from disk or because of expensive preprocessing.
+Note that in the current implementation, parallel data loading is only beneficial when it is slow, e.g., because of loading the data from disk or because of expensive preprocessing.
+This will hopefully be improved in the future (by a faster implementation of the parallel dataloader).
 :::
+
 
 ### Moving Data to the GPU
 
-One thing we have ignored so far is that when training using a GPU, the data needs to be moved to the GPU.
+One thing we have ignored so far is that when training using a GPU, the data needs to be moved from RAM to the GPU.
 This is because a GPU has its own memory (VRAM), and the data needs to be moved to this memory before it can be used for training.
 The moving of the data to the GPU cannot be done on the processes that are loading the data but must be done in the main process, i.e., after the batch was received from (possibly parallelized) dataloader.
 One way to speed up the data loading process is to pin the memory of the data to the GPU.
-Before a tensor can be moved from RAM to VRAM, it needs to be in so-called page-locked memory, which can be done using the `pin_memory` parameter.
+Before a tensor can be moved from RAM to VRAM, it needs to be in so-called page-locked memory, which can be enabled using the `pin_memory` parameter of `dataloader()`..
 
 ![](../assets/pinned-memory.png)
 
@@ -318,7 +318,7 @@ bench::mark(
 
 In order to use parallel data loading or memory pinning with `mlr3torch`, these parameters can simply be specified in the learner:
 
-```{r}
+```{r, output = FALSE}
 lrn("classif.mlp", num_workers = 8L, pin_memory = TRUE, device = "cuda")
 ```
 :::
@@ -338,7 +338,7 @@ optim_ignite_adamw
 ```
 
 The 'ignite' indicates that the optimizer is a version that is optimized for performance.
-Not for all optimizers does an ignite version exist, but for the most common ones, it does.
+Not for all optimizers does an ignite version exist, but for the most common ones, there does.
 
 Below, we compare the performance of the default optimizer and the ignite optimizer and see that the latter is considerably faster.
 
@@ -392,7 +392,7 @@ out = f(x, w, bias)
 str(out)
 ```
 
-Besides syntax, there are some important differences between TorchScript and R:
+Besides syntax, there are some notable differences between TorchScript and R to be aware of:
 
 1. In TorchScript, indexing tensors is 0-based, and
 2. TorchScript is statically typed, so you need to specify the types of the arguments, unless they are tensors, which is the default.
@@ -425,7 +425,7 @@ out2 = f2(x, w, bias)
 torch_equal(out, out2)
 ```
 
-An advantage of trace-compilation is that it even allows you to JIT-compile modules, which is currently not possible with `jit_compile`.
+An advantage of trace-compilation is that it can be applied to modules, which is currently not possible with `jit_compile`.
 
 ```{r}
 net = nn_sequential(
@@ -438,9 +438,9 @@ net_jit = jit_trace(net, torch_randn(10, 10))
 torch_equal(net(x), net_jit(x))
 ```
 
-Trace-compilation is restrictive because it only records operations applied to torch tensors and is unaware of R control flow, so you need to be careful when using it.
+However, trace-compilation is restrictive because it only records operations applied to torch tensors and is unaware of R control flow, so you need to be careful when using it.
 Furthermore, it only accepts torch tensors as arguments.
-Unless you have dynamic inputs and outputs or modify the configuration of the module, trace-compilation should usually work.
+For many simple modules, trace-compilation should usually work.
 You can also check this by running the original and trace-jitted module on some example inputs and see if they return the same result.
 
 :::{.callout-note}
@@ -474,7 +474,7 @@ net_both(list(torch_randn(1)))
 
 **Question 1**: Consider the trace-jitted function below. Can you predict the output of the last two lines? Can you explain why this happens?
 
-```{r}
+```{r, output = FALSE}
 f = function(a, b, multiply) {
   if (multiply$item()) {
     a * b
@@ -488,9 +488,19 @@ fjit(torch_tensor(2), torch_tensor(3), torch_tensor(TRUE))
 fjit(torch_tensor(2), torch_tensor(3), torch_tensor(FALSE))
 ```
 
-**Question 2**: Answer the same question for the following function:
+<details>
+<summary>Click for answer</summary>
 
 ```{r}
+fjit(torch_tensor(2), torch_tensor(3), torch_tensor(TRUE))
+fjit(torch_tensor(2), torch_tensor(3), torch_tensor(FALSE))
+```
+
+</details>
+
+**Question 2**: Answer the same question for the following function:
+
+```{r, output = FALSE}
 f = function(a, b, multiply) {
   torch_where(multiply, a * b, a + b)
 }
@@ -499,6 +509,15 @@ fjit = jit_trace(f, torch_tensor(1), torch_tensor(2), torch_tensor(TRUE))
 fjit(torch_tensor(2), torch_tensor(3), torch_tensor(TRUE))
 fjit(torch_tensor(2), torch_tensor(3), torch_tensor(FALSE))
 ```
+
+<details>
+<summary>Click for answer</summary>
+
+```{r}
+fjit(torch_tensor(2), torch_tensor(3), torch_tensor(TRUE))
+fjit(torch_tensor(2), torch_tensor(3), torch_tensor(FALSE))
+```
+</details>
 :::
 
 ### Mixed Precision Training
@@ -506,7 +525,6 @@ fjit(torch_tensor(2), torch_tensor(3), torch_tensor(FALSE))
 Another way to speed up the training process is to use mixed precision training.
 This technique involves training the model using both 16-bit and 32-bit floating point numbers.
 This allows reducing the memory footprint of the model and speeding up the training process.
-
 We won't cover this here, but refer to the [torch documentation](https://torch.mlverse.org/docs/articles/amp) that explains how to do this.
 
 ## Methodological Approaches
@@ -521,13 +539,9 @@ This allows monitoring the performance of the model on unseen data.
 In `mlr3torch`, we can track the performance of the model on a validation set by specifying:
 
 * `validate`, which is the ratio of the data that is used for validation
-* `measures_valid`, which is a list of measures to use for validation
+* `measures_valid`, which is a list of measures to evaluate the validation performance
 * `eval_freq`, which is the frequency at which the validation is performed
-* `callbacks`, which is a list of callbacks to use during training, in this case, we use the `history` callback, which records the performance of the model on the validation set at regular intervals, enabling us to monitor and analyze the model's performance over time.
-
-:::{.callout-tip}
-While `mlr3torch` comes with predefined callbacks, it is also possible to define custom callbacks that modify the training process.
-:::
+* `callbacks`, which is a list of callbacks to use during training, in this case, we use the `t_clbk("history")` callback, which records the performance of the model on the validation set at regular intervals, enabling us to monitor and analyze the model's performance over time.
 
 ```{r}
 task = tsk("sonar")
@@ -545,7 +559,6 @@ mlp_learner = lrn("classif.mlp",
 )
 mlp_learner$train(task)
 history = mlp_learner$model$callbacks$history
-str(history)
 head(history)
 ```
 
@@ -566,17 +579,18 @@ ggplot(history, aes(x = epoch)) +
 ```
 
 Instead of only monitoring the validation loss (and watching it get worse and worse), we can also stop the training process dynamically when the validation loss begins to increase.
-This regularization technique is called early stopping, and it prevents overfitting during the training of iteratively trained machine learning models.
-It involves monitoring the validation loss during training and stopping the training process when the validation loss begins to increase, indicating that the model is starting to overfit the training data.
+This regularization technique is called **early stopping**, and it prevents overfitting during the training of iteratively trained machine learning models.
 
-The key configuration option for early stopping is the `patience` parameter, which defines the number of epochs to wait after the last improvement in validation loss before stopping the training. For example, if patience is set to 10, the training will continue for 10 additional epochs after the last observed improvement in validation loss. If no improvement is seen during this period, training will be halted.
+The key configuration option for early stopping is the `patience` parameter, which defines the number of epochs to wait after the last improvement in validation loss before stopping the training.
+For example, if the patience is set to 5, the training will continue for 5 additional epochs after the last observed improvement in validation loss.
+If no improvement is seen during this period, training will be halted.
 
 Advantages of early stopping include:
 
 - **Prevention of Overfitting**: By stopping training when the model starts to overfit, we can achieve better generalization on unseen data.
 - **Resource Efficiency**: It saves computational resources by avoiding unnecessary training epochs once the model performance has plateaued.
 
-Now, let's train the learner again using early stopping with a patience of 10 epochs:
+Now, let's train the learner again using early stopping with a patience of 5 epochs:
 
 ```{r}
 mlp_learner$param_set$set_values(
@@ -587,7 +601,7 @@ mlp_learner$internal_tuned_values$epochs
 ```
 
 Beyond only tuning the number of epochs, `mlr3`'s internal tuning mechanism also allows tuning the number of epochs internally while using an offline tuning method to optimize other hyperparameters.
-To use this, we can set the parameters we want to tune `TuneTokens`:
+To use this, we can set the parameters we want to tune using `to_tune()`, but need to set `internal = TRUE` for the `epochs` parameter.
 
 ```{r, message = FALSE}
 library(mlr3tuning)
@@ -597,19 +611,19 @@ mlp_learner$param_set$set_values(
 )
 ```
 
-We could now pass this learner to a tuner, where the tuner would only optimize the learning rate, while the learner optimizes the epochs internally.
+We could now pass this learner to a tuner as usual.
 
 ## Architecture Design
 
 Another essential aspect of training neural networks efficiently and effectively is the design of the network architecture, which can be a challenging task.
-However, for many tasks, there are well-known architectures that perform well and can be used as a starting point.
+However, for many problems, there are predefined architectures that perform well and can be used.
 Unless there is a specific reason to design a new architecture, it is recommended to use such an architecture.
 
 :::{.callout-note}
 Because the Python deep learning ecosystem is so large, many more architectures are implemented in Python than in R.
 One way to use them in R is to simply translate the PyTorch code to (R-)torch.
 While PyTorch and (R-)torch are quite similar, there are some differences, e.g., 1-based and 0-based indexing.
-The `torch` website contains a [brief tutorial](https://torch.mlverse.org/docs/articles/python-to-r) on how to do this.
+The `torch` website contains a [brief tutorial](https://torch.mlverse.org/docs/articles/python-to-r) on this topic.
 :::
 
 Nonetheless, we will cover important techniques that can be used to speed up the training process, namely *batch normalization* and *dropout*.
@@ -635,7 +649,7 @@ where:
 During inference, the module uses the running mean and variance of the training data to normalize the input.
 
 In `torch`, different versions of batch normalization exist for different dimensions of the input tensor.
-Below, we illustrate the batch normalization module using a 1D input tensor (the batch dimension does not count here)
+Below, we illustrate the batch normalization module using a 1D input tensor (the batch dimension does not count here):
 
 ```{r}
 x = torch_randn(10, 5)
@@ -646,7 +660,7 @@ bn(x)
 :::{.callout-note}
 ## Quiz: Batch Normalization
 
-**Question 1**: Earlier we have learned that `nn_module`s have buffers and parameters, where the latter are learned with gradient descent.
+**Question 1**: Earlier we have learned that `nn_module`s have buffers and parameters, where only the latter are learned with gradient descent.
 Do you think the mean and variance are parameters or buffers?
 
 <details>
@@ -655,8 +669,8 @@ They are both buffers as they only store the variance and running mean of all tr
 </details>
 
 **Question 2**: Training vs. Evaluation Mode:
-While many `nn_module`s behave the same way irrespective of their mode, batch normalization is an example of a module that behaves differently during training and evaluation, i.e.,
-during training, the module uses the mean and variance of the current batch, while during evaluation, it uses the running mean and variance of all training samples seen.
+While many `nn_module`s behave the same way irrespective of their mode, batch normalization is an example of a module that behaves differently during training and evaluation.
+During training, the module uses the mean and variance of the current batch, while during evaluation, it uses the running mean and variance of all training samples seen.
 
 ```{r}
 bn(x[1:10, ])
@@ -688,13 +702,12 @@ The second statement is false because the first tensor uses different means and 
 </details>
 :::
 
-To illustrate its effectiveness, we will define a simple CNN, with and without batch normalization, train it on CIFAR-10, and compare their performance.
+To illustrate its effectiveness, we will define a simple CNN, with and without batch normalization, train it on CIFAR-10, and compare their performances.
 
 To build the neural networks, we will use `mlr3torch`, which allows building architectures from `PipeOp`s.
-This makes the creation of network architectures easier, as we, e.g., don't have to specify auxiliary parameters (such as the input dimension of a linear layer).
 Recall that the `po("torch_ingress_ltnsr")` is a special `PipeOp` that marks the input of the neural network.
 Note that `po("nn_relu_1")` is equivalent to `po("nn_relu", id = "nn_relu_1")`.
-We need to specify unique ID parameters as this is required in `mlr3pipelines`.
+We need to specify unique IDs for each `PipeOp` as this is required in mlr3pipelines graphs.
 
 ```{r}
 cnn_bn = po("torch_ingress_ltnsr") %>>%
@@ -756,13 +769,14 @@ bmr$aggregate()
 
 ## Dropout
 
-Dropout is a regularization technique used to prevent overfitting in neural networks by randomly setting a fraction of input units to zero during training. This encourages the network to learn more robust features that are not reliant on specific neurons, thereby improving its generalization capabilities.
-During each training iteration, dropout randomly "drops" a subset of neurons by setting their activations to zero with a specified probability (commonly between 20% to 50%). This forces the network to distribute the learned representations more evenly across neurons, reducing the reliance on any single neuron and mitigating overfitting.
-Dropout is more commonly used in the context of fully connected layers.
+Dropout is a regularization technique used to prevent overfitting in neural networks.
+During each training iteration, dropout randomly "drops" a subset of neurons by setting their activations to zero with a specified probability (commonly between 20% to 50%).
+This forces the network to distribute the learned representations more evenly across neurons.
+Dropout is most commonly used in the context of fully connected layers.
 
 ![](../assets/dropout.png){fig-align="center" width=100%}
 
-Source: https://medium.com/konvergen/understanding-dropout-ddb60c9f98aa
+[Source](https://medium.com/konvergen/understanding-dropout-ddb60c9f98aa)
 
 Just like batch normalization, it also has different behavior during training and evaluation.
 
@@ -773,7 +787,7 @@ dropout$eval()
 dropout(x)
 ```
 
-To look at the effects, we will create a second classification head with dropout and then define new learners
+To look at the effects, we will create a second classification head with dropout and then define new learners.
 
 ```{r}
 head_dropout = po("nn_flatten") %>>%
@@ -810,7 +824,7 @@ autoplot(bmr)
 <details>
 <summary>Click for answer</summary>
 Not necessarily, as dropout is a regularization technique that prevents overfitting.
-It's goal is to reduce the generalization performance of the model.
+Its goal is to reduce the generalization performance of the model and not to improve training performance.
 </details>
 :::
 
@@ -830,9 +844,9 @@ This is visualized below:
 
 ![](../assets/transfer-learning.svg)
 
-Source: https://en.wikipedia.org/wiki/Transfer_learning
+[Source](https://en.wikipedia.org/wiki/Transfer_learning)
 
-`mlr3torch` connects various pretrained image networks that are available in the [`torchvision` package](https://torchvision.mlverse.org/).
+`mlr3torch` offers various pretrained image networks that are available through the [`torchvision` package](https://torchvision.mlverse.org/).
 The ResNet-18 model is a popular pre-trained model that was pretrained on ImageNet.
 We can use the pretrained weights by setting the `pretrained` parameter to `TRUE`.
 
@@ -864,22 +878,14 @@ bmr$aggregate()
 ```
 
 When fine-tuning a pretrained model like ResNet-18, it's common to observe instabilities in gradients, which can manifest as fluctuating validation performance.
-This can e.g. be because the learning rate is too high (compared to the learning rate that was used during pretraining).
 
-To address this, one can:
-
-1. Use a smaller learning rate for the pretrained layers than for the new output head.
-2. Freeze the pretrained layers (for some epochs) and only train the new output head.
-
-In `mlr3torch` this can be achieved via the callback mechanism.
-For the unfreezing, there even exists a predefined callback `t_clbk("unfreeze")`.
-To create a custom callback, the `torch_callback()` function can be used.
-A tutorial on this can be found on the [`mlr3torch` package website](https://mlr3torch.mlr-org.com/index.html).
+To address this, one can for example freeze the pretrained layers (for some epochs) and only train the new output head.
+In `mlr3torch`, this can be achieved by using the `t_clbk("unfreeze")` callback.
 
 :::{.callout-note}
 ## In-Context Learning
 
-Large  foundation models (such as GPT-4) even allow to perform tasks on which they were not pretrained on without any finetuning.
+Large foundation models (such as GPT-4) even allow performing tasks on which they were not pretrained on without any finetuning.
 This is referred to as in-context learning or zero-shot learning.
 There, the task is fed into the model during inference: "Hey ChatGPT, is What is the sentiment of this sentence. Return -1 for sad, 0 for neutral, 1 for happy: <sentence>"
 :::
@@ -899,7 +905,7 @@ Which data augmentation is admissible, depends on the task:
 In other words, the data augmentation must be compatible with the invariances of the task.
 
 In `mlr3torch`, data augmentation is available via `PipeOp`s of the form `po("augment_")`.
-Currently, only augemntation operators from the `torchvision` package are available, but you can also add your own.
+Currently, only augmentation operators from the `torchvision` package are available, but you can also add your own.
 
 ```{r}
 augment = po("augment_random_resized_crop") %>>%
@@ -907,7 +913,7 @@ augment = po("augment_random_resized_crop") %>>%
   po("augment_random_vertical_flip")
 ```
 
-We can just create a new `GraphLearner` that includes the augemntation steps as well as the learner from above:
+We can just create a new `GraphLearner` that includes the augmentation steps as well as the learner from above:
 
 ```{r, eval = cuda_is_available()}
 resnet_augmented = as_learner(augment %>>% resnet)

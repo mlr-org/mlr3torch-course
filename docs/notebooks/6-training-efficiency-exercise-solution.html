@@ -321,27 +321,18 @@ window.Quarto = {
 <li>Utilizes a batch size of 128.</li>
 <li>Trains for 200 epochs.</li>
 <li>Employs a validation set comprising 30% of the data.</li>
-<li>Tracks the training and validation log-loss during training.</li>
+<li>Track the validation log-loss.</li>
 <li>Utilizes trace-jitting to speed up the training process.</li>
 <li>Employs the history callback to record the training and validation log-loss during training.</li>
 </ol>
 <p>Afterward, plot the validation log-loss, which is accessible via <code>learner$model$callbacks$history</code>.</p>
-<p>Below, we create the task and remove the <code>gender</code> feature for simplicity.</p>
+<p>Below, we create the task and remove the <code>gender</code> feature again for simplicity.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3verse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: mlr3</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3torch)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: mlr3pipelines</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: torch</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ilpd_num <span class="ot">&lt;-</span> <span class="fu">tsk</span>(<span class="st">"ilpd"</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ilpd_num<span class="sc">$</span><span class="fu">select</span>(<span class="fu">setdiff</span>(ilpd_num<span class="sc">$</span>feature_names, <span class="st">"gender"</span>))</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ilpd_num</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3verse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3torch)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>ilpd_num <span class="ot">&lt;-</span> <span class="fu">tsk</span>(<span class="st">"ilpd"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>ilpd_num<span class="sc">$</span><span class="fu">select</span>(<span class="fu">setdiff</span>(ilpd_num<span class="sc">$</span>feature_names, <span class="st">"gender"</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>ilpd_num</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;TaskClassif:ilpd&gt; (583 x 10): Indian Liver Patient Data
 * Target: diseased
@@ -351,34 +342,23 @@ window.Quarto = {
   - int (4): age, alanine_transaminase, alkaline_phosphatase, aspartate_transaminase</code></pre>
 </div>
 </div>
-<details>
-<summary>
-Hint
-</summary>
-<ul>
-<li>To specify the validation set, use the <code>validate</code> field, which can either be set during construction or by calling <code>$configure()</code>.</li>
-<li>Trace-jitting can be enabled via the <code>jit_trace</code> parameter.</li>
-<li>The history callback can be constructed via <code>t_clbk("history")</code> and needs to be passed during the <em>construction</em> of the learner.</li>
-<li>The validation and measures can be specified via <code>measures_valid</code> and take a measure object that is constructed via <code>msr()</code>.</li>
-</ul>
-</details>
 <p><strong>Solution</strong></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>mlp <span class="ot">&lt;-</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">neurons =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">100</span>),</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">128</span>,</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">200</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">predict_type =</span> <span class="st">"prob"</span>,</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">validate =</span> <span class="fl">0.3</span>,</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">jit_trace =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> <span class="fu">t_clbk</span>(<span class="st">"history"</span>),</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_valid =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span><span class="fu">train</span>(ilpd_num)</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mlp<span class="sc">$</span>model<span class="sc">$</span>callbacks<span class="sc">$</span>history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>mlp <span class="ot">&lt;-</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">neurons =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">100</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">128</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">200</span>,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">predict_type =</span> <span class="st">"prob"</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">validate =</span> <span class="fl">0.3</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">jit_trace =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> <span class="fu">t_clbk</span>(<span class="st">"history"</span>),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_valid =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span><span class="fu">train</span>(ilpd_num)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mlp<span class="sc">$</span>model<span class="sc">$</span>callbacks<span class="sc">$</span>history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   epoch valid.classif.logloss
    &lt;num&gt;                 &lt;num&gt;
@@ -389,13 +369,13 @@ Hint
 5:     5              1.563049
 6:     6              0.958690</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mlp<span class="sc">$</span>model<span class="sc">$</span>callbacks<span class="sc">$</span>history) <span class="sc">+</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> epoch, <span class="at">y =</span> valid.classif.logloss)) <span class="sc">+</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Log-Loss (Validation)"</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Epoch"</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mlp<span class="sc">$</span>model<span class="sc">$</span>callbacks<span class="sc">$</span>history) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> epoch, <span class="at">y =</span> valid.classif.logloss)) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Log-Loss (Validation)"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Epoch"</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -404,7 +384,8 @@ Hint
 </div>
 </div>
 </div>
-<p><strong>Question 2:</strong> Early Stopping Enable early stopping to prevent overfitting and re-train the learner (using a patience of 10). Print the final validation performance of the learner and the early stopped results. You can consult the <a href="https://mlr3torch.mlr-org.com/reference/mlr_learners_torch.html">documentation of <code>LearnerTorch</code></a> on how to access these two results (section <em>Active Bindings</em>).</p>
+<p><strong>Question 2:</strong> Early Stopping</p>
+<p>Enable early stopping to prevent overfitting and re-train the learner (using a patience of 10). Print the final validation performance of the learner and the early stopped results. You can consult the <a href="https://mlr3torch.mlr-org.com/reference/mlr_learners_torch.html">documentation of <code>LearnerTorch</code></a> on how to access these (see section <em>Active Bindings</em>).</p>
 <details>
 <summary>
 Hint
@@ -413,16 +394,16 @@ You can enable early stopping by setting the <code>patience</code> parameter.
 </details>
 <p><strong>Solution</strong></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span><span class="fu">configure</span>(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">patience =</span> <span class="dv">10</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span><span class="fu">train</span>(ilpd_num)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span>internal_tuned_values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span><span class="fu">configure</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">patience =</span> <span class="dv">10</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span><span class="fu">train</span>(ilpd_num)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span>internal_tuned_values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$epochs
 [1] 24</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span>internal_valid_scores</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span>internal_valid_scores</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$classif.logloss
 [1] 0.5598296</code></pre>
@@ -430,42 +411,99 @@ You can enable early stopping by setting the <code>patience</code> parameter.
 </div>
 <p><strong>Question 3:</strong> Early Stopping and Dropout Tuning</p>
 <p>While early stopping in itself is already useful, <code>mlr3torch</code> also allows you to simultaneously tune the number of epochs using early stopping while tuning other hyperparameters via traditional hyperparameter tuning from <code>mlr3tuning</code>.</p>
-<p>One thing we have not covered so far is that the MLP learner we have used so far also uses a dropout layer. The dropout probability can be configured via the <code>p</code> parameter.</p>
-<p>Your task is to tune the dropout probability <code>p</code> in the range <span class="math inline">\([0, 1]\)</span> and the epochs using early stopping (using the configuration from the previous exercise).</p>
+<p>One thing we have not mentioned so far is that the MLP learner also uses a dropout layer. The dropout probability can be configured via the <code>p</code> parameter.</p>
+<p>Your task is to tune the dropout probability <code>p</code> in the range <span class="math inline">\([0, 1]\)</span> and the epochs using early stopping (using the configuration from the previous exercise) with an upper bound of 100 epochs.</p>
 <p>To adapt this to work with early stopping, you need to set the:</p>
 <ol type="1">
 <li><code>epochs</code> to <code>to_tune(upper = &lt;value&gt;, internal = TRUE)</code>: This tells the <code>Tuner</code> that the learner will tune the number of epochs itself.</li>
 <li><code>$validate</code> field of the <code>"test"</code> so the same data is used for tuning and validation.</li>
 <li>Tuning <code>measure</code> to <code>msr("internal_valid_score", minimize = TRUE)</code>. We set <code>minimize</code> to <code>TRUE</code> because we have used the log-loss as a validation measure.</li>
 </ol>
-<p>Apart from this, the tuning works just like in tutorial 5. Use 3-fold cross-validation for the tuning and evaluate 10 configurations.</p>
-<p>Run the tuning and print the optimal configuration.</p>
+<p>Apart from this, the tuning works just like in tutorial 5. Use 3-fold cross-validation and evaluate 10 configurations using random search. Finally, print the optimal configuration.</p>
 <p><strong>Solution</strong></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3torch)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span><span class="fu">configure</span>(</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="fu">to_tune</span>(<span class="at">upper =</span> <span class="dv">100</span>, <span class="at">internal =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> <span class="fu">to_tune</span>(<span class="at">lower =</span> <span class="dv">0</span>, <span class="at">upper =</span> <span class="dv">1</span>),</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">validate =</span> <span class="st">"test"</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>tuner <span class="ot">&lt;-</span> <span class="fu">tnr</span>(<span class="st">"random_search"</span>)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>resampling <span class="ot">&lt;-</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>)</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>measure <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"internal_valid_score"</span>, <span class="at">minimize =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>ti <span class="ot">&lt;-</span> <span class="fu">tune</span>(</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> tuner,</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> ilpd_num,</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> mlp,</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> resampling,</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> measure,</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">term_evals =</span> <span class="dv">10</span></span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>ti<span class="sc">$</span>learner_result_param_vals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3torch)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span><span class="fu">configure</span>(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="fu">to_tune</span>(<span class="at">upper =</span> <span class="dv">100</span>, <span class="at">internal =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> <span class="fu">to_tune</span>(<span class="at">lower =</span> <span class="dv">0</span>, <span class="at">upper =</span> <span class="dv">1</span>),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">validate =</span> <span class="st">"test"</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>tuner <span class="ot">&lt;-</span> <span class="fu">tnr</span>(<span class="st">"random_search"</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>resampling <span class="ot">&lt;-</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>measure <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"internal_valid_score"</span>, <span class="at">minimize =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>ti <span class="ot">&lt;-</span> <span class="fu">tune</span>(</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> tuner,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> ilpd_num,</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> mlp,</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> resampling,</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> measure,</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">term_evals =</span> <span class="dv">10</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>ti<span class="sc">$</span>result_learner_param_vals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>NULL</code></pre>
+<pre><code>$epochs
+[1] 53
+
+$device
+[1] "auto"
+
+$num_threads
+[1] 1
+
+$num_interop_threads
+[1] 1
+
+$seed
+[1] "random"
+
+$jit_trace
+[1] TRUE
+
+$eval_freq
+[1] 1
+
+$measures_train
+list()
+
+$measures_valid
+list()
+
+$patience
+[1] 0
+
+$min_delta
+[1] 0
+
+$batch_size
+[1] 128
+
+$neurons
+[1] 100 100
+
+$p
+[1] 0.3738756
+
+$activation
+&lt;nn_relu&gt; object generator
+  Inherits from: &lt;inherit&gt;
+  Public:
+    .classes: nn_relu nn_module
+    initialize: function (inplace = FALSE) 
+    forward: function (input) 
+    clone: function (deep = FALSE, ..., replace_values = TRUE) 
+  Private:
+    .__clone_r6__: function (deep = FALSE) 
+  Parent env: &lt;environment: 0x12f15a7b8&gt;
+  Locked objects: FALSE
+  Locked class: FALSE
+  Portable: TRUE
+
+$activation_args
+list()</code></pre>
 </div>
 </div>
 
