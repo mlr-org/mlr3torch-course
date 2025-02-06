@@ -383,6 +383,7 @@ Hidden columns: resample_result</code></pre>
 </div>
 <p><strong>Question 4:</strong> Iris as a Lazy Tensor</p>
 <p>Create a version of the iris task where the 4 features are represented as a single lazy tensor column.</p>
+<p><strong>Solution:</strong></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(iris[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>dt_class <span class="ot">&lt;-</span> <span class="fu">dataset</span>(<span class="st">"iris"</span>,</span>
@@ -414,6 +415,7 @@ Hidden columns: resample_result</code></pre>
 </div>
 <p><strong>Question 5:</strong> Custom Architecture</p>
 <p>Create a network with one hidden layer with 100 neurons and a sigmoid activation function by assempling <code>PipeOp</code>s in a <code>Graph</code>. Convert the <code>Graph</code> to a <code>Learner</code> and train the network for 10 epochs using Adam with a learning rate of 0.001 and a batch size of 32.</p>
+<p><strong>Solution:</strong></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>graph <span class="ot">&lt;-</span> <span class="fu">po</span>(<span class="st">"torch_ingress_ltnsr"</span>) <span class="sc">%&gt;&gt;%</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_linear"</span>, <span class="at">out_features =</span> <span class="dv">100</span>) <span class="sc">%&gt;&gt;%</span></span>

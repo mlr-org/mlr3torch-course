@@ -386,7 +386,7 @@ Random Seeds in torch
 </div>
 </section>
 <section id="missing-values" class="level3">
-<h3 class="anchored">Missing Values</h3>
+<h3 class="anchored" data-anchor-id="missing-values">Missing Values</h3>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -456,6 +456,10 @@ Click for answer
 <p>When converting an R array to a torch tensors, the underlying data is simply copied over. Because R uses special values for <code>NA</code>s that are not standardized by the industry, torch will interprete them differently. E.g. in R, <code>NA</code> integers are internally represented as the smallest negative value.</p>
 In principle, <code>torch</code> could scan R objects for these values, but this would make conversion slower.
 </details>
+</div>
+</div>
+</section>
+</section>
 <section id="tensor-properties" class="level2">
 <h2 class="anchored" data-anchor-id="tensor-properties">Tensor Properties</h2>
 <section id="shape" class="level3">
@@ -1008,10 +1012,10 @@ Click for answer
 <p>The functionality of strides is illustrated in the image below.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../assets/2D_tensor_strides.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption><a href="https://martinlwx.github.io/en/how-to-reprensent-a-tensor-or-ndarray/">Source</a></figcaption>
+<p><img src="../assets/2D_tensor_strides.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
 </figure>
 </div>
+<p><a href="https://martinlwx.github.io/en/how-to-reprensent-a-tensor-or-ndarray/">Source</a></p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1172,10 +1176,6 @@ This will result in <code>(1, 3, 5, 2, 4, 6)</code> because we (imagine that) fi
 </div>
 
 
-</section>
-</div>
-</div>
-</section>
 </section>
 
 </main> <!-- /main -->

@@ -551,12 +551,8 @@ torch_tensor
 <section id="convolutional-neural-networks-cnns" class="level3">
 <h3 class="anchored" data-anchor-id="convolutional-neural-networks-cnns">Convolutional Neural Networks (CNNs)</h3>
 <p>The central component of a CNN is the convolutional layer:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/convolution.png" class="img-fluid figure-img"></p>
-<figcaption><a href="https://www.ibm.com/think/topics/convolutional-neural-networks">Source</a></figcaption>
-</figure>
-</div>
+<p><img src="../assets/convolution.png" class="img-fluid"></p>
+<p><a href="https://www.ibm.com/think/topics/convolutional-neural-networks">Source</a></p>
 <p>CNNs encode several strong inductive biases about visual data:</p>
 <ol type="1">
 <li><strong>Locality</strong>: Nearby pixels are more likely to be related than distant ones.</li>
@@ -639,12 +635,8 @@ Answer
 <section id="transformers" class="level3">
 <h3 class="anchored" data-anchor-id="transformers">Transformers</h3>
 <p>While there are many variations of transformer architectures, the main idea is the (self-)attention mechanism:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/attention.png" class="img-fluid figure-img"></p>
-<figcaption><a href="https://medium.com/@ramendrakumar/self-attention-d8196b9e9143">Source</a></figcaption>
-</figure>
-</div>
+<p><img src="../assets/attention.png" class="img-fluid"></p>
+<p><a href="https://medium.com/@ramendrakumar/self-attention-d8196b9e9143">Source</a></p>
 <p>Transformer architecturers, which power language models like GPT-4 and are commonly used in natural language processing, have other inductive biases than CNNs:</p>
 <ol type="1">
 <li><strong>Non-locality</strong>: Any token can directly interact with any other token (this is why training transformers is so expensive as the complexity is quadratic in the sequence length).</li>
@@ -686,22 +678,14 @@ Answer
 </div>
 </div>
 <p>The architecture of the module is visualized below:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/attention2.png" class="img-fluid figure-img" style="width:60.0%"></p>
-<figcaption><a href="https://data-science-blog.com/blog/2021/04/07/multi-head-attention-mechanism/">Source</a></figcaption>
-</figure>
-</div>
+<p><img src="../assets/attention2.png" class="img-fluid" style="width:60.0%"></p>
+<p><a href="https://data-science-blog.com/blog/2021/04/07/multi-head-attention-mechanism/">Source</a></p>
 </section>
 <section id="mlps-like-our-spiral-network" class="level3">
 <h3 class="anchored" data-anchor-id="mlps-like-our-spiral-network">MLPs (like our Spiral Network)</h3>
 <p>The different layers in a Multi-Layer Perceptron (MLP) consist mainly of an affine-linear transformation followed by a non-linear function, such as a ReLU activation function:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/mlp-layer.png" class="img-fluid figure-img" style="width:40.0%"></p>
-<figcaption><a href="https://scikit-learn.org/1.5/modules/neural_networks_supervised.html">Source</a></figcaption>
-</figure>
-</div>
+<p><img src="../assets/mlp-layer.png" class="img-fluid" style="width:40.0%"></p>
+<p><a href="https://scikit-learn.org/1.5/modules/neural_networks_supervised.html">Source</a></p>
 <p>Our simple multi-layer perceptron has minimal inductive biases:</p>
 <ol type="1">
 <li><strong>Continuity</strong>: Similar inputs should produce similar outputs.</li>
@@ -747,12 +731,8 @@ Tip
 </div>
 </div>
 <p>The architecture of such an MLP layer is visualized below:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../assets/neural_networks-002.png" class="img-fluid figure-img" style="width:60.0%"></p>
-<figcaption><a href="https://tikz.net/neural_networks/">Source</a></figcaption>
-</figure>
-</div>
+<p><img src="../assets/neural_networks-002.png" class="img-fluid" style="width:60.0%"></p>
+<p><a href="https://tikz.net/neural_networks/">Source</a></p>
 <p>We can create a concrete network by calling the resulting <code>nn_module_generator</code> and specifying the required parameters.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create model instance</span></span>

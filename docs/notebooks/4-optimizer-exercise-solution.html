@@ -521,8 +521,8 @@ Implementation of <code>compare_configs</code>
 </div>
 </div>
 </div>
-<p><em><span class="math inline">\(\beta_1\)</span></em></p>
-<p>For the momentum parameter, we can observe that too large values for the momentum parameter lead to oscillations because the local information is not used enough. Too small values lead to worse performance.</p>
+<p><em>Beta 1</em></p>
+<p>For the momentum parameter, we can observe that too large values for the momentum parameter lead to oscillations, possibly because the local information is not used enough. Too small values lead to worse performance.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_configs</span>(<span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">beta1 =</span> <span class="fu">list</span>(<span class="fl">0.5</span>, <span class="fl">0.85</span>, <span class="fl">0.9</span>, <span class="fl">0.95</span>, <span class="fl">0.99</span>, <span class="fl">0.999</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -533,7 +533,7 @@ Implementation of <code>compare_configs</code>
 </div>
 </div>
 </div>
-<p><em><span class="math inline">\(\beta_2\)</span></em></p>
+<p><em>Beta 2</em></p>
 <p>For larger values of <span class="math inline">\(\beta_2\)</span>, the loss trajectory is considerably smoother.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_configs</span>(<span class="at">epochs =</span> <span class="dv">30</span>, <span class="at">beta2 =</span> <span class="fu">list</span>(<span class="fl">0.99</span>, <span class="fl">0.999</span>, <span class="fl">0.9999</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -574,12 +574,12 @@ Implementation of <code>compare_configs</code>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  ...</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>It will receive as arguments, the current values <code>x</code> and <code>y</code>, as well as the momentum values <code>x_momentum</code> and <code>y_momentum</code> (all scalar tensors). The function should then:</p>
+<p>It will receive as arguments, the current values <code>x</code> and <code>y</code>, the momentum values <code>x_momentum</code> and <code>y_momentum</code> (all scalar tensors) as well as the learning rate <code>lr</code> and the momentum parameter <code>beta</code>. The function should then:</p>
 <ol type="1">
 <li>Perform a forward pass.</li>
 <li>Calculate the gradients.</li>
 <li>Update the momentum values in-place.</li>
-<li>Update the parameters in=-place.</li>
+<li>Update the parameters in-place.</li>
 </ol>
 <details>
 <summary>
@@ -627,7 +627,7 @@ Code to test your optimizer
 <span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_rosenbrock</span>() <span class="sc">+</span></span>
 <span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_path</span>(<span class="at">data =</span> trajectory, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">z =</span> <span class="cn">NULL</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Optimization Path on Rosenbrock Function"</span>, <span class="at">x =</span> <span class="st">"X-axis"</span>, <span class="at">y =</span> <span class="st">"Y-axis"</span>)</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Optimization Path on Rosenbrock Function"</span>, <span class="at">x =</span> <span class="st">"x"</span>, <span class="at">y =</span> <span class="st">"y"</span>)</span>
 <span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </details>
@@ -656,7 +656,7 @@ Code to test your optimizer
 </div>
 </div>
 <p><strong>Question 3</strong>: Weight Decay</p>
-<p>In exercise 2, we have optimized the Rosenbrock function. Does it make sense to also use weight decay for this optimization?</p>
+<p>In exercise 2, we have optimized the Rosenbrock function. Does it make sense to also use weight decay here?</p>
 <p><strong>Solution</strong> No, it does not make sense to use weight decay for this optimization as it is intended to prevent overfitting which is not a problem in this case. This is, because there is no uncertainty in the function we are optimizing.</p>
 
 

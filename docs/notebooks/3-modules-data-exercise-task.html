@@ -340,7 +340,7 @@ Hint
 </summary>
 The functions <code>coro::loop()</code> and <code>torch_cat()</code> might be helpful.
 </details>
-<p><strong>Question 3</strong>: Create a custom torch module that allows modeling the sinus data we have created. To test it, apply it to the tensor <code>X</code> we have created above and calculate its mean squared error with the tensor <code>Y</code>.</p>
+<p><strong>Question 3</strong>: Create a custom torch module that allows modeling the sinus data we have created. To test it, apply it to the tensor <code>X</code> we have created above and calculate its mean squared error with the tensor <code>Y</code>. Don’t forget to run it without tracking gradients.</p>
 <details>
 <summary>
 Hint
@@ -380,12 +380,13 @@ You can either use <code>nn_module</code> to create a custom module generically,
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> y, <span class="at">color =</span> <span class="st">"true"</span>)) <span class="sc">+</span></span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> pred, <span class="at">color =</span> <span class="st">"pred"</span>)) <span class="sc">+</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>train_and_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(net, dataloader, <span class="at">epochs =</span> <span class="dv">10</span>, <span class="at">lr =</span> <span class="fl">0.01</span>) {</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">train_network</span>(net, dataloader, <span class="at">epochs =</span> epochs, <span class="at">lr =</span> lr)</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_results</span>(result)</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">""</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>train_and_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(net, dataloader, <span class="at">epochs =</span> <span class="dv">10</span>, <span class="at">lr =</span> <span class="fl">0.01</span>) {</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">train_network</span>(net, dataloader, <span class="at">epochs =</span> epochs, <span class="at">lr =</span> lr)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_results</span>(result)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -400,7 +401,7 @@ Tip
 <p>Beware of the reference semantics and make sure that you create a new instance of the network for each run.</p>
 </div>
 </div>
-<p><strong>Question 5</strong>: Create a new instance from the sinus dataset class created earlier. Now, set the <code>min</code> and <code>max</code> values to <code>10</code> and <code>20</code> respectively and visualize the results. What do you observe? Can you explain why this is happening and can you fix the network architecture to make it work?</p>
+<p><strong>Question 5</strong>: Create a new instance from the sinus dataset class created earlier. Now, set the <code>min</code> and <code>max</code> values to <code>10</code> and <code>20</code> respectively and visualize the predictions of the previously trained network on this new dataset. What do you observe? Can you explain why this is happening and can you fix the network architecture to make it work?</p>
 <details>
 <summary>
 Hint

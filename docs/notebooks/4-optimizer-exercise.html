@@ -511,12 +511,12 @@ Implementation of <code>compare_configs</code>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  ...</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>It will receive as arguments, the current values <code>x</code> and <code>y</code>, as well as the momentum values <code>x_momentum</code> and <code>y_momentum</code> (all scalar tensors). The function should then:</p>
+<p>It will receive as arguments, the current values <code>x</code> and <code>y</code>, the momentum values <code>x_momentum</code> and <code>y_momentum</code> (all scalar tensors) as well as the learning rate <code>lr</code> and the momentum parameter <code>beta</code>. The function should then:</p>
 <ol type="1">
 <li>Perform a forward pass.</li>
 <li>Calculate the gradients.</li>
 <li>Update the momentum values in-place.</li>
-<li>Update the parameters in=-place.</li>
+<li>Update the parameters in-place.</li>
 </ol>
 <details>
 <summary>
@@ -564,12 +564,12 @@ Code to test your optimizer
 <span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_rosenbrock</span>() <span class="sc">+</span></span>
 <span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_path</span>(<span class="at">data =</span> trajectory, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">z =</span> <span class="cn">NULL</span>), <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Optimization Path on Rosenbrock Function"</span>, <span class="at">x =</span> <span class="st">"X-axis"</span>, <span class="at">y =</span> <span class="st">"Y-axis"</span>)</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Optimization Path on Rosenbrock Function"</span>, <span class="at">x =</span> <span class="st">"x"</span>, <span class="at">y =</span> <span class="st">"y"</span>)</span>
 <span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </details>
 <p><strong>Question 3</strong>: Weight Decay</p>
-<p>In exercise 2, we have optimized the Rosenbrock function. Does it make sense to also use weight decay for this optimization?</p>
+<p>In exercise 2, we have optimized the Rosenbrock function. Does it make sense to also use weight decay here?</p>
 
 
 

@@ -322,7 +322,7 @@ Below, we print the attention weights between the random embeddings and weights.
 ```{r, echo = FALSE}
 # Convert to data frame for plotting
 attn_df <- as.data.frame(as_array(attn_weights[1, ..]$detach()$cpu()))
-colnames(attn_df) <- paste0("Key_", 1:seq_length
+colnames(attn_df) <- paste0("Key_", 1:seq_length)
 attn_df$Query <- paste0("Query_", 1:seq_length)
 attn_long <- reshape(attn_df, varying = list(names(attn_df)[startsWith(names(attn_df), "Key_")]),
                                              v.names = "Weight",

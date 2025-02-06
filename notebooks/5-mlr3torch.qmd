@@ -392,7 +392,7 @@ tsk_cifar
 
 The image below shows some examples from the dataset:
 
-![](assets/cifar10.jpg)
+![](../assets/cifar10.jpg)
 
 :::{.callout-tip}
 To avoid having to re-download the dataset every time, you can set the `mlr3torch.cache` option to `TRUE`.

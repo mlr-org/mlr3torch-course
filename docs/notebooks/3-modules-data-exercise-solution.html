@@ -374,9 +374,17 @@ The functions <code>coro::loop()</code> and <code>torch_cat()</code> might be he
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  batches <span class="ot">&lt;-</span> <span class="fu">c</span>(batches, <span class="fu">list</span>(batch))</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">torch_cat</span>(<span class="fu">lapply</span>(batches, <span class="cf">function</span>(batch) batch<span class="sc">$</span>x), <span class="at">dim =</span> <span class="dv">1</span>)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">torch_cat</span>(<span class="fu">lapply</span>(batches, <span class="cf">function</span>(batch) batch<span class="sc">$</span>y), <span class="at">dim =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>X<span class="sc">$</span>shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1000    1</code></pre>
 </div>
-<p><strong>Question 3</strong>: Create a custom torch module that allows modeling the sinus data we have created. To test it, apply it to the tensor <code>X</code> we have created above and calculate its mean squared error with the tensor <code>Y</code>.</p>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fu">torch_cat</span>(<span class="fu">lapply</span>(batches, <span class="cf">function</span>(batch) batch<span class="sc">$</span>y), <span class="at">dim =</span> <span class="dv">1</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>Y<span class="sc">$</span>shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1000    1</code></pre>
+</div>
+</div>
+<p><strong>Question 3</strong>: Create a custom torch module that allows modeling the sinus data we have created. To test it, apply it to the tensor <code>X</code> we have created above and calculate its mean squared error with the tensor <code>Y</code>. Don’t forget to run it without tracking gradients.</p>
 <details>
 <summary>
 Hint
@@ -385,24 +393,24 @@ You can either use <code>nn_module</code> to create a custom module generically,
 </details>
 <p><strong>Solution</strong></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>nn_sin <span class="ot">&lt;-</span> <span class="fu">nn_module</span>(<span class="st">"nn_sin"</span>,</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(<span class="at">latent =</span> <span class="dv">200</span>) {</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>lin1 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(<span class="dv">1</span>, latent)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>lin2 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(latent, latent)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>lin3 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(latent, <span class="dv">1</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">forward =</span> <span class="cf">function</span>(x) {</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    x <span class="sc">|&gt;</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">lin1</span>() <span class="sc">|&gt;</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">nnf_relu</span>() <span class="sc">|&gt;</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">lin2</span>() <span class="sc">|&gt;</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">nnf_relu</span>() <span class="sc">|&gt;</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">lin3</span>()</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>net <span class="ot">&lt;-</span> <span class="fu">nn_sin</span>(<span class="dv">200</span>)</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>Y_pred <span class="ot">&lt;-</span> <span class="fu">with_no_grad</span>(<span class="fu">net</span>(X))</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="fu">nnf_mse_loss</span>(Y_pred, Y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>nn_sin <span class="ot">&lt;-</span> <span class="fu">nn_module</span>(<span class="st">"nn_sin"</span>,</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(<span class="at">latent =</span> <span class="dv">200</span>) {</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>lin1 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(<span class="dv">1</span>, latent)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>lin2 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(latent, latent)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>lin3 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(latent, <span class="dv">1</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">forward =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    x <span class="sc">|&gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">lin1</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">nnf_relu</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">lin2</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">nnf_relu</span>() <span class="sc">|&gt;</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">lin3</span>()</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>net <span class="ot">&lt;-</span> <span class="fu">nn_sin</span>(<span class="dv">200</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>Y_pred <span class="ot">&lt;-</span> <span class="fu">with_no_grad</span>(<span class="fu">net</span>(X))</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="fu">nnf_mse_loss</span>(Y_pred, Y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 1.08382
@@ -411,43 +419,44 @@ You can either use <code>nn_module</code> to create a custom module generically,
 </div>
 <p><strong>Question 4</strong>: Train the model on the task for different hyperparameters (<code>lr</code> or <code>epochs</code>) and visualize the results. Play around with the hyperparameters until you get a good fit. You can use the following code for that:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>predict_network <span class="ot">&lt;-</span> <span class="cf">function</span>(net, dataloader) {</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">local_no_grad</span>()</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  xs <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="fu">numeric</span>(), <span class="at">y =</span> <span class="fu">numeric</span>(), <span class="at">pred =</span> <span class="fu">numeric</span>())</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  i <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  net<span class="sc">$</span><span class="fu">eval</span>()</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span> (batch <span class="cf">in</span> dataloader) {</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    xs<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">c</span>(xs<span class="sc">$</span>x, <span class="fu">as.numeric</span>(batch<span class="sc">$</span>x))</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    xs<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">c</span>(xs<span class="sc">$</span>y, <span class="fu">as.numeric</span>(batch<span class="sc">$</span>y))</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    xs<span class="sc">$</span>pred <span class="ot">&lt;-</span> <span class="fu">c</span>(xs<span class="sc">$</span>pred, <span class="fu">as.numeric</span>(<span class="fu">net</span>(batch<span class="sc">$</span>x)))</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(xs)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>train_network <span class="ot">&lt;-</span> <span class="cf">function</span>(net, dataloader, epochs, lr) {</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  optimizer <span class="ot">&lt;-</span> <span class="fu">optim_ignite_adamw</span>(net<span class="sc">$</span>parameters, <span class="at">lr =</span> lr)</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  net<span class="sc">$</span><span class="fu">train</span>()</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(epochs)) {</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span> (batch <span class="cf">in</span> dataloader) {</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>      optimizer<span class="sc">$</span><span class="fu">zero_grad</span>()</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>      Y_pred <span class="ot">&lt;-</span> <span class="fu">net</span>(batch<span class="sc">$</span>x)</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>      loss <span class="ot">&lt;-</span> <span class="fu">nnf_mse_loss</span>(Y_pred, batch<span class="sc">$</span>y)</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>      loss<span class="sc">$</span><span class="fu">backward</span>()</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>      optimizer<span class="sc">$</span><span class="fu">step</span>()</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict_network</span>(net, dataloader)</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>plot_results <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> y, <span class="at">color =</span> <span class="st">"true"</span>)) <span class="sc">+</span></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> pred, <span class="at">color =</span> <span class="st">"pred"</span>)) <span class="sc">+</span></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>train_and_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(net, dataloader, <span class="at">epochs =</span> <span class="dv">10</span>, <span class="at">lr =</span> <span class="fl">0.01</span>) {</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">train_network</span>(net, dataloader, <span class="at">epochs =</span> epochs, <span class="at">lr =</span> lr)</span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_results</span>(result)</span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>predict_network <span class="ot">&lt;-</span> <span class="cf">function</span>(net, dataloader) {</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">local_no_grad</span>()</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  xs <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="fu">numeric</span>(), <span class="at">y =</span> <span class="fu">numeric</span>(), <span class="at">pred =</span> <span class="fu">numeric</span>())</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  i <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  net<span class="sc">$</span><span class="fu">eval</span>()</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span> (batch <span class="cf">in</span> dataloader) {</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    xs<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">c</span>(xs<span class="sc">$</span>x, <span class="fu">as.numeric</span>(batch<span class="sc">$</span>x))</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    xs<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">c</span>(xs<span class="sc">$</span>y, <span class="fu">as.numeric</span>(batch<span class="sc">$</span>y))</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    xs<span class="sc">$</span>pred <span class="ot">&lt;-</span> <span class="fu">c</span>(xs<span class="sc">$</span>pred, <span class="fu">as.numeric</span>(<span class="fu">net</span>(batch<span class="sc">$</span>x)))</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>(xs)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>train_network <span class="ot">&lt;-</span> <span class="cf">function</span>(net, dataloader, epochs, lr) {</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>  optimizer <span class="ot">&lt;-</span> <span class="fu">optim_ignite_adamw</span>(net<span class="sc">$</span>parameters, <span class="at">lr =</span> lr)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>  net<span class="sc">$</span><span class="fu">train</span>()</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(epochs)) {</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span> (batch <span class="cf">in</span> dataloader) {</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>      optimizer<span class="sc">$</span><span class="fu">zero_grad</span>()</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>      Y_pred <span class="ot">&lt;-</span> <span class="fu">net</span>(batch<span class="sc">$</span>x)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>      loss <span class="ot">&lt;-</span> <span class="fu">nnf_mse_loss</span>(Y_pred, batch<span class="sc">$</span>y)</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>      loss<span class="sc">$</span><span class="fu">backward</span>()</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>      optimizer<span class="sc">$</span><span class="fu">step</span>()</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict_network</span>(net, dataloader)</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>plot_results <span class="ot">&lt;-</span> <span class="cf">function</span>(df) {</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="at">data =</span> df, <span class="fu">aes</span>(<span class="at">x =</span> x)) <span class="sc">+</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> y, <span class="at">color =</span> <span class="st">"true"</span>)) <span class="sc">+</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> pred, <span class="at">color =</span> <span class="st">"pred"</span>)) <span class="sc">+</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">""</span>)</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>train_and_plot <span class="ot">&lt;-</span> <span class="cf">function</span>(net, dataloader, <span class="at">epochs =</span> <span class="dv">10</span>, <span class="at">lr =</span> <span class="fl">0.01</span>) {</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>  result <span class="ot">&lt;-</span> <span class="fu">train_network</span>(net, dataloader, <span class="at">epochs =</span> epochs, <span class="at">lr =</span> lr)</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot_results</span>(result)</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -464,8 +473,8 @@ Tip
 </div>
 <p><strong>Solution</strong></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>net <span class="ot">&lt;-</span> <span class="fu">nn_sin</span>(<span class="dv">200</span>)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">train_and_plot</span>(net, dl, <span class="at">epochs =</span> <span class="dv">200</span>, <span class="at">lr =</span> <span class="fl">0.01</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>net <span class="ot">&lt;-</span> <span class="fu">nn_sin</span>(<span class="dv">200</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">train_and_plot</span>(net, dl, <span class="at">epochs =</span> <span class="dv">200</span>, <span class="at">lr =</span> <span class="fl">0.01</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -474,7 +483,7 @@ Tip
 </div>
 </div>
 </div>
-<p><strong>Question 5</strong>: Create a new instance from the sinus dataset class created earlier. Now, set the <code>min</code> and <code>max</code> values to <code>10</code> and <code>20</code> respectively and visualize the results. What do you observe? Can you explain why this is happening and can you fix the network architecture to make it work?</p>
+<p><strong>Question 5</strong>: Create a new instance from the sinus dataset class created earlier. Now, set the <code>min</code> and <code>max</code> values to <code>10</code> and <code>20</code> respectively and visualize the predictions of the previously trained network on this new dataset. What do you observe? Can you explain why this is happening and can you fix the network architecture to make it work?</p>
 <details>
 <summary>
 Hint
@@ -483,8 +492,8 @@ The sinus function has a phase of <span class="math inline">\(2 \pi\)</span>.
 </details>
 <p><strong>Solution</strong></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dl_ood <span class="ot">&lt;-</span> <span class="fu">dataloader</span>(<span class="fu">sin_dataset</span>(<span class="at">n =</span> <span class="dv">1000</span>, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">20</span>), <span class="at">batch_size =</span> <span class="dv">10</span>)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_results</span>(<span class="fu">predict_network</span>(net, dl_ood))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dl_ood <span class="ot">&lt;-</span> <span class="fu">dataloader</span>(<span class="fu">sin_dataset</span>(<span class="at">n =</span> <span class="dv">1000</span>, <span class="at">min =</span> <span class="dv">0</span>, <span class="at">max =</span> <span class="dv">20</span>), <span class="at">batch_size =</span> <span class="dv">10</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_results</span>(<span class="fu">predict_network</span>(net, dl_ood))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -493,27 +502,27 @@ The sinus function has a phase of <span class="math inline">\(2 \pi\)</span>.
 </div>
 </div>
 </div>
-<p>For values out of the range <code>[0, 10]</code>, the network fails to generalize. This is because the network only observed values in the range <code>[0, 10]</code> during training.</p>
-<p>We can fix this by preprocessing the data</p>
+<p>For values in the range <code>[10, 20]</code>, the network fails to generalize. This is because the network only observed values in the range <code>[0, 10]</code> during training.</p>
+<p>We can fix this by preprocessing the data using the modulo operator, i.e.&nbsp;using the correct <em>inductive bias</em> for the problem.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>nn_sin2 <span class="ot">&lt;-</span> <span class="fu">nn_module</span>(<span class="st">"nn_sin2"</span>,</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(<span class="at">latent =</span> <span class="dv">200</span>) {</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>lin1 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(<span class="dv">1</span>, latent)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>lin2 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(latent, latent)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>lin3 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(latent, <span class="dv">1</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">forward =</span> <span class="cf">function</span>(x) {</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    (x <span class="sc">%%</span> (<span class="dv">2</span> <span class="sc">*</span> pi)) <span class="sc">|&gt;</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">lin1</span>() <span class="sc">|&gt;</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">nnf_relu</span>() <span class="sc">|&gt;</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">lin2</span>() <span class="sc">|&gt;</span></span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">nnf_relu</span>() <span class="sc">|&gt;</span></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">lin3</span>()</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>net2 <span class="ot">&lt;-</span> <span class="fu">nn_sin2</span>(<span class="dv">200</span>)</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">train_network</span>(net2, dl, <span class="at">epochs =</span> <span class="dv">200</span>, <span class="at">lr =</span> <span class="fl">0.01</span>)</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_results</span>(<span class="fu">predict_network</span>(net2, dl_ood))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>nn_sin2 <span class="ot">&lt;-</span> <span class="fu">nn_module</span>(<span class="st">"nn_sin2"</span>,</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(<span class="at">latent =</span> <span class="dv">200</span>) {</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>lin1 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(<span class="dv">1</span>, latent)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>lin2 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(latent, latent)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>lin3 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(latent, <span class="dv">1</span>)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">forward =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    (x <span class="sc">%%</span> (<span class="dv">2</span> <span class="sc">*</span> pi)) <span class="sc">|&gt;</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">lin1</span>() <span class="sc">|&gt;</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>      <span class="fu">nnf_relu</span>() <span class="sc">|&gt;</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">lin2</span>() <span class="sc">|&gt;</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">nnf_relu</span>() <span class="sc">|&gt;</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">lin3</span>()</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>net2 <span class="ot">&lt;-</span> <span class="fu">nn_sin2</span>(<span class="dv">200</span>)</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">train_network</span>(net2, dl, <span class="at">epochs =</span> <span class="dv">200</span>, <span class="at">lr =</span> <span class="fl">0.01</span>)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_results</span>(<span class="fu">predict_network</span>(net2, dl_ood))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">

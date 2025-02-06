@@ -517,8 +517,8 @@ Click for answer
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 disk          228ms    258ms      3.88     109MB     9.69
-2 ram           183ms    184ms      5.33    94.4MB    10.7 </code></pre>
+1 disk          217ms    232ms      4.37     109MB     10.2
+2 ram           192ms    193ms      5.13    94.4MB     10.3</code></pre>
 </div>
 </div>
 </details>
@@ -553,8 +553,8 @@ Click for answer
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 tensor       4.52ms   4.82ms     206.    96.08KB     6.71
-2 array       14.94ms  16.26ms      62.0    9.44MB    16.9 </code></pre>
+1 tensor       4.48ms   4.87ms     203.    96.08KB     6.70
+2 array       16.93ms  18.98ms      53.0    9.44MB    14.7 </code></pre>
 </div>
 </div>
 </details>
@@ -588,8 +588,8 @@ Click for answer
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 getbatch     1.75ms   1.94ms      502.      23KB     4.69
-2 getitem      4.61ms   4.94ms      198.    54.7KB     7.54</code></pre>
+1 getbatch     1.68ms   2.03ms      462.      23KB     2.14
+2 getitem      4.68ms   5.04ms      188.    54.7KB     7.40</code></pre>
 </div>
 </div>
 </details>
@@ -666,7 +666,7 @@ Note
     loop_fun: function (group, param, g, p) 
     step: function (closure = NULL) 
     clone: function (deep = FALSE) 
-  Parent env: &lt;environment: 0x12cfbcbc8&gt;
+  Parent env: &lt;environment: 0x153267c80&gt;
   Locked objects: FALSE
   Locked class: FALSE
   Portable: TRUE</code></pre>
@@ -690,7 +690,7 @@ Note
     .set_param_group_options: function (opt, list) 
     .zero_grad: function (opt) 
     .get_param_groups: function (ptr) 
-  Parent env: &lt;environment: 0x12cae2478&gt;
+  Parent env: &lt;environment: 0x1534aa748&gt;
   Locked objects: FALSE
   Locked class: FALSE
   Portable: TRUE</code></pre>
@@ -722,8 +722,8 @@ Note
 <pre><code># A tibble: 2 × 6
   expression                            min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt;                       &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 learner$train(task_sonar)           588ms    588ms      1.70    15.7MB     5.10
-2 learner_ignite$train(task_sonar)    204ms    208ms      4.77    10.7MB     4.77</code></pre>
+1 learner$train(task_sonar)           688ms    688ms      1.45    15.7MB     4.36
+2 learner_ignite$train(task_sonar)    223ms    239ms      3.76    10.7MB     3.76</code></pre>
 </div>
 </div>
 </section>
