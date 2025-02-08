@@ -1,0 +1,69 @@
+#### Transformers
+
+While there are many variations of transformer architectures, the main idea is the (self-)attention mechanism:
+
+![](../assets/attention.png)
+
+[Source](https://medium.com/@ramendrakumar/self-attention-d8196b9e9143)
+
+Transformer architecturers, which power language models like GPT-4 and are commonly used in natural language processing, have other inductive biases than CNNs:
+
+1. **Non-locality**: Any token can directly interact with any other token (this is why training transformers is so expensive as the complexity is quadratic in the sequence length).
+2. **Position Awareness**: Sequential order matters but is explicitly encoded.
+3. **Attention-based Relationships**: Important connections between elements are learned dynamically.
+
+These biases make Transformers well-suited for tasks where long-range dependencies are important, such as understanding language or analyzing sequences.
+
+In `torch`, the `nn_multihead_attention` module implements the attention mechanism. We demonstrate how to use it with random data, a single output head, and self-attention for simplicity.
+
+```{r}
+embed_dim <- 16
+seq_length <- 10
+batch_size <- 1
+
+# Initialize multihead attention module
+attention <- nn_multihead_attention(
+  embed_dim = embed_dim,
+  num_heads = 1
+)
+
+# Create random input embedding
+input_embedding <- torch_randn(seq_length, batch_size, embed_dim)
+
+# For self-attention, the query, key, and value are the same
+query <- key <- value <- input_embedding
+
+# Forward pass, keep the attention weights, not only new embeddings
+output <- attention(query, key, value, need_weights = TRUE)
+attn_output <- output[[1L]]
+attn_weights <- output[[2L]]
+```
+
+Below, we print the attention weights between the random embeddings and weights.
+
+```{r, echo = FALSE}
+# Convert to data frame for plotting
+attn_df <- as.data.frame(as_array(attn_weights[1, ..]$detach()$cpu()))
+colnames(attn_df) <- paste0("Key_", 1:seq_length)
+attn_df$Query <- paste0("Query_", 1:seq_length)
+attn_long <- reshape(attn_df, varying = list(names(attn_df)[startsWith(names(attn_df), "Key_")]),
+                                             v.names = "Weight",
+                                             timevar = "Key",
+                                             direction = "long")
+
+# Plot heatmap
+ggplot(attn_long, aes(x = Key, y = Query, fill = Weight)) +
+  geom_tile() +
+  scale_fill_gradient(low = "white", high = "steelblue") +
+  theme_minimal() +
+  labs(title = "Self-Attention Weights",
+       x = "Key",
+       y = "Query (same as key)",
+       fill = "Weight")
+```
+
+The architecture of the module is visualized below:
+
+![](../assets/attention2.png){width=60%}
+
+[Source](https://data-science-blog.com/blog/2021/04/07/multi-head-attention-mechanism/)

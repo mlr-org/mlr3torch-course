@@ -4,13 +4,13 @@ title: "Autograd"
 
 {{< include _setup.qmd >}}
 
-Automatic differentiation (autograd) is one of torch's key features, enabling the automatic computation of gradients for optimization tasks like training neural networks. Unlike numerical differentiation, which approximates gradients using finite differences, autograd computes exact gradients by tracking operations as they are performed and automatically applying the chain rule of calculus. This makes it possible to efficiently compute gradients of complex functions with respect to many parameters—a critical requirement for training modern neural networks.
+Automatic differentiation (autograd) is one of `torch`'s key features, enabling the automatic computation of gradients for optimization tasks like training neural networks. Unlike numerical differentiation, which approximates gradients using finite differences, autograd computes exact gradients by tracking operations as they are performed and automatically applying the chain rule of calculus. This makes it possible to efficiently compute gradients of complex functions with respect to many parameters—a critical requirement for training modern neural networks.
 
 Autograd works by building a dynamic computational graph of operations, where each node represents a tensor and each edge represents a mathematical operation.
 
 **Why do we need automatic differentiation?**
 
-In deep learning, training a model requires iteratively updating parameters to minimize a loss function, which measures the difference between predictions and actual data. These updates depend on calculating gradients of the loss with respect to model parameters, information used by optimization algorithms like stochastic gradient descent (SGD). *Automatic Differentiation* eliminates the need to manually derive these gradients, which is error-prone.
+In deep learning, training a model requires iteratively updating parameters to minimize a loss function, which measures the difference between predictions and actual data. These updates depend on calculating gradients of the loss with respect to model parameters, information used by optimization algorithms like stochastic gradient descent (SGD). *Automatic Differentiation* eliminates the need to manually derive these gradients.
 
 ## Enabling Gradient Tracking
 
@@ -18,12 +18,12 @@ To use autograd, tensors must have their `requires_grad` field set to `TRUE`. Th
 
 The forward pass is defined as:
 
-$$\hat{y} = a \times x + b$$
+$$\hat{y} = u + b = a \times x + b$$
 
 We might be interested in how the prediction $\hat{y}$ changes for the given $x$ when we change the weight $a$ or the bias $b$.
 We will later use this to adjust the weights $a$ and $b$ to improve predictions, i.e., to perform gradient-based optimization. To write down the gradients, let $u = a \times x$ denote the intermediate tensor from the linear predictor.
 
-We can now denote the gradients for:
+We can now derive the gradients for:
 
 * **Weight $a$**:
 
@@ -58,7 +58,7 @@ When you perform operations on tensors with gradient tracking, torch builds a co
 * The yellow boxes are differentiable functions.
 * The green node is the final tensor with respect to which we want to calculate gradients.
 
-```{mermaid}
+```{mermaid, fig.align = "center"}
 graph TD
     a[a] --> mul[Multiply]
     x[x] --> mul
@@ -89,7 +89,7 @@ y$grad_fn
 u$grad_fn
 ```
 
-To calculate the gradients $\frac{\partial y}{\partial a}$ and $\frac{\partial y}{\partial b}$, we can traverse this computational graph backward, invoke the differentiation functions, and multiply the individual derivatives according to the chain rule.
+To calculate the gradients $\frac{\partial y}{\partial a}$ and $\frac{\partial y}{\partial b}$, we can traverse this computational graph backwards, invoke the differentiation functions, and multiply the individual derivatives according to the chain rule.
 
 In `torch`, this is done by calling `$backward()` on `y`.
 Note that `$backward()` can only be called on scalar tensors.
@@ -114,7 +114,7 @@ In the next section, we will show how we can use gradients to train our simple l
 
 ## A Simple Linear Model
 
-We can use autograd to fit a simple linear regression model. Let's first generate some synthetic data:
+We can use autograd to fit a simple linear regression model. Let's first generate some synthetic observations $\{(x^{(i)}, y^{(i)})\}_{i = 1}^n$.
 
 ```{r}
 library(ggplot2)
@@ -145,23 +145,26 @@ p <- ggplot(data.frame(x = x_r, y = y_r), aes(x = x, y = y)) +
               color = "blue") +
   theme_minimal() +
   labs(title = "Simulated Linear Regression Data",
-       x = "X", y = "Y")
+       x = "x", y = "y")
 p
 ```
 
 To start the optimization, we need to randomly initialize our parameters `a` and `b`.
 
 ```{r}
-# Initialize parameters with random values
 a <- torch_randn(1, requires_grad = TRUE)
 b <- torch_randn(1, requires_grad = TRUE)
 ```
 
-To optimize the parameters $a$ and $b$, we further need to define the *Loss Function* that quantifies the discrepancy between our predictions $\hat{y}$ and the observed values $y$. The standard loss for linear regression is the L2 loss:
+To optimize the parameters $a$ and $b$, we further need to define the *loss function* that quantifies the discrepancy between our predictions $\hat{y}$ and the observed values $y$. The standard loss for linear regression is the L2 loss:
 
-$$ L(y, \hat{y}) = (y - \hat{y})^2$$
+$$ \mathcal{L}y, \hat{y}) = (y - \hat{y})^2$$
 
-The graphic below visualizes the relationship between the parameters $a$ and $b$ with the average L2 loss over all datapoints, i.e., the Mean Squared Error (MSE). For parameters $a$ and $b$ that are on the same contour line, the same loss is observed. The color gradient indicates the magnitude of the MSE. In this case, lighter values mark areas with higher loss, and darker values mark areas with lower loss. The red point marks the minimum loss, while the blue point shows the starting values of the parameters.
+This allows us to define the empirical risk function that assigns the average loss over all observations to a given pair of parameters $a$ and $b$:
+
+$$ \hat{\mathcal{R}}(a, b) = \frac{1}{n} \sum_{i=1}^n (y^{(i)} - (a \times x^{(i)} + b))^2$$
+
+This risk function is visualized in the contour plot below.
 
 ```{r, echo = FALSE}
 # Create grid of a and b values
@@ -173,8 +176,8 @@ grid <- expand.grid(a = a_range, b = b_range)
 grid$mse <- sapply(1:nrow(grid), function(i) {
   a_val <- grid$a[i]
   b_val <- grid$b[i]
-  y_pred <- X * a_val + b_val
-  mean(as.array((Y - y_pred)^2))  # Changed from y to Y
+  Y_pred <- X * a_val + b_val
+  mean(as.array((Y - Y_pred)^2))
 })
 
 # Fit linear model to get minimum
@@ -196,7 +199,7 @@ ggplot(grid, aes(x = a, y = b, z = mse)) +
            label = sprintf("Minimum:\na = %.2f\nb = %.2f", a_min, b_min), color = "red") +
   annotate("text", x = as.numeric(a) + 0.3, y = as.numeric(b) + 0.4,
            label = sprintf("Start:\na = %.2f\nb = %.2f", as.numeric(a), as.numeric(b)), color = "blue") +
-  labs(title = "Loss Surface",
+  labs(title = "Empirical Risk Surface",
        x = "Slope a",
        y = "Bias b",
        fill = "MSE") +
@@ -212,7 +215,7 @@ The gradient of a function points in the direction of the steepest increase—li
 Gradient descent uses this property to iteratively:
 
 1. Calculate the gradient at the current position.
-2. Take a small step in the opposite direction of the gradient.
+2. Take a small step in the opposite direction of the gradient, so the negative gradient.
 3. Repeat until we reach a minimum.
 
 Note that the gradient only tells us in which direction we have to go, not how far. The length of the step should not be:
@@ -222,20 +225,22 @@ Note that the gradient only tells us in which direction we have to go, not how f
 
 The general update formula for the weights $a$ and $b$ is:
 
-$$a_{t+1} = a_t - \eta \frac{\partial L}{\partial a_t}$$
-$$b_{t+1} = b_t - \eta \frac{\partial L}{\partial b_t}$$
+$$a_{t+1} = a_t - \eta \frac{\partial R}{\partial a_t}$$
+$$b_{t+1} = b_t - \eta \frac{\partial R}{\partial b_t}$$
 
-where $\eta$ is the learning rate, and $L$ is the loss function.
+where $\eta$ is the learning rate / step size, and $R$ is the empirical risk function.
 
 In practice, when dealing with large datasets, computing the gradient over the entire dataset can be computationally expensive.
 Instead, we often use **Stochastic Gradient Descent (SGD)**, where the gradient is estimated using only a few observations (a so called 'batch'), but more on that later.
 
-We start by implementing a single gradient step. Note that if we repeatedly call `loss$backward()`, the gradients in `a` and `b` would accumulate, so we set them to `0` before performing the update. The return value of the update will be the parameter values and the loss so we can plot them later. Also, note that we mutate the parameters `a` and `b` in-place (suffix `_`).
+We start by implementing a single gradient step.
+Note that if we repeatedly call `loss$backward()`, the gradients in `a` and `b` would accumulate, so we set them to `0` before performing the update.
+The return value of the update will be the parameter values and the loss so we can plot them later.
+Also, note that we mutate the parameters `a` and `b` in-place (suffix `_`).
 
 ```{r}
 update_params <- function(X_batch, Y_batch, lr, a, b) {
-
-  # Perform forward pass, calculate loss
+  # Perform forward pass, calculate average loss
   Y_hat <- X_batch * a + b
   loss <- mean((Y_hat - Y_batch)^2)
 
@@ -252,6 +257,7 @@ update_params <- function(X_batch, Y_batch, lr, a, b) {
   a$grad$zero_()
   b$grad$zero_()
 
+  # $item() converts scalar tensors to R vectors of length 1
   list(
     a = a$item(),
     b = b$item(),
@@ -312,9 +318,7 @@ ggplot(data = grid, aes(x = a, y = b, z = mse)) +
   geom_path(data = history,
             aes(x = a, y = b, z = NULL),
             color = "red",
-            arrow = arrow(length = unit(0.1, "cm"),
-                         type = "closed",
-                         ends = "last")) +
+            arrow = arrow(length = unit(0.1, "cm"), type = "closed", ends = "last")) +
   # Add start and end points
   geom_point(data = history[1,], aes(x = a, y = b, z = NULL), color = "darkred", size = 3) +
   geom_point(data = history[nrow(history),], aes(x = a, y = b, z = NULL), color = "darkred", size = 3) +
@@ -322,11 +326,13 @@ ggplot(data = grid, aes(x = a, y = b, z = mse)) +
            label = "Start", color = "darkred") +
   annotate("text", x = history[nrow(history),]$a + 0.3, y = history[nrow(history),]$b,
            label = "End", color = "darkred") +
-  labs(title = "Parameter Updates on Loss Landscape",
+  labs(title = "Parameter Updates on Empirical Risk Landscape",
        x = "Slope a",
        y = "Bias b",
        fill = "MSE") +
   coord_fixed()
 ```
 
-Of course, better solutions exist for estimating a simple linear model, but this example demonstrates how we can utilize an autograd system to estimate the parameters of a model.
+Of course, better solutions exist for estimating a simple linear model.
+Because the risk is simply a quadratic function, we can analytically solve this optimization problem by solving the normal equations.
+The motivation behind the example was merely to demonstrate how we can utilize an autograd system to estimate the parameters of a model.

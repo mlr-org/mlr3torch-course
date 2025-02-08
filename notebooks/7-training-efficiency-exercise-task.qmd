@@ -1,0 +1,6 @@
+---
+title: "Training Efficiency"
+solutions: false
+---
+
+{{< include 7-training-efficiency-exercise.qmd >}}

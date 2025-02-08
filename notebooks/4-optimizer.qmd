@@ -1,5 +1,6 @@
 ---
-title: "Optimizers"
+title: "Optimization & Regularization"
+bibliography: references.bib
 ---
 
 {{< include _setup.qmd >}}
@@ -7,27 +8,55 @@ title: "Optimizers"
 source(here::here("scripts", "helper.R"))
 ```
 
-In this notebook, we will focus on the optimization aspect of deep learning and how to work with optimizers in `torch`.
-Optimizers are algorithms that iteratively adjust the parameters of a neural network to minimize the loss function during training.
-They define how the networks *learn* from the data.
+In this notebook, we will focus on the *optimization* and *regularization* aspects of deep learning.
 
-Let's denote with $L(\theta)$ the loss function, which assigns the empirical risk given data $\{(x_i, y_i)\}_{i = 1}^n$ to a parameter vector $\theta$:
-$$L(\theta) = 1/n \sum_{i=1}^n L(f_\theta(x_i), y_i)$$
-Here, $f_\theta$ is the model's prediction function, $x_i$ is the $i$-th sample in the training data, and $y_i$ is the corresponding target value.
+Optimizers are algorithms that iteratively adjust the parameters of a neural network to minimize the loss function during training. They define how the networks *learn* from the data.
 
-The goal of the optimizer is to find the parameter vector $\theta^*$ that minimizes the loss function $L(\theta)$:
-$$\theta^* = \arg \min_\theta L(\theta)$$
+Let's denote $\hat{\mathcal{R}}(\theta)$ as the empirical risk function, which assigns the empirical risk given data $\{(x^{(i)}, y^{(i)})\}_{i = 1}^n$ to a parameter vector $\theta$.
+Here, $f_\theta$ is the model's prediction function, $x^{(i)}$ is the $i$-th sample in the training data, and $y^{(i)}$ is the corresponding target value.
+$$\hat{\mathcal{R}}(\theta) = \frac{1}{n} \sum_{i=1}^n L(f_\theta(x^{(i)}), y^{(i)}) $$
+
+Often, the empirical risk function is extended with a **regularization term**.
+Regularization in machine learning and statistics is used to prevent overfitting by adding a penalty term to the risk function, which discourages overly complex models that might fit noise in the training data.
+It helps improve generalization to unseen data.
+One common regularizer is the L2 norm of the parameter vector, which penalizes large coefficients by adding the squared magnitude of the coefficients to the loss function:
+
+$$
+\hat{\mathcal{R}}_{\text{reg}}(\theta) = \hat{\mathcal{R}}(\theta) + \lambda \sum_{j=1}^p \theta_j^2
+$$
+
+Here, $\lambda$ controls the strength of the regularization, i.e., the trade-off between fitting the training data and keeping the parameters small.
+This encourages the model to prefer less complex solutions, where complexity is measured by the L2 norm of the coefficients.
+As a result, parameter vectors will have entries closer to the zero vector, a concept known as parameter shrinkage.
+
+::: {.callout-note}
+## Quiz: Regularization
+
+**Question 1**: Different Scales: Is it a problem for L2-regularization when the features have different scales? What can we do about it?
+
+<details>
+<summary>Click for answer</summary>
+Yes, because the size of the parameter vector depends on the scale of the features.
+Consider the marginal effect of an additional cent on GDP vs. the effect of an additional euro.
+To avoid this, we can normalize the features so they all have the same scale.
+</details>
+:::
+
+While the goal of the risk function is to define what we want, it's the optimizer's job to find the parameter vector $\theta^*$ that minimizes the empirical risk function.
+For simplicity, we will now refer to both the regularized and unregularized risk function as $\hat{\mathcal{R}}$.
+
+$$\theta^* = \arg \min_\theta \hat{\mathcal{R}}(\theta)$$
 
 This is done by iteratively updating the parameter vector $\theta$ using the gradient of the loss function with respect to the parameter vector. The simplified update formula for a parameter $\theta$ at time step $t$ is given by:
 
-$$\theta_{t+1} = \theta_t - \eta \frac{\partial L}{\partial \theta_t}$$
+$$\theta_{t+1} = \theta_t - \eta \frac{\partial \hat{\mathcal{R}}}{\partial \theta_t}$$
 
 Where:
 
 - $\theta_t$ is the current value of the parameter vector at time step $t$.
 - $\theta_{t+1}$ is the new value of the parameter after the update.
-- $\eta$ (eta) is the learning rate, which controls how big of a step we take.
-- $\frac{\partial L}{\partial \theta_t}$ is the derivative of the loss function $L$ with respect to parameter $\theta$, i.e., the gradient.
+- $\eta$ (eta) is the learning rate, which controls the step size.
+- $\frac{\partial \hat{\mathcal{R}}}{\partial \theta_t}$ is the derivative of the empirical risk function $\hat{\mathcal{R}}$ with respect to parameter $\theta$, i.e., the gradient.
 
 ::: {.callout-note}
 ## Quiz: Learning Rate
@@ -55,9 +84,9 @@ Before we cover these more advanced approaches (specifically their implementatio
 
 ## Mini-Batch Effects in SGD
 
-When using mini-batches, the gradient becomes a noisy estimate of the gradient over the full dataset. With $\nabla L^i_t := \frac{\partial L^i}{\partial \theta_t}$ being the gradient of the loss function with respect to the entire parameter vector estimated using $(x_i, y_i)$, the mini-batch gradient is given by:
+When using mini-batches, the gradient becomes a noisy estimate of the gradient over the full dataset. With $\nabla L^{(i)}_t := \frac{\partial L^{(i)}}{\partial \theta_t}$ being the gradient of the loss function with respect to the entire parameter vector estimated using $(x^{(i)}, y^{(i)})$, the mini-batch gradient is given by:
 
-$$\nabla L^B_t = \frac{1}{|B|} \sum_{i \in B} \nabla L^i_t$$
+$$\nabla L^B_t = \frac{1}{|B|} \sum_{i \in B} \nabla L^{(i)}_t$$
 
 where $B$ is the batch of samples and $|B|$ is the batch size.
 
@@ -90,7 +119,7 @@ This is visualized in the image below:
 In machine learning, we assume that the data is drawn from a distribution $P$.
 The gradient over the full dataset approximates the expectation over this distribution:
 
-$$\nabla L = \mathbb{E}_{x \sim P} \nabla L(f_\theta(x), y)$$
+$$\nabla \mathcal{R} = \mathbb{E}_{x \sim P} \nabla \mathcal{L}(f_\theta(x), y)$$
 </details>
 :::
 
@@ -107,7 +136,7 @@ We will discuss point 1 later, and point 4 does not depend on the batch size, so
 ## Quiz: Bang for Your Buck
 
 **Question 1:**
-True or False: The cost (duration) of performing a gradient update using a batch size of $2$ is twice the cost of a batch size of $1$.
+True or false: The cost (duration) of performing a gradient update using a batch size of $2$ is twice the cost of a batch size of $1$.
 
 <details>
 <summary>Click for answer</summary>
@@ -175,23 +204,11 @@ These properties are also known as *implicit regularization* of SGD. Regularizat
 
 ### Weight Decay
 
-Because weight decay in SGD is equivalent to adding a regularization penalty term to the loss function, we can draw a parallel to the regularization techniques used in statistics such as ridge regression.
+One modification to the SGD update formula is the so-called *weight decay*, which is equivalent to adding a regularization penalty term to the loss function as we have seen earlier.
 
 :::{.callout-note}
-For more complex optimizers such as Adam, weight decay is not equivalent to adding a regularization penalty term to the loss function. However, the main idea of both approaches is still to shrink the weights to $0$ during training.
+For more complex optimizers such as Adam, weight decay is not equivalent to adding a regularization penalty term to the loss function [@loshchilov2017decoupled]. However, the main idea of both approaches is still to shrink the weights to $0$ during training.
 :::
-
-Regularization in machine learning/statistics is used to prevent overfitting by adding a penalty term to the model's loss function, which discourages overly complex models that might fit noise in the training data.
-It helps improve generalization to unseen data.
-For example, in ridge regression, the regularization term penalizes large coefficients by adding the squared magnitude of the coefficients to the loss function:
-
-$$
-\mathcal{L}(y, \hat{y}) = \sum_{i=1}^n \left(y_i - \hat{f}_{\theta}(x_i)\right)^2 + \lambda \sum_{j=1}^p \theta_j^2
-$$
-
-This will make the model prefer less complex solutions, where complexity is measured by the L2 norm of the coefficients.
-
-Here, $\lambda$ controls the strength of the regularization, $y_i$ are the observed values, $\hat{y}_i$ are the predicted values, and $\theta_i$ are the model coefficients.
 
 If we integrate weight decay into the gradient update formula, we get the following:
 
@@ -203,7 +220,7 @@ This formula shows that the weight decay term ($- \lambda \theta_t$) effectively
 
 [Source](https://www.linkedin.com/pulse/understanding-regularization-techniques-machine-javier-icaza-santos)
 
-## Momentum
+### Momentum
 
 Momentum is a technique that helps accelerate gradient descent by using an exponential moving average of past gradients. Like a ball rolling down a hill, momentum helps the optimizer:
 
@@ -233,7 +250,7 @@ The hyperparameter $\beta_1$ is the momentum decay rate (typically 0.9), $v_t$ i
 
 [Source](https://eloquentarduino.github.io/2020/04/stochastic-gradient-descent-on-your-microcontroller/)
 
-## Adaptive Learning Rates
+### Adaptive Learning Rates
 
 Adaptive learning rate methods automatically adjust the learning rate for each parameter during training. This is particularly useful because:
 
@@ -354,7 +371,7 @@ opt$zero_grad()
 ```
 
 ::: {.callout-note}
-## Quiz: Guess which Parameter is Varied
+## Quiz: Guess which parameter is varied
 
 We will now show some real trajectories of the AdamW optimizer applied to the linear regression problem from above where one specific parameter is varied. Recall that:
 
@@ -411,7 +428,8 @@ The $\beta_2$ parameter is varied. There is no second moment adjustment on the l
 
 ## Learning Rate Schedules
 
-While we have already covered dynamic learning rates, it can still be beneficial to use a **learning rate scheduler** to further improve convergence. Like for adaptive learning rates, the learning rate is then not a constant scalar, but a function of the current epoch or iteration.
+While we have already covered dynamic learning rates, it can still be beneficial to use a **learning rate scheduler** to further improve convergence.
+Like for adaptive learning rates, the learning rate is then not a constant scalar, but a function of the current epoch or iteration.
 Note that the learning rate schedulers discussed here can also be combined with adaptive learning rates such as in AdamW and are not mutually exclusive.
 
 $$\theta_{t+1} = \theta_t - \eta_t \cdot \frac{\nabla_\theta L(\theta_t)}{\sqrt{v_t} + \epsilon}$$
@@ -423,7 +441,7 @@ This includes gradient decay, cosine annealing, and cyclical learning rates. The
 **Warmup**:
 
 Warmup is a technique that gradually increases the learning rate from a small value to a larger value over a specified number of epochs.
-This ensures that in the beginning, where the weights are randomly initialized, the learning rate is not oo high.
+This ensures that in the beginning, where the weights are randomly initialized, the learning rate is not too high.
 
 **Cyclical Learning Rates**:
 
@@ -542,4 +560,209 @@ We can load the optimizer state again using `torch_load()`.
 state_dict2 = torch_load(pth)
 opt2 <- optim_adamw(model$parameters, lr = 0.2)
 opt2$load_state_dict(state_dict2)
+```
+
+## Embedded Regularization Techniques
+
+Besides the explicit regularization effects of weight decay and the implicit regularization effects of mini-batch gradient descent, there are also other regularization techniques that improve generalization of deep neural networks.
+Here, we focus on dropout and layer normalization, which are both embedded in neural network architectures.
+
+### Dropout
+
+Dropout is a regularization technique used to prevent overfitting in neural networks.
+During each training iteration, dropout randomly "drops" a subset of neurons by setting their activations to zero with a specified probability.
+This forces the network to distribute the learned representations more evenly across neurons.
+Dropout is most commonly used in the context of fully connected layers.
+
+![](../assets/dropout.png){fig-align="center" width=100%}
+
+[Source](https://medium.com/konvergen/understanding-dropout-ddb60c9f98aa)
+
+Note that neurons are only dropped when the module is in *train* mode, not in *eval* mode.
+
+```{r}
+x = torch_randn(10, 5)
+dropout = nn_dropout(p = 0.5)
+dropout(x)
+dropout$eval()
+dropout(x)
+```
+
+
+:::{.callout-note}
+## Quiz: Dropout
+
+**Question 1**: Worse Training Loss: You are training a neural network with and without dropout. The training loss is higher with dropout, is this a bug?
+
+<details>
+<summary>Click for answer</summary>
+Not necessarily, as dropout is a regularization technique that prevents overfitting.
+Its goal is to reduce the generalization performance of the model and not to improve training performance.
+</details>
+:::
+
+### Batch Normalization
+
+Batch Normalization is an important technique in deep learning that contributed significantly to speeding up the training process, especially in convolutional neural networks that are covered in the next chapter.
+During training, batch normalization introduces noise into the network by normalizing each mini-batch independently.
+Besides faster congerence, batch normalization also acts as a regularizer, where the model learns to be less sensitive to the specific details of the training data, thus reducing overfitting.
+
+The formula for batch normalization (during training) is given by:
+
+$$
+\hat{x} = \frac{x - \mu_B}{\sqrt{\sigma_B^2 + \epsilon}}
+$$
+
+where:
+
+- $\hat{x}$ is the normalized output,
+- $x$ is the input,
+- $\mu_B$ is the mean of the batch,
+- $\sigma_B^2$ is the variance of the batch,
+- $\epsilon$ is a small constant added for numerical stability.
+
+During inference, the module uses the running mean and variance of the training data to normalize the input.
+
+In `torch`, different versions of batch normalization exist for different dimensions of the input tensor.
+Below, we illustrate the batch normalization module using a 1D input tensor (the batch dimension does not count here):
+
+```{r}
+x = torch_randn(10, 5)
+bn = nn_batch_norm1d(num_features = 5)
+bn(x)
+```
+
+:::{.callout-note}
+## Quiz: Batch Normalization
+
+**Question 1**: Earlier we have learned that `nn_module`s have buffers and parameters, where only the latter are learned with gradient descent.
+Do you think the mean and variance are parameters or buffers?
+
+<details>
+<summary>Click for answer</summary>
+They are both buffers as they only store the variance and running mean of all training samples seen, i.e., they are not updated using gradient information.
+</details>
+
+**Question 2**: Training vs. Evaluation Mode:
+While many `nn_module`s behave the same way irrespective of their mode, batch normalization is an example of a module that behaves differently during training and evaluation.
+During training, the module uses the mean and variance of the current batch, while during evaluation, it uses the running mean and variance of all training samples seen.
+
+```{r}
+bn(x[1:10, ])
+```
+
+Which of the following statements is true and why?
+
+```{r}
+bn$eval()
+equal1 = torch_equal(
+  torch_cat(list(bn(x[1:2, ]), bn(x[3:4, ]))),
+  bn(x[1:4, ])
+)
+bn$train()
+equal2 = torch_equal(
+  torch_cat(list(bn(x[1:2, ]), bn(x[3:4, ]))),
+  bn(x[1:4, ])
+)
+```
+
+<details>
+<summary>Click for answer</summary>
+```{r}
+c(equal1, equal2)
+```
+
+The first statement is true because, in evaluation mode, the module uses the running mean and variance of all training samples seen.
+The second statement is false because the first tensor uses different means and variances for rows 1-2 and 3-4, while the second tensor uses the same mean and variance for all rows.
+</details>
+:::
+
+
+
+```{r, include = FALSE}
+library(mlr3torch)
+task <- tsk("spam")
+spam <- task$data()
+```
+
+To demonstrate these dropout, we apply them to a simple spam classification task.
+The data has one binary target variable `type` (spam or no spam) and 57 numerical features.
+
+```{r}
+c(nrow(spam), ncol(spam))
+table(spam$type)
+```
+
+Below, we create a simple neural network with two hidden layers of dimension 100, ReLU activation and optionally dropout and batch normalization.
+
+```{r}
+nn_reg <- nn_module("nn_reg",
+  initialize = function(dropout, batch_norm) {
+    self$net <- nn_sequential(
+      nn_linear(in_features = 57, out_features = 100),
+      if (batch_norm) nn_batch_norm1d(num_features = 100) else nn_identity(),
+      if (dropout) nn_dropout(p = 0.5) else nn_identity(),
+      nn_relu(),
+      nn_linear(in_features = 100, out_features = 100),
+      if (batch_norm) nn_batch_norm1d(num_features = 100) else nn_identity(),
+      if (dropout) nn_dropout(p = 0.5) else nn_identity(),
+      nn_relu(),
+      nn_linear(in_features = 100, out_features = 2)
+    )
+  },
+  forward = function(x) {
+    self$net(x)
+  }
+)
+nn_drop <- nn_reg(dropout = TRUE, batch_norm = FALSE)
+nn_batch <- nn_reg(dropout = FALSE, batch_norm = TRUE)
+nn_both <- nn_reg(dropout = TRUE, batch_norm = TRUE)
+nn_vanilla <- nn_reg(dropout = FALSE, batch_norm = FALSE)
+```
+
+We evaluate the performance of the four neural networks created above using subsampling with 10 repetitions and an 80/20 train/test split.
+We don't show the specific training code here, but only the resulting confidence intervals for the accuracy.
+While the intervals are too wide to be able to draw any final conclusions and we are only looking at a single dataset, both normalization techniques tend to lead to better results.
+Also, both normalization techniques improve stability, so that the confidence intervals are narrower.
+
+```{r, echo = FALSE, message = FALSE}
+library(mlr3inferr)
+library(mlr3viz)
+task <- tsk("spam")
+ingress <- TorchIngressToken(task$feature_names, batchgetter_num, c(NA, 57))
+ingress_tokens <- list(x = ingress)
+
+lrn_dropout <- lrn("classif.torch_model", network = nn_drop,
+  id = "Dropout", ingress_tokens = ingress_tokens)
+
+lrn_batch <- lrn("classif.torch_model", network = nn_batch,
+  id = "Batch Norm", ingress_tokens = ingress_tokens)
+
+lrn_both <- lrn("classif.torch_model", network = nn_both,
+  id = "Batch Norm & Dropout", ingress_tokens = ingress_tokens)
+
+lrn_vanilla <- lrn("classif.torch_model", network = nn_vanilla,
+  id = "Vanilla", ingress_tokens = ingress_tokens)
+
+lrns = list(lrn_dropout, lrn_batch, lrn_both, lrn_vanilla)
+for (l in lrns) {
+  l$configure(
+    epochs = 500L,
+    patience = 10L,
+    measures_valid = msr("classif.logloss"),
+    validate = "test",
+    batch_size = 128L,
+    jit_trace = FALSE,
+    predict_type = "prob",
+    tensor_dataset = TRUE
+  )
+}
+
+design <- benchmark_grid(task, lrns, resampling = rsmp("subsampling", repeats = 10))
+bmr <- benchmark(design, store_models = TRUE)
+
+autoplot(bmr, type = "ci", measure = msr("ci", msr("classif.acc")))
+autoplot(bmr)
+
+x = bmr$score()[, c("learner_id", "iteration", "classif.ce")]
 ```

@@ -371,7 +371,7 @@ There are strict rules that define when two shapes are compatible:
 <summary>Click for answer</summary>
 The resulting shape would be `(2, 4, 3)`. Here's why:
 
-1. Prepend one to the rank of the second tensor to get `(1, 4, 3)`.
+1. Prepend one to the dimensions of the second tensor to get `(1, 4, 3)`.
 2. Going dimension by dimension:
    * First: 2 vs 1 -> Compatible, expand to 2
    * Second: 1 vs 4 -> Compatible, expand to 4
@@ -385,7 +385,7 @@ The resulting shape would be `(2, 4, 3)`. Here's why:
 <summary>Click for answer</summary>
 No, broadcasting would fail in this case. Here's why:
 
-1. Both tensors have the same rank (2), so no prepending is needed.
+1. Both tensors have the same number of dimensions (2), so no prepending is needed.
 2. Going dimension by dimension:
    * First: 2 vs 3 -> Incompatible (neither is 1)
    * Second: 3 vs 2 -> Incompatible (neither is 1)
@@ -398,7 +398,7 @@ No, broadcasting would fail in this case. Here's why:
 Torch provides several ways to reshape tensors while preserving their data:
 
 ```{r}
-# Create a sample tensor
+# Create an example tensor
 x <- torch_tensor(0:15)
 print(x)
 ```
@@ -433,7 +433,7 @@ The value of the stride indicates how many elements to skip to get to the next e
 If we move from element `x[1]` (`1`) to element `x[2]` (`2`), we move one index along the columns of `y`.
 If we move from `x[1]` to `x[5]` (`5`), i.e., 4 steps, we move one index along the rows of `y`.
 
-This means, for example, that reshaping torch tensors can be considerably more efficient than permuting R arrays, as the latter will always allocate a new, reordered vector, while the former just changes the strides.
+This means, for example, that reshaping of torch tensors can be considerably more efficient than reshaping of R arrays, as the latter will always allocate a new, reordered vector, while the former just changes the strides.
 
 The functionality of strides is illustrated in the image below.
 
@@ -444,7 +444,7 @@ The functionality of strides is illustrated in the image below.
 ::: {.callout-note}
 ## Quiz: Strides
 
-**Question 1**: How do you need to change the strides from a matrix with strides `(4, 1)` to transpose it?
+**Question 1**: How do you need to change the strides from a matrix with strides `(4, 1)` (like the one above) to transpose it?
 
 <details>
 <summary>Click for answer</summary>
@@ -471,7 +471,7 @@ x$reshape(6)
 
 ## Reference Semantics
 
-One key property of torch tensors is that they have *reference semantics*. This is different from R, where objects usually have *value semantics*.
+One key property of torch tensors is that they have *reference semantics*.
 
 ```{r}
 x <- torch_ones(2)
@@ -491,14 +491,18 @@ x # was not modified
 
 
 :::{.callout-note}
-Another notable exception to values semantics are `R6` classes, which are used in the `mlr3` ecosystem.
+Another notable exception to value semantics are environments and `R6` classes, which are used in the `mlr3` ecosystem.
 :::
 
-When one tensor (`y`) shares underlying data with another tensor (`x`), this is called a *view*. It is also possible to obtain a view on a subset of a tensor, e.g., via slicing:
+When one tensor (`y`) shares underlying data with another tensor (`x`), this is called a *view*.
+It is also possible to obtain a view on a subset of a tensor, e.g., via slicing as shown below.
+There, `torch_arange()` creates a tensor with elements from 1 to 10.
 
 ```{r}
-x <- torch_arange(1, 10)
+x <- torch_arange(start = 1, end = 10, step = 1)
+x
 y <- x[1:3]
+y
 y[1] <- 100
 x[1]
 ```
@@ -528,7 +532,7 @@ This is also the case for the `$reshape()` methods from the last section, which 
 ::: {.callout-note}
 ## Quiz: Contiguous Data
 
-**Question 1**: Reshaping a 2D Tensor
+**Question 1**: Reshaping a 2D tensor
 
 Consider the tensor below:
 ```{r}

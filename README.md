@@ -9,10 +9,11 @@ The seven topics are:
 1. Torch Tensors
 2. Autograd
 3. Modules and Data
-4. Optimizers
-5. Intro to mlr3torch (and mlr3 recap)
-6. Training Efficiency
-7. Use Case (WIP)
+4. Optimization & Regularization
+5. Convolutional Neural Networks
+6. Intro to mlr3torch (and mlr3 recap)
+7. Training Efficiency
+8. Use Case (WIP)
 
 ## Contributing
 

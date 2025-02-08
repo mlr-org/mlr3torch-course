@@ -8,3 +8,8 @@ notebooks/.quarto/
 notebooks/data
 /.quarto/
 /_site/
+_cache
+*.rdb
+*.RData
+*.rdx
+_freeze/

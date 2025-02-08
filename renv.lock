@@ -833,14 +833,14 @@
     },
     "mlr3torch": {
       "Package": "mlr3torch",
-      "Version": "0.1.2-9000",
+      "Version": "0.2.0-9000",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "mlr-org",
       "RemoteRepo": "mlr3torch",
-      "RemoteRef": "perf-improvements",
-      "RemoteSha": "e1ff3046c1ff4d1cb58554861deb4e16807003cc"
+      "RemoteRef": "main",
+      "RemoteSha": "da449b4285ac6bb51ac7d64813a9cde26e3284b9"
     },
     "mlr3tuning": {
       "Package": "mlr3tuning",
@@ -1282,14 +1282,8 @@
     },
     "torch": {
       "Package": "torch",
-      "Version": "0.13.0.9001",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "sebffischer",
-      "RemoteRepo": "torch",
-      "RemoteRef": "fix-ignite",
-      "RemoteSha": "cde2eb130598c08852c8c0847f64f3ff9a58bb65"
+      "Version": "0.14.1",
+      "Source": "Repository"
     },
     "torchvision": {
       "Package": "torchvision",

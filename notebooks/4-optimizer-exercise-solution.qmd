@@ -1,5 +1,5 @@
 ---
-title: "Optimizers"
+title: "Optimization & Regularization"
 solutions: true
 ---
 

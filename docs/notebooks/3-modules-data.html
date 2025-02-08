@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Modules and Data – Deep Learning with torch in R</title>
+<title>Modules and Data – Deep Learning with (mlr3)torch</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -141,7 +141,7 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">Deep Learning with torch in R</span>
+    <span class="navbar-title">Deep Learning with (mlr3)torch</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -150,14 +150,21 @@ window.Quarto = {
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../notebooks/setup-guide.html"> 
-<span class="menu-text">Setup</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-general" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">General</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-general">    
+        <li>
+    <a class="dropdown-item" href="../notebooks/setup-guide.html">
+ <span class="dropdown-text">Setup</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../notebooks/resources.html"> 
-<span class="menu-text">Resources</span></a>
+        <li>
+    <a class="dropdown-item" href="../notebooks/resources.html">
+ <span class="dropdown-text">Resources</span></a>
   </li>  
+    </ul>
+  </li>
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tutorials" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Tutorials</span>
@@ -182,19 +189,23 @@ window.Quarto = {
   </li>  
         <li>
     <a class="dropdown-item" href="../notebooks/4-optimizer.html">
- <span class="dropdown-text">4. Optimizers</span></a>
+ <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-mlr3torch.html">
- <span class="dropdown-text">5. mlr3torch</span></a>
+    <a class="dropdown-item" href="../notebooks/5-cnn.html">
+ <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-training-efficiency.html">
- <span class="dropdown-text">6. Training Efficiency</span></a>
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch.html">
+ <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-usecase.html">
- <span class="dropdown-text">7. Use Case</span></a>
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency.html">
+ <span class="dropdown-text">7. Training Efficiency</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/8-usecase.html">
+ <span class="dropdown-text">8. Use Case</span></a>
   </li>  
     </ul>
   </li>
@@ -222,19 +233,23 @@ window.Quarto = {
   </li>  
         <li>
     <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-task.html">
- <span class="dropdown-text">4. Optimizers</span></a>
+ <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-mlr3torch-exercise-task.html">
- <span class="dropdown-text">5. mlr3torch</span></a>
+    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-task.html">
+ <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-training-efficiency-exercise-task.html">
- <span class="dropdown-text">6. Training Efficiency</span></a>
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-task.html">
+ <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-usecase-exercise-task.html">
- <span class="dropdown-text">7. Use Case</span></a>
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html">
+ <span class="dropdown-text">7. Training Efficiency</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/8-usecase-exercise-task.html">
+ <span class="dropdown-text">8. Use Case</span></a>
   </li>  
     </ul>
   </li>
@@ -257,19 +272,23 @@ window.Quarto = {
   </li>  
         <li>
     <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-solution.html">
- <span class="dropdown-text">4. Optimizers</span></a>
+ <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-mlr3torch-exercise-solution.html">
- <span class="dropdown-text">5. mlr3torch</span></a>
+    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-solution.html">
+ <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-training-efficiency-exercise-solution.html">
- <span class="dropdown-text">6. Training Efficiency</span></a>
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-solution.html">
+ <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-usecase-exercise-solution.html">
- <span class="dropdown-text">7. Use Case</span></a>
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html">
+ <span class="dropdown-text">7. Training Efficiency</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/8-usecase-exercise-solution.html">
+ <span class="dropdown-text">8. Use Case</span></a>
   </li>  
     </ul>
   </li>
@@ -314,8 +333,8 @@ window.Quarto = {
 </header>
 
 
-<section id="from-linear-models-to-deep-neural-networks" class="level1">
-<h1>From Linear Models to Deep Neural Networks</h1>
+<section id="from-linear-models-to-deep-neural-networks" class="level2">
+<h2 class="anchored" data-anchor-id="from-linear-models-to-deep-neural-networks">From Linear Models to Deep Neural Networks</h2>
 <p>In the previous notebook, we explored how to use <code>torch</code>’s autograd system to fit simple linear models. We manually:</p>
 <ol type="1">
 <li>Managed the weights.</li>
@@ -330,15 +349,15 @@ window.Quarto = {
 </ul>
 <p>Let’s explore how these components work together by building a neural network to classify spirals. Note that we only briefly touch on optimizers here and dedicate an additional notebook to them.</p>
 </section>
-<section id="neural-network-architecture-with-nn_module" class="level1">
-<h1>Neural Network Architecture with <code>nn_module</code></h1>
+<section id="neural-network-architecture-with-nn_module" class="level2">
+<h2 class="anchored" data-anchor-id="neural-network-architecture-with-nn_module">Neural Network Architecture with <code>nn_module</code></h2>
 <p>The <code>nn_module</code> class serves several purposes:</p>
 <ol type="1">
 <li>Acts as a container for learnable parameters.</li>
 <li>Provides train/eval modes, which are essential for layers like dropout and batch normalization.</li>
 <li>Defines the forward pass of the model.</li>
 </ol>
-<p>Torch offers many common neural network modules out of the box. For example, the simple linear model we created earlier (<span class="math inline">\(\hat{y} = ax + b\)</span>) can be constructed using the built-in <code>nn_linear</code> module:</p>
+<p>Torch offers many common neural network modules out of the box. For example, the simple linear model we created earlier (<span class="math inline">\(\hat{y} = a \times x + b\)</span>) can be constructed using the built-in <code>nn_linear</code> module:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>linear_model <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(<span class="at">in_features =</span> <span class="dv">1</span>, <span class="at">out_features =</span> <span class="dv">1</span>, <span class="at">bias =</span> <span class="cn">TRUE</span>)</span>
@@ -369,7 +388,7 @@ torch_tensor
 <p>Implementing a custom <code>nn_module</code> is straightforward and requires defining two key methods:</p>
 <ol type="1">
 <li><code>initialize</code>: This constructor runs when the model is created. It defines the layers and their dimensions. It can take arguments that allow to configure the network layer (such as the number of neurons in a layer).</li>
-<li><code>forward</code>: This method defines how data flows through your network: it specifies the actual computation path from input to output.</li>
+<li><code>forward</code>: This method defines how data flows through your network: it specifies the actual computation path from inputs to outputs.</li>
 </ol>
 <p>Let’s implement a simple linear regression module ourselves.</p>
 <div class="cell" data-layout-align="center">
@@ -424,7 +443,7 @@ torch_tensor
 </div>
 </div>
 <p>Besides parameters, neural networks can also have <strong>buffers</strong> (<code>nn_buffer</code>). Buffers are tensors that are part of the model’s state but don’t receive gradients during backpropagation.</p>
-<p>Additionally, an <code>nn_module</code> operates in either a <em>train</em> or <em>eval</em> state:</p>
+<p>Additionally, an <code>nn_module</code> operates in either a <em>train</em> or <em>eval</em> state that are activated by <code>$train()</code> and <code>$eval()</code> respectively.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>simple_linear<span class="sc">$</span><span class="fu">train</span>()</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>simple_linear<span class="sc">$</span>training</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -453,7 +472,7 @@ torch_tensor
 [ CPUFloatType{1} ][ requires_grad = TRUE ]</code></pre>
 </div>
 </div>
-<p>You can also load new parameters into a network using <code>$load_state_dict()</code>:</p>
+<p>You can load new parameters into a network using <code>$load_state_dict()</code>:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>simple_linear<span class="sc">$</span><span class="fu">load_state_dict</span>(<span class="fu">list</span>(</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">a =</span> <span class="fu">nn_parameter</span>(<span class="fu">torch_tensor</span>(<span class="dv">1</span>)),</span>
@@ -514,8 +533,8 @@ torch_tensor
 </div>
 </div>
 <p>Besides adding parameters and buffers to the network’s state dict by registering <code>nn_parameter</code>s and <code>nn_buffer</code>s in the module’s <code>$initialize()</code> method, you can also register other <code>nn_module</code>s, which we will do in the next section.</p>
-<section id="the-world-is-not-linear" class="level2">
-<h2 class="anchored" data-anchor-id="the-world-is-not-linear">The World is Not Linear</h2>
+<section id="the-world-is-not-linear" class="level3">
+<h3 class="anchored" data-anchor-id="the-world-is-not-linear">The World is Not Linear</h3>
 <p>While we have so far explained much of <code>torch</code>’s functionality using simple linear networks, the main idea of deep learning is to model complex, non-linear relationships. Below, we generate some non-linear synthetic spiral data for binary classification:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
@@ -545,144 +564,9 @@ torch_tensor
 </div>
 </div>
 <p>While linear models are often useful and have helped us explain the <code>torch</code> API, they are limited in capturing the complex, non-linear patterns commonly present in real-world data, especially unstructured types like images, text, audio, and video. Deep neural networks typically consist of many different layers (hence the name “deep”) and combine linear and non-linear layers with various other components, allowing them to represent highly complex functions. Traditional machine learning and statistics rely on manual feature engineering to transform raw inputs, whereas deep neural networks have revolutionized this process by automatically learning hierarchical features directly from the data.</p>
-<p>One challenging problem is defining a neural network architecture for a given task. While neural networks with a single hidden layer can theoretically approximate any continuous function, the practical challenge lies in finding these solutions efficiently. This is where architectural choices and their associated <em>inductive biases</em> become crucial.</p>
-<p>An inductive bias represents the set of assumptions that a learning algorithm uses to predict outputs for inputs it hasn’t encountered during training. These biases help the model generalize beyond its training data by favoring certain solutions over others.</p>
-<p>Some examples of inductive biases in different neural network architectures are Convolutional Neural Networks, Transformers, and Multi-Layer Perceptrons.</p>
-<section id="convolutional-neural-networks-cnns" class="level3">
-<h3 class="anchored" data-anchor-id="convolutional-neural-networks-cnns">Convolutional Neural Networks (CNNs)</h3>
-<p>The central component of a CNN is the convolutional layer:</p>
-<p><img src="../assets/convolution.png" class="img-fluid"></p>
-<p><a href="https://www.ibm.com/think/topics/convolutional-neural-networks">Source</a></p>
-<p>CNNs encode several strong inductive biases about visual data:</p>
-<ol type="1">
-<li><strong>Locality</strong>: Nearby pixels are more likely to be related than distant ones.</li>
-<li><strong>Translation Invariance</strong>: Features should be detected regardless of their position.</li>
-<li><strong>Hierarchical Composition</strong>: Complex patterns are built from simpler ones.</li>
-</ol>
-<p>These biases make CNNs particularly effective for image-related tasks because they align with our understanding of how visual information is structured. As an example, we will apply a convolutional layer to an image from MNIST. The image is shown below:</p>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="3-modules-data_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>Such an image is a 3D tensor with dimensions <code>[1, 28, 28]</code>.</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(image)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Float [1:1, 1:28, 1:28]</code></pre>
-</div>
-</div>
-<p>To create a convolutional layer for a 2D image, we can use the <code>nn_conv2d</code> function.</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>conv_layer <span class="ot">&lt;-</span> <span class="fu">nn_conv2d</span>(<span class="at">in_channels =</span> <span class="dv">1</span>, <span class="at">out_channels =</span> <span class="dv">1</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">padding =</span> <span class="dv">1</span>)</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(<span class="fu">conv_layer</span>(image))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Float [1:1, 1:28, 1:28]</code></pre>
-</div>
-</div>
-<p>Because we have encoded more information about the structural relationship between the input tensor and the output tensor (the same filter is applied to the entire image), the convolutional layer has far fewer parameters than a fully connected layer.</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>conv_layer<span class="sc">$</span>parameters</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$weight
-torch_tensor
-(1,1,.,.) = 
- -0.1232  0.1247 -0.2829
- -0.2022 -0.1224 -0.0655
- -0.2543  0.2183 -0.0786
-[ CPUFloatType{1,1,3,3} ][ requires_grad = TRUE ]
-
-$bias
-torch_tensor
- 0.1070
-[ CPUFloatType{1} ][ requires_grad = TRUE ]</code></pre>
-</div>
-</div>
-<p>Below, we show the output of the first convolutional layer from a (trained) ResNet18 model applied to an image from MNIST (which has 28x28 pixels).</p>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="3-modules-data_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Weights of a Fully Connected Layer
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Question 1</strong>: How many parameters does a fully connected layer with the same number of inputs <code>(1, 28, 28)</code> and outputs <code>(1, 28, 28)</code> have?</p>
-<details>
-<summary>
-Answer
-</summary>
-<p>The input has <span class="math inline">\(28 \times 28 = 784\)</span> pixels and the output as well. The weights of the fully connected layer are a <span class="math inline">\(784 \times 784\)</span> matrix and the bias also has 784 elements, so the number of parameters is <span class="math inline">\(784 \times 784 + 784 = 615440\)</span>, much more than our simple convolutional kernel.</p>
-</details>
-</div>
-</div>
-</section>
-<section id="transformers" class="level3">
-<h3 class="anchored" data-anchor-id="transformers">Transformers</h3>
-<p>While there are many variations of transformer architectures, the main idea is the (self-)attention mechanism:</p>
-<p><img src="../assets/attention.png" class="img-fluid"></p>
-<p><a href="https://medium.com/@ramendrakumar/self-attention-d8196b9e9143">Source</a></p>
-<p>Transformer architecturers, which power language models like GPT-4 and are commonly used in natural language processing, have other inductive biases than CNNs:</p>
-<ol type="1">
-<li><strong>Non-locality</strong>: Any token can directly interact with any other token (this is why training transformers is so expensive as the complexity is quadratic in the sequence length).</li>
-<li><strong>Position Awareness</strong>: Sequential order matters but is explicitly encoded.</li>
-<li><strong>Attention-based Relationships</strong>: Important connections between elements are learned dynamically.</li>
-</ol>
-<p>These biases make Transformers well-suited for tasks where long-range dependencies are important, such as understanding language or analyzing sequences.</p>
-<p>In <code>torch</code>, the <code>nn_multihead_attention</code> module implements the attention mechanism. We demonstrate how to use it with random data, a single output head, and self-attention for simplicity.</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>embed_dim <span class="ot">&lt;-</span> <span class="dv">16</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>seq_length <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>batch_size <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize multihead attention module</span></span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>attention <span class="ot">&lt;-</span> <span class="fu">nn_multihead_attention</span>(</span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">embed_dim =</span> embed_dim,</span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">num_heads =</span> <span class="dv">1</span></span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Create random input embedding</span></span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>input_embedding <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(seq_length, batch_size, embed_dim)</span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a><span class="co"># For self-attention, the query, key, and value are the same</span></span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>query <span class="ot">&lt;-</span> key <span class="ot">&lt;-</span> value <span class="ot">&lt;-</span> input_embedding</span>
-<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Forward pass, keep the attention weights, not only new embeddings</span></span>
-<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="fu">attention</span>(query, key, value, <span class="at">need_weights =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>attn_output <span class="ot">&lt;-</span> output[[<span class="dv">1</span>L]]</span>
-<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>attn_weights <span class="ot">&lt;-</span> output[[<span class="dv">2</span>L]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>Below, we print the attention weights between the random embeddings and weights.</p>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="3-modules-data_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>The architecture of the module is visualized below:</p>
-<p><img src="../assets/attention2.png" class="img-fluid" style="width:60.0%"></p>
-<p><a href="https://data-science-blog.com/blog/2021/04/07/multi-head-attention-mechanism/">Source</a></p>
-</section>
-<section id="mlps-like-our-spiral-network" class="level3">
-<h3 class="anchored" data-anchor-id="mlps-like-our-spiral-network">MLPs (like our Spiral Network)</h3>
+<p>One challenging problem is defining a neural network architecture for a given task. This is where architectural choices and their associated <em>inductive biases</em> become crucial.</p>
+<p>An inductive bias represents a set of structural assumptions of how our predictive function looks like and behaves. These biases help the model generalize beyond its training data by favoring certain solutions over others.</p>
+<p>Some examples of inductive biases in different neural network architectures are convolutional neural networks, transformers, and multi-layer perceptrons (MLPs). Here, we will focus on MLPs, which are the most basic type of neural network (but are part of every other neural network).</p>
 <p>The different layers in a Multi-Layer Perceptron (MLP) consist mainly of an affine-linear transformation followed by a non-linear function, such as a ReLU activation function:</p>
 <p><img src="../assets/mlp-layer.png" class="img-fluid" style="width:40.0%"></p>
 <p><a href="https://scikit-learn.org/1.5/modules/neural_networks_supervised.html">Source</a></p>
@@ -694,26 +578,26 @@ Answer
 <p>This flexibility makes MLPs general-purpose learners, but they may require more data or parameters to learn patterns that specialized architectures can discover more efficiently.</p>
 <p>For our spirals classification problem, we will use a simple MLP with three hidden layers:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>nn_spiral_net <span class="ot">&lt;-</span> <span class="fu">nn_module</span>(<span class="st">"nn_spiral_net"</span>,</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(input_size, hidden_size, output_size) {</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>fc1 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(input_size, hidden_size)</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>fc2 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(hidden_size, hidden_size)</span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>fc3 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(hidden_size, hidden_size)</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>fc4 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(hidden_size, output_size)</span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>relu <span class="ot">=</span> <span class="fu">nn_relu</span>()</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">forward =</span> <span class="cf">function</span>(x) {</span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>    x <span class="sc">|&gt;</span></span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">fc1</span>() <span class="sc">|&gt;</span></span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">relu</span>() <span class="sc">|&gt;</span></span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">fc2</span>() <span class="sc">|&gt;</span></span>
-<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">relu</span>() <span class="sc">|&gt;</span></span>
-<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">fc3</span>() <span class="sc">|&gt;</span></span>
-<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">relu</span>() <span class="sc">|&gt;</span></span>
-<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">fc4</span>()</span>
-<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>nn_spiral_net <span class="ot">&lt;-</span> <span class="fu">nn_module</span>(<span class="st">"nn_spiral_net"</span>,</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(input_size, hidden_size, output_size) {</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>fc1 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(input_size, hidden_size)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>fc2 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(hidden_size, hidden_size)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>fc3 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(hidden_size, hidden_size)</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>fc4 <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(hidden_size, output_size)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>relu <span class="ot">=</span> <span class="fu">nn_relu</span>()</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">forward =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    x <span class="sc">|&gt;</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">fc1</span>() <span class="sc">|&gt;</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">relu</span>() <span class="sc">|&gt;</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">fc2</span>() <span class="sc">|&gt;</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">relu</span>() <span class="sc">|&gt;</span></span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">fc3</span>() <span class="sc">|&gt;</span></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">relu</span>() <span class="sc">|&gt;</span></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>      self<span class="sc">$</span><span class="fu">fc4</span>()</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -735,14 +619,14 @@ Tip
 <p><a href="https://tikz.net/neural_networks/">Source</a></p>
 <p>We can create a concrete network by calling the resulting <code>nn_module_generator</code> and specifying the required parameters.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create model instance</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">nn_spiral_net</span>(</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">input_size =</span> <span class="dv">2</span>,</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">hidden_size =</span> <span class="dv">64</span>,</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_size =</span> <span class="dv">2</span></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create model instance</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">nn_spiral_net</span>(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">input_size =</span> <span class="dv">2</span>,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">hidden_size =</span> <span class="dv">64</span>,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_size =</span> <span class="dv">2</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>An `nn_module` containing 8,642 parameters.
 
@@ -760,21 +644,21 @@ Tip
 <p><span class="math display">\[ \text{softmax}(x) = \frac{\exp(x)}{\sum_i \exp(x_i)} \]</span></p>
 <p>In <code>torch</code>, we can apply the softmax function using <code>nnf_softmax()</code>, specifying the dimension along which to apply softmax.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>logits <span class="ot">&lt;-</span> <span class="fu">model</span>(<span class="fu">torch_randn</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(logits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>logits <span class="ot">&lt;-</span> <span class="fu">model</span>(<span class="fu">torch_randn</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(logits)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 0.01 *
- 9.6994  3.6723
-  9.8986  2.9452
+-1.4163 -4.6232
+  4.6392 -6.1470
 [ CPUFloatType{2,2} ][ grad_fn = &lt;AddmmBackward0&gt; ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dim = 2 applies softmax along the class dimension (columns)</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nnf_softmax</span>(logits, <span class="at">dim =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dim = 2 applies softmax along the class dimension (columns)</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nnf_softmax</span>(logits, <span class="at">dim =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
- 0.5151  0.4849
- 0.5174  0.4826
+ 0.5080  0.4920
+ 0.5269  0.4731
 [ CPUFloatType{2,2} ][ grad_fn = &lt;SoftmaxBackward0&gt; ]</code></pre>
 </div>
 </div>
@@ -785,52 +669,52 @@ Tip
 <p>where <span class="math inline">\(y\)</span> is the true class and <span class="math inline">\(q_y\)</span> is its predicted probability.</p>
 <p>To calculate the cross-entropy loss, we need to pass the predicted scores and the true class indices to the loss function. The classes should be labeled from <code>1</code> to <code>C</code> for a total of <code>C</code> classes.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>y_true <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">dtype =</span> <span class="fu">torch_long</span>())</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>y_true</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>y_true <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">dtype =</span> <span class="fu">torch_long</span>())</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>y_true</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  1
  2
 [ CPULongType{2} ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>logits</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>logits</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 0.01 *
- 9.6994  3.6723
-  9.8986  2.9452
+-1.4163 -4.6232
+  4.6392 -6.1470
 [ CPUFloatType{2,2} ][ grad_fn = &lt;AddmmBackward0&gt; ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nnf_cross_entropy</span>(<span class="at">input =</span> logits, <span class="at">target =</span> y_true)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nnf_cross_entropy</span>(<span class="at">input =</span> logits, <span class="at">target =</span> y_true)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
-0.695992
+0.712886
 [ CPUFloatType{} ][ grad_fn = &lt;NllLossBackward0&gt; ]</code></pre>
 </div>
 </div>
 <p><strong>Regression</strong></p>
 <p>For regression tasks, the final layer is almost always a simple linear layer with a single output. We can construct a version of the spiral network for regression by changing the final layer to a linear layer with a single output:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>model_regr <span class="ot">&lt;-</span> <span class="fu">nn_spiral_net</span>(<span class="at">input_size =</span> <span class="dv">2</span>, <span class="at">hidden_size =</span> <span class="dv">64</span>, <span class="at">output_size =</span> <span class="dv">1</span>)</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>y_hat <span class="ot">&lt;-</span> <span class="fu">model_regr</span>(x)</span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">1</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>model_regr <span class="ot">&lt;-</span> <span class="fu">nn_spiral_net</span>(<span class="at">input_size =</span> <span class="dv">2</span>, <span class="at">hidden_size =</span> <span class="dv">64</span>, <span class="at">output_size =</span> <span class="dv">1</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>y_hat <span class="ot">&lt;-</span> <span class="fu">model_regr</span>(x)</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">1</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The loss function typically used is the mean squared error, defined as:</p>
-<p><span class="math display">\[ \text{MSE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^n (y_i - \hat{y}_i)^2 \]</span></p>
+<p><span class="math display">\[ \text{MSE}(y, \hat{y}) = \frac{1}{n} \sum_{i=1}^n (y^{(i)} - \hat{y}^{(i)})^2 \]</span></p>
 <p>In <code>torch</code>, we can apply the mean squared error loss using <code>nnf_mse_loss()</code>, or construct an MSE module:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">nn_mse_loss</span>()</span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mse</span>(y_hat, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">nn_mse_loss</span>()</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mse</span>(y_hat, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
-0.559677
+0.581592
 [ CPUFloatType{} ][ grad_fn = &lt;MseLossBackward0&gt; ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nnf_mse_loss</span>(y_hat, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nnf_mse_loss</span>(y_hat, y)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
-0.559677
+0.581592
 [ CPUFloatType{} ][ grad_fn = &lt;MseLossBackward0&gt; ]</code></pre>
 </div>
 </div>
@@ -849,9 +733,8 @@ Note
 </div>
 </section>
 </section>
-</section>
-<section id="dataset-and-dataloader" class="level1">
-<h1>Dataset and DataLoader</h1>
+<section id="dataset-and-dataloader" class="level2">
+<h2 class="anchored" data-anchor-id="dataset-and-dataloader">Dataset and DataLoader</h2>
 <p>Besides the network architecture, another essential component of deep learning is the dataset. Two central classes are <code>dataset</code> and <code>dataloader</code>, which address separate concerns:</p>
 <ul>
 <li><code>dataset</code>: Handles data storage and access to individual samples. The methods are:
@@ -865,22 +748,22 @@ Note
 <p>We will start by creating a custom <code>dataset</code> class for the spiral problem. In its <code>$initialize()</code> method, it expects a <code>data.frame</code> with columns <code>"x1"</code>, <code>"x2"</code>, and <code>"label"</code>. We then convert these to tensors and store them in the object.</p>
 <p>Below, we implement <code>.getitem()</code>, but we could also implement <code>.getbatch()</code>, which retrieves a vector of indices Note that implementing <code>.getbatch()</code> can sometimes offer performance benefits.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>spiral_dataset <span class="ot">&lt;-</span> <span class="fu">dataset</span>(</span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"spiral_dataset"</span>,</span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(data) {</span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">as.matrix</span>(data[, <span class="fu">c</span>(<span class="st">"x1"</span>, <span class="st">"x2"</span>)]))</span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">as.integer</span>(data<span class="sc">$</span>label))</span>
-<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
-<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(</span>
-<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> self<span class="sc">$</span>x[i,],</span>
-<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> self<span class="sc">$</span>y[i]</span>
-<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
-<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>y<span class="sc">$</span><span class="fu">size</span>()[[<span class="dv">1</span>]]</span>
-<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>spiral_dataset <span class="ot">&lt;-</span> <span class="fu">dataset</span>(</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"spiral_dataset"</span>,</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(data) {</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>x <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">as.matrix</span>(data[, <span class="fu">c</span>(<span class="st">"x1"</span>, <span class="st">"x2"</span>)]))</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">as.integer</span>(data<span class="sc">$</span>label))</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> self<span class="sc">$</span>x[i,],</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> self<span class="sc">$</span>y[i]</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>y<span class="sc">$</span><span class="fu">size</span>()[[<span class="dv">1</span>]]</span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now that we have defined the dataset class generator, let’s create training and validation datasets:</p>
 <p>Training and validation datasets serve different purposes:</p>
@@ -896,18 +779,18 @@ Note
 </ol>
 <p>The validation set acts as a proxy for unseen data, providing an estimate of how well our model will generalize to new examples. It’s important to keep this data separate from training to obtain an unbiased evaluation of model performance.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split data into train and validation sets</span></span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>train_ids <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">500</span>, <span class="dv">400</span>)</span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> spiral_data[train_ids,]</span>
-<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>valid_data <span class="ot">&lt;-</span> spiral_data[<span class="sc">-</span>train_ids,]</span>
-<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Create datasets</span></span>
-<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>train_dataset <span class="ot">&lt;-</span> <span class="fu">spiral_dataset</span>(train_data)</span>
-<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>valid_dataset <span class="ot">&lt;-</span> <span class="fu">spiral_dataset</span>(valid_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split data into train and validation sets</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>train_ids <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">500</span>, <span class="dv">400</span>)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>train_data <span class="ot">&lt;-</span> spiral_data[train_ids,]</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>valid_data <span class="ot">&lt;-</span> spiral_data[<span class="sc">-</span>train_ids,]</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Create datasets</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>train_dataset <span class="ot">&lt;-</span> <span class="fu">spiral_dataset</span>(train_data)</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>valid_dataset <span class="ot">&lt;-</span> <span class="fu">spiral_dataset</span>(valid_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can access individual elements via the <code>$.getitem()</code> method:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>train_dataset<span class="sc">$</span><span class="fu">.getitem</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>train_dataset<span class="sc">$</span><span class="fu">.getitem</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$x
 torch_tensor
@@ -923,51 +806,51 @@ torch_tensor
 </div>
 <p>Constructing a <code>dataloader</code> is straightforward:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>train_loader <span class="ot">&lt;-</span> <span class="fu">dataloader</span>(</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  train_dataset,</span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>,</span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">drop_last =</span> <span class="cn">FALSE</span></span>
-<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>valid_loader <span class="ot">&lt;-</span> <span class="fu">dataloader</span>(</span>
-<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>  valid_dataset,</span>
-<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>,</span>
-<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">drop_last =</span> <span class="cn">FALSE</span></span>
-<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>train_loader <span class="ot">&lt;-</span> <span class="fu">dataloader</span>(</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  train_dataset,</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>,</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">drop_last =</span> <span class="cn">FALSE</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>valid_loader <span class="ot">&lt;-</span> <span class="fu">dataloader</span>(</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>  valid_dataset,</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>,</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">drop_last =</span> <span class="cn">FALSE</span></span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The most common way to iterate over the batches of a <code>dataloader</code> is to use the <code>coro::loop</code> function, which resembles a for loop:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>n_batches <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span> (batch <span class="cf">in</span> train_loader) {</span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># do something with the batch</span></span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  n_batches <span class="ot">&lt;-</span> n_batches <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(n_batches)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>n_batches <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span> (batch <span class="cf">in</span> train_loader) {</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># do something with the batch</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  n_batches <span class="ot">&lt;-</span> n_batches <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(n_batches)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 7</code></pre>
 </div>
 </div>
 <p>It is also possible to manually iterate over the batches by first creating an iterator using <code>torch::dataloader_make_iter()</code> and then calling <code>dataloader_next()</code> until <code>NULL</code> is returned, indicating that the iterator is exhausted.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>iter <span class="ot">&lt;-</span> <span class="fu">dataloader_make_iter</span>(train_loader)</span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>n_batches <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> (<span class="sc">!</span><span class="fu">is.null</span>(batch <span class="ot">&lt;&lt;-</span> <span class="fu">dataloader_next</span>(iter))) {</span>
-<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  n_batches <span class="ot">&lt;-</span> n_batches <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(n_batches)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>iter <span class="ot">&lt;-</span> <span class="fu">dataloader_make_iter</span>(train_loader)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>n_batches <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> (<span class="sc">!</span><span class="fu">is.null</span>(batch <span class="ot">&lt;&lt;-</span> <span class="fu">dataloader_next</span>(iter))) {</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  n_batches <span class="ot">&lt;-</span> n_batches <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(n_batches)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 7</code></pre>
 </div>
 </div>
 <p>The <code>torch::dataloader</code> class also has other parameters that e.g.&nbsp;allow to parallelize the loading. This will be covered in the <em>Training Efficiency</em> notebook.</p>
 </section>
-<section id="training-loop" class="level1">
-<h1>Training Loop</h1>
+<section id="training-loop" class="level2">
+<h2 class="anchored" data-anchor-id="training-loop">Training Loop</h2>
 <p>To train our MLP on the data, we need to specify how the gradients will update the network parameters, which is the role of the optimizer. While we’ll cover more complex optimizers in the next section, we’ll use a vanilla SGD optimizer with a learning rate of <code>0.3</code> and pass it the parameters of the model we wish to optimize.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>optimizer <span class="ot">&lt;-</span> <span class="fu">optim_sgd</span>(model<span class="sc">$</span>parameters, <span class="at">lr =</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>optimizer <span class="ot">&lt;-</span> <span class="fu">optim_sgd</span>(model<span class="sc">$</span>parameters, <span class="at">lr =</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For the training loop, we only need methods from the optimizer class:</p>
 <ul>
@@ -976,71 +859,71 @@ torch_tensor
 </ul>
 <p>Now, let’s put everything together:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Training settings</span></span>
-<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>n_epochs <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>device <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">cuda_is_available</span>()) <span class="st">"cuda"</span> <span class="cf">else</span> <span class="st">"cpu"</span></span>
-<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Move model to device</span></span>
-<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>model<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
-<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Training loop</span></span>
-<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">loss =</span> <span class="fu">numeric</span>(), <span class="at">train_acc =</span> <span class="fu">numeric</span>(), <span class="at">valid_acc =</span> <span class="fu">numeric</span>())</span>
-<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(epoch <span class="cf">in</span> <span class="fu">seq_len</span>(n_epochs)) {</span>
-<span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">train</span>()  <span class="co"># Set to training mode</span></span>
-<span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-14"><a href="#cb63-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Training loop</span></span>
-<span id="cb63-15"><a href="#cb63-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-16"><a href="#cb63-16" aria-hidden="true" tabindex="-1"></a>  train_losses <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
-<span id="cb63-17"><a href="#cb63-17" aria-hidden="true" tabindex="-1"></a>  train_accs <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
-<span id="cb63-18"><a href="#cb63-18" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> train_loader) {</span>
-<span id="cb63-19"><a href="#cb63-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Move batch to device</span></span>
-<span id="cb63-20"><a href="#cb63-20" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> batch<span class="sc">$</span>x<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
-<span id="cb63-21"><a href="#cb63-21" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> batch<span class="sc">$</span>y<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
-<span id="cb63-22"><a href="#cb63-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-23"><a href="#cb63-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Forward pass</span></span>
-<span id="cb63-24"><a href="#cb63-24" aria-hidden="true" tabindex="-1"></a>    output <span class="ot">&lt;-</span> <span class="fu">model</span>(x)</span>
-<span id="cb63-25"><a href="#cb63-25" aria-hidden="true" tabindex="-1"></a>    loss <span class="ot">&lt;-</span> <span class="fu">nnf_cross_entropy</span>(output, y)</span>
-<span id="cb63-26"><a href="#cb63-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-27"><a href="#cb63-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Backward pass</span></span>
-<span id="cb63-28"><a href="#cb63-28" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="sc">$</span><span class="fu">zero_grad</span>()</span>
-<span id="cb63-29"><a href="#cb63-29" aria-hidden="true" tabindex="-1"></a>    loss<span class="sc">$</span><span class="fu">backward</span>()</span>
-<span id="cb63-30"><a href="#cb63-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-31"><a href="#cb63-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Update parameters</span></span>
-<span id="cb63-32"><a href="#cb63-32" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="sc">$</span><span class="fu">step</span>()</span>
-<span id="cb63-33"><a href="#cb63-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-34"><a href="#cb63-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Store training losses</span></span>
-<span id="cb63-35"><a href="#cb63-35" aria-hidden="true" tabindex="-1"></a>    train_losses <span class="ot">&lt;-</span> <span class="fu">c</span>(train_losses, loss<span class="sc">$</span><span class="fu">item</span>())</span>
-<span id="cb63-36"><a href="#cb63-36" aria-hidden="true" tabindex="-1"></a>    train_accs <span class="ot">&lt;-</span> <span class="fu">c</span>(train_accs, <span class="fu">mean</span>(<span class="fu">as_array</span>(output<span class="sc">$</span><span class="fu">argmax</span>(<span class="at">dim =</span> <span class="dv">2</span>) <span class="sc">==</span> y)))</span>
-<span id="cb63-37"><a href="#cb63-37" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb63-38"><a href="#cb63-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-39"><a href="#cb63-39" aria-hidden="true" tabindex="-1"></a>  history<span class="sc">$</span>loss <span class="ot">&lt;-</span> <span class="fu">c</span>(history<span class="sc">$</span>loss, <span class="fu">mean</span>(train_losses))</span>
-<span id="cb63-40"><a href="#cb63-40" aria-hidden="true" tabindex="-1"></a>  history<span class="sc">$</span>train_acc <span class="ot">&lt;-</span> <span class="fu">c</span>(history<span class="sc">$</span>train_acc, <span class="fu">mean</span>(train_accs))</span>
-<span id="cb63-41"><a href="#cb63-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-42"><a href="#cb63-42" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Validation loop</span></span>
-<span id="cb63-43"><a href="#cb63-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-44"><a href="#cb63-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set model to evaluation mode</span></span>
-<span id="cb63-45"><a href="#cb63-45" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">eval</span>()</span>
-<span id="cb63-46"><a href="#cb63-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-47"><a href="#cb63-47" aria-hidden="true" tabindex="-1"></a>  valid_accs <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
-<span id="cb63-48"><a href="#cb63-48" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> valid_loader) {</span>
-<span id="cb63-49"><a href="#cb63-49" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> batch<span class="sc">$</span>x<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
-<span id="cb63-50"><a href="#cb63-50" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> batch<span class="sc">$</span>y<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
-<span id="cb63-51"><a href="#cb63-51" aria-hidden="true" tabindex="-1"></a>    <span class="co"># IMPORTANT: Disable gradient tracking</span></span>
-<span id="cb63-52"><a href="#cb63-52" aria-hidden="true" tabindex="-1"></a>    output <span class="ot">&lt;-</span> <span class="fu">with_no_grad</span>(<span class="fu">model</span>(x))</span>
-<span id="cb63-53"><a href="#cb63-53" aria-hidden="true" tabindex="-1"></a>    valid_acc <span class="ot">&lt;-</span> <span class="fu">as_array</span>(output<span class="sc">$</span><span class="fu">argmax</span>(<span class="at">dim =</span> <span class="dv">2</span>) <span class="sc">==</span> y)</span>
-<span id="cb63-54"><a href="#cb63-54" aria-hidden="true" tabindex="-1"></a>    valid_accs <span class="ot">=</span> <span class="fu">c</span>(valid_accs, <span class="fu">mean</span>(valid_acc))</span>
-<span id="cb63-55"><a href="#cb63-55" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb63-56"><a href="#cb63-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb63-57"><a href="#cb63-57" aria-hidden="true" tabindex="-1"></a>  history<span class="sc">$</span>valid_acc <span class="ot">&lt;-</span> <span class="fu">c</span>(history<span class="sc">$</span>valid_acc, <span class="fu">mean</span>(valid_accs))</span>
-<span id="cb63-58"><a href="#cb63-58" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Training settings</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>n_epochs <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>device <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">cuda_is_available</span>()) <span class="st">"cuda"</span> <span class="cf">else</span> <span class="st">"cpu"</span></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Move model to device</span></span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>model<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Training loop</span></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">loss =</span> <span class="fu">numeric</span>(), <span class="at">train_acc =</span> <span class="fu">numeric</span>(), <span class="at">valid_acc =</span> <span class="fu">numeric</span>())</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(epoch <span class="cf">in</span> <span class="fu">seq_len</span>(n_epochs)) {</span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">train</span>()  <span class="co"># Set to training mode</span></span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Training loop</span></span>
+<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a>  train_losses <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
+<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a>  train_accs <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
+<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> train_loader) {</span>
+<span id="cb56-19"><a href="#cb56-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Move batch to device</span></span>
+<span id="cb56-20"><a href="#cb56-20" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> batch<span class="sc">$</span>x<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
+<span id="cb56-21"><a href="#cb56-21" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> batch<span class="sc">$</span>y<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
+<span id="cb56-22"><a href="#cb56-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-23"><a href="#cb56-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Forward pass and average loss computation</span></span>
+<span id="cb56-24"><a href="#cb56-24" aria-hidden="true" tabindex="-1"></a>    output <span class="ot">&lt;-</span> <span class="fu">model</span>(x)</span>
+<span id="cb56-25"><a href="#cb56-25" aria-hidden="true" tabindex="-1"></a>    loss <span class="ot">&lt;-</span> <span class="fu">nnf_cross_entropy</span>(output, y)</span>
+<span id="cb56-26"><a href="#cb56-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-27"><a href="#cb56-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Backward pass</span></span>
+<span id="cb56-28"><a href="#cb56-28" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="sc">$</span><span class="fu">zero_grad</span>()</span>
+<span id="cb56-29"><a href="#cb56-29" aria-hidden="true" tabindex="-1"></a>    loss<span class="sc">$</span><span class="fu">backward</span>()</span>
+<span id="cb56-30"><a href="#cb56-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-31"><a href="#cb56-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Update parameters</span></span>
+<span id="cb56-32"><a href="#cb56-32" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="sc">$</span><span class="fu">step</span>()</span>
+<span id="cb56-33"><a href="#cb56-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-34"><a href="#cb56-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Store training losses</span></span>
+<span id="cb56-35"><a href="#cb56-35" aria-hidden="true" tabindex="-1"></a>    train_losses <span class="ot">&lt;-</span> <span class="fu">c</span>(train_losses, loss<span class="sc">$</span><span class="fu">item</span>())</span>
+<span id="cb56-36"><a href="#cb56-36" aria-hidden="true" tabindex="-1"></a>    train_accs <span class="ot">&lt;-</span> <span class="fu">c</span>(train_accs, <span class="fu">mean</span>(<span class="fu">as_array</span>(output<span class="sc">$</span><span class="fu">argmax</span>(<span class="at">dim =</span> <span class="dv">2</span>) <span class="sc">==</span> y)))</span>
+<span id="cb56-37"><a href="#cb56-37" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb56-38"><a href="#cb56-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-39"><a href="#cb56-39" aria-hidden="true" tabindex="-1"></a>  history<span class="sc">$</span>loss <span class="ot">&lt;-</span> <span class="fu">c</span>(history<span class="sc">$</span>loss, <span class="fu">mean</span>(train_losses))</span>
+<span id="cb56-40"><a href="#cb56-40" aria-hidden="true" tabindex="-1"></a>  history<span class="sc">$</span>train_acc <span class="ot">&lt;-</span> <span class="fu">c</span>(history<span class="sc">$</span>train_acc, <span class="fu">mean</span>(train_accs))</span>
+<span id="cb56-41"><a href="#cb56-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-42"><a href="#cb56-42" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Validation loop</span></span>
+<span id="cb56-43"><a href="#cb56-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-44"><a href="#cb56-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set model to evaluation mode</span></span>
+<span id="cb56-45"><a href="#cb56-45" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">eval</span>()</span>
+<span id="cb56-46"><a href="#cb56-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-47"><a href="#cb56-47" aria-hidden="true" tabindex="-1"></a>  valid_accs <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
+<span id="cb56-48"><a href="#cb56-48" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> valid_loader) {</span>
+<span id="cb56-49"><a href="#cb56-49" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> batch<span class="sc">$</span>x<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
+<span id="cb56-50"><a href="#cb56-50" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> batch<span class="sc">$</span>y<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
+<span id="cb56-51"><a href="#cb56-51" aria-hidden="true" tabindex="-1"></a>    <span class="co"># IMPORTANT: Disable gradient tracking</span></span>
+<span id="cb56-52"><a href="#cb56-52" aria-hidden="true" tabindex="-1"></a>    output <span class="ot">&lt;-</span> <span class="fu">with_no_grad</span>(<span class="fu">model</span>(x))</span>
+<span id="cb56-53"><a href="#cb56-53" aria-hidden="true" tabindex="-1"></a>    valid_acc <span class="ot">&lt;-</span> <span class="fu">as_array</span>(output<span class="sc">$</span><span class="fu">argmax</span>(<span class="at">dim =</span> <span class="dv">2</span>) <span class="sc">==</span> y)</span>
+<span id="cb56-54"><a href="#cb56-54" aria-hidden="true" tabindex="-1"></a>    valid_accs <span class="ot">=</span> <span class="fu">c</span>(valid_accs, <span class="fu">mean</span>(valid_acc))</span>
+<span id="cb56-55"><a href="#cb56-55" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb56-56"><a href="#cb56-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-57"><a href="#cb56-57" aria-hidden="true" tabindex="-1"></a>  history<span class="sc">$</span>valid_acc <span class="ot">&lt;-</span> <span class="fu">c</span>(history<span class="sc">$</span>valid_acc, <span class="fu">mean</span>(valid_accs))</span>
+<span id="cb56-58"><a href="#cb56-58" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The decision boundary plot shows how our neural network learned to separate the spiral classes, demonstrating its ability to learn non-linear patterns that a simple linear model couldn’t capture.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="3-modules-data_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+<p><img src="3-modules-data_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1050,7 +933,7 @@ torch_tensor
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="3-modules-data_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+<p><img src="3-modules-data_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
 </figure>
 </div>
 </div>

@@ -1,0 +1,6 @@
+---
+title: "Convolutional Neural Networks"
+solutions: false
+---
+
+{{< include 5-cnn-exercise.qmd >}}

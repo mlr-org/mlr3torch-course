@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Torch Tensors – Deep Learning with torch in R</title>
+<title>Torch Tensors – Deep Learning with (mlr3)torch</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -141,7 +141,7 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">Deep Learning with torch in R</span>
+    <span class="navbar-title">Deep Learning with (mlr3)torch</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -150,14 +150,21 @@ window.Quarto = {
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../notebooks/setup-guide.html"> 
-<span class="menu-text">Setup</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-general" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">General</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-general">    
+        <li>
+    <a class="dropdown-item" href="../notebooks/setup-guide.html">
+ <span class="dropdown-text">Setup</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../notebooks/resources.html"> 
-<span class="menu-text">Resources</span></a>
+        <li>
+    <a class="dropdown-item" href="../notebooks/resources.html">
+ <span class="dropdown-text">Resources</span></a>
   </li>  
+    </ul>
+  </li>
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tutorials" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Tutorials</span>
@@ -182,19 +189,23 @@ window.Quarto = {
   </li>  
         <li>
     <a class="dropdown-item" href="../notebooks/4-optimizer.html">
- <span class="dropdown-text">4. Optimizers</span></a>
+ <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-mlr3torch.html">
- <span class="dropdown-text">5. mlr3torch</span></a>
+    <a class="dropdown-item" href="../notebooks/5-cnn.html">
+ <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-training-efficiency.html">
- <span class="dropdown-text">6. Training Efficiency</span></a>
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch.html">
+ <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-usecase.html">
- <span class="dropdown-text">7. Use Case</span></a>
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency.html">
+ <span class="dropdown-text">7. Training Efficiency</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/8-usecase.html">
+ <span class="dropdown-text">8. Use Case</span></a>
   </li>  
     </ul>
   </li>
@@ -222,19 +233,23 @@ window.Quarto = {
   </li>  
         <li>
     <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-task.html">
- <span class="dropdown-text">4. Optimizers</span></a>
+ <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-mlr3torch-exercise-task.html">
- <span class="dropdown-text">5. mlr3torch</span></a>
+    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-task.html">
+ <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-training-efficiency-exercise-task.html">
- <span class="dropdown-text">6. Training Efficiency</span></a>
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-task.html">
+ <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-usecase-exercise-task.html">
- <span class="dropdown-text">7. Use Case</span></a>
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html">
+ <span class="dropdown-text">7. Training Efficiency</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/8-usecase-exercise-task.html">
+ <span class="dropdown-text">8. Use Case</span></a>
   </li>  
     </ul>
   </li>
@@ -257,19 +272,23 @@ window.Quarto = {
   </li>  
         <li>
     <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-solution.html">
- <span class="dropdown-text">4. Optimizers</span></a>
+ <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-mlr3torch-exercise-solution.html">
- <span class="dropdown-text">5. mlr3torch</span></a>
+    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-solution.html">
+ <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-training-efficiency-exercise-solution.html">
- <span class="dropdown-text">6. Training Efficiency</span></a>
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-solution.html">
+ <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-usecase-exercise-solution.html">
- <span class="dropdown-text">7. Use Case</span></a>
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html">
+ <span class="dropdown-text">7. Training Efficiency</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/8-usecase-exercise-solution.html">
+ <span class="dropdown-text">8. Use Case</span></a>
   </li>  
     </ul>
   </li>
@@ -911,7 +930,7 @@ Click for answer
 </summary>
 <p>The resulting shape would be <code>(2, 4, 3)</code>. Here’s why:</p>
 <ol type="1">
-<li>Prepend one to the rank of the second tensor to get <code>(1, 4, 3)</code>.</li>
+<li>Prepend one to the dimensions of the second tensor to get <code>(1, 4, 3)</code>.</li>
 <li>Going dimension by dimension:
 <ul>
 <li>First: 2 vs 1 -&gt; Compatible, expand to 2</li>
@@ -928,7 +947,7 @@ Click for answer
 </summary>
 <p>No, broadcasting would fail in this case. Here’s why:</p>
 <ol type="1">
-<li>Both tensors have the same rank (2), so no prepending is needed.</li>
+<li>Both tensors have the same number of dimensions (2), so no prepending is needed.</li>
 <li>Going dimension by dimension:
 <ul>
 <li>First: 2 vs 3 -&gt; Incompatible (neither is 1)</li>
@@ -944,7 +963,7 @@ Click for answer
 <h2 class="anchored" data-anchor-id="reshaping-tensors">Reshaping Tensors</h2>
 <p>Torch provides several ways to reshape tensors while preserving their data:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a sample tensor</span></span>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an example tensor</span></span>
 <span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">15</span>)</span>
 <span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1008,7 +1027,7 @@ Click for answer
 </div>
 </div>
 <p>The value of the stride indicates how many elements to skip to get to the next element along each dimension: If we move from element <code>x[1]</code> (<code>1</code>) to element <code>x[2]</code> (<code>2</code>), we move one index along the columns of <code>y</code>. If we move from <code>x[1]</code> to <code>x[5]</code> (<code>5</code>), i.e., 4 steps, we move one index along the rows of <code>y</code>.</p>
-<p>This means, for example, that reshaping torch tensors can be considerably more efficient than permuting R arrays, as the latter will always allocate a new, reordered vector, while the former just changes the strides.</p>
+<p>This means, for example, that reshaping of torch tensors can be considerably more efficient than reshaping of R arrays, as the latter will always allocate a new, reordered vector, while the former just changes the strides.</p>
 <p>The functionality of strides is illustrated in the image below.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1026,7 +1045,7 @@ Quiz: Strides
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Question 1</strong>: How do you need to change the strides from a matrix with strides <code>(4, 1)</code> to transpose it?</p>
+<p><strong>Question 1</strong>: How do you need to change the strides from a matrix with strides <code>(4, 1)</code> (like the one above) to transpose it?</p>
 <details>
 <summary>
 Click for answer
@@ -1058,7 +1077,7 @@ Click for answer
 </section>
 <section id="reference-semantics" class="level2">
 <h2 class="anchored" data-anchor-id="reference-semantics">Reference Semantics</h2>
-<p>One key property of torch tensors is that they have <em>reference semantics</em>. This is different from R, where objects usually have <em>value semantics</em>.</p>
+<p>One key property of torch tensors is that they have <em>reference semantics</em>.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_ones</span>(<span class="dv">2</span>)</span>
 <span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x</span>
@@ -1091,15 +1110,38 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Another notable exception to values semantics are <code>R6</code> classes, which are used in the <code>mlr3</code> ecosystem.</p>
+<p>Another notable exception to value semantics are environments and <code>R6</code> classes, which are used in the <code>mlr3</code> ecosystem.</p>
 </div>
 </div>
-<p>When one tensor (<code>y</code>) shares underlying data with another tensor (<code>x</code>), this is called a <em>view</em>. It is also possible to obtain a view on a subset of a tensor, e.g., via slicing:</p>
+<p>When one tensor (<code>y</code>) shares underlying data with another tensor (<code>x</code>), this is called a <em>view</em>. It is also possible to obtain a view on a subset of a tensor, e.g., via slicing as shown below. There, <code>torch_arange()</code> creates a tensor with elements from 1 to 10.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_arange</span>(<span class="dv">1</span>, <span class="dv">10</span>)</span>
-<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
-<span id="cb111-3"><a href="#cb111-3" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb111-4"><a href="#cb111-4" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_arange</span>(<span class="at">start =</span> <span class="dv">1</span>, <span class="at">end =</span> <span class="dv">10</span>, <span class="at">step =</span> <span class="dv">1</span>)</span>
+<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a>x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+[ CPUFloatType{10} ]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
+<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a>y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>torch_tensor
+ 1
+ 2
+ 3
+[ CPUFloatType{3} ]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 100
@@ -1108,10 +1150,10 @@ Note
 </div>
 <p>Unfortunately, similar operations might sometimes create a view and sometimes allocate a new tensor. In the example below, we create a subset that is a non-contiguous sequence, and hence a new tensor is allocated:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_arange</span>(<span class="dv">1</span>, <span class="dv">10</span>)</span>
-<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)]</span>
-<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb113-4"><a href="#cb113-4" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_arange</span>(<span class="dv">1</span>, <span class="dv">10</span>)</span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">5</span>)]</span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">1</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 1
@@ -1120,10 +1162,10 @@ Note
 </div>
 <p>If it is important to create a copy of a vector, you can call the <code>$clone()</code> method:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_arange</span>(<span class="dv">1</span>, <span class="dv">3</span>)</span>
-<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x<span class="sc">$</span><span class="fu">clone</span>()</span>
-<span id="cb115-3"><a href="#cb115-3" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb115-4"><a href="#cb115-4" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">1</span>] <span class="co"># is still 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">torch_arange</span>(<span class="dv">1</span>, <span class="dv">3</span>)</span>
+<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> x<span class="sc">$</span><span class="fu">clone</span>()</span>
+<span id="cb119-3"><a href="#cb119-3" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb119-4"><a href="#cb119-4" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">1</span>] <span class="co"># is still 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 1
@@ -1153,11 +1195,11 @@ Quiz: Contiguous Data
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Question 1</strong>: Reshaping a 2D Tensor</p>
+<p><strong>Question 1</strong>: Reshaping a 2D tensor</p>
 <p>Consider the tensor below:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">FALSE</span>))</span>
-<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>x1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a>x1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  1  3  5

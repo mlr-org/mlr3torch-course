@@ -1,4 +1,6 @@
-freeze: true
+execute:
+  # only re-render when something has changed
+  freeze: auto
 
 knitr:
   opts_chunk:

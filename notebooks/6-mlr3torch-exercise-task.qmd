@@ -1,0 +1,6 @@
+---
+title: "Training Neural Networks with mlr3torch"
+solutions: false
+---
+
+{{< include 6-mlr3torch-exercise.qmd >}}
