@@ -64,6 +64,7 @@ The padding and the strides are visualized below:
 For the input and output channels, we have the following:
 
 ![](../assets/input_output_channels.svg)
+
 [Source](https://classic.d2l.ai/chapter_convolutional-neural-networks/channels.html)
 
 To create a convolutional layer for a 2D image, we can use the `torch::nn_conv2d` function.
