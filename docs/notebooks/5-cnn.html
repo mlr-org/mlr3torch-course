@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.39">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -69,10 +69,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-79108a0fc1995748cbd19a5b0e3e3e7c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -362,7 +362,8 @@ window.Quarto = {
 <p><img src="../assets/padding_strides.png" class="img-fluid"></p>
 <p><a href="https://www.geeksforgeeks.org/cnn-introduction-to-padding/">Source</a></p>
 <p>For the input and output channels, we have the following:</p>
-<p><img src="../assets/input_output_channels.svg" class="img-fluid"> <a href="https://classic.d2l.ai/chapter_convolutional-neural-networks/channels.html">Source</a></p>
+<p><img src="../assets/input_output_channels.svg" class="img-fluid"></p>
+<p><a href="https://classic.d2l.ai/chapter_convolutional-neural-networks/channels.html">Source</a></p>
 <p>To create a convolutional layer for a 2D image, we can use the <code>torch::nn_conv2d</code> function.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>conv_layer <span class="ot">&lt;-</span> <span class="fu">nn_conv2d</span>(<span class="at">in_channels =</span> <span class="dv">1</span>, <span class="at">out_channels =</span> <span class="dv">1</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">padding =</span> <span class="dv">1</span>, <span class="at">stride =</span> <span class="dv">1</span>)</span>
@@ -600,6 +601,15 @@ Note
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform =</span> transform_mnist, <span class="at">target_transform =</span> torch_tensor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can now compare the pretrained and untrained resnet on the training task and evaluate it on the validation data. The results are shown below:</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="5-cnn_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 <p>When fine-tuning a pretrained model like ResNet-18, it’s common to observe instabilities in gradients, which can manifest as fluctuating validation performance.</p>
 <p>To address this, one can for example freeze the pretrained layers (for some epochs) and only train the new output head, a process known as <strong>freezing layers</strong>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -702,6 +712,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -812,6 +824,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

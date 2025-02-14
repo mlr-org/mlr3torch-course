@@ -96,7 +96,7 @@ You can use the `plot_2d_image` function from the helper script to plot the imag
 ```{r}
 library(torchvision)
 source(here::here("scripts/helper.R"))
-mnist <- mnist_dataset(root = "data")
+mnist <- mnist_dataset(root = "data", download = TRUE)
 image <- mnist$.getitem(13)$x
 plot_2d_image(image)
 ```

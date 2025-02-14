@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.39">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -69,10 +69,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-79108a0fc1995748cbd19a5b0e3e3e7c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -348,14 +348,14 @@ Tip
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cuda_is_available</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] FALSE</code></pre>
+<pre><code>[1] TRUE</code></pre>
 </div>
 </div>
 <p>If you have an M1 Mac (or later), you can also use the available graphics card by setting the <code>device</code> parameter to <code>"mps"</code>. You can check this by running:</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">backends_mps_is_available</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
+<pre><code>[1] FALSE</code></pre>
 </div>
 </div>
 </div>
@@ -373,17 +373,31 @@ Tip
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">cpu =</span> x_cpu<span class="sc">$</span><span class="fu">matmul</span>(x_cpu),</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">cuda =</span> x_cuda<span class="sc">$</span><span class="fu">matmul</span>(x_cuda)</span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 6
+  expression      min   median `itr/sec` mem_alloc `gc/sec`
+  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+1 cpu          19.1ms   19.2ms      52.1    4.13KB        0
+2 cuda         25.8µs  232.2µs    4818.         0B        0</code></pre>
+</div>
 </div>
 </section>
 <section id="cpu-threads" class="level3">
 <h3 class="anchored" data-anchor-id="cpu-threads">CPU Threads</h3>
 <p>Training large networks on a CPU is not a recommended approach, but it can be a viable option for smaller networks. You can still use multiple threads to speed up the execution of operations. Please be aware that the code below will not execute on macOS, as setting the number of threads is not supported on this operating system.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># this will be skipped on macOS</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  {<span class="fu">torch_set_num_threads</span>(<span class="dv">1</span>L); x_cpu<span class="sc">$</span><span class="fu">matmul</span>(x_cpu)},</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  {<span class="fu">torch_set_num_threads</span>(<span class="dv">16</span>L); x_cpu<span class="sc">$</span><span class="fu">matmul</span>(x_cpu)}</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># this will be skipped on macOS</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  {<span class="fu">torch_set_num_threads</span>(<span class="dv">1</span>L); x_cpu<span class="sc">$</span><span class="fu">matmul</span>(x_cpu)},</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  {<span class="fu">torch_set_num_threads</span>(<span class="dv">16</span>L); x_cpu<span class="sc">$</span><span class="fu">matmul</span>(x_cpu)}</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 6
+  expression                                              min   median `itr/sec` mem_alloc `gc/sec`
+  &lt;bch:expr&gt;                                         &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+1 { torch_set_num_threads(1L) x_cpu$matmul(x_cpu) }    18.4ms   19.2ms      52.3    11.1KB        0
+2 { torch_set_num_threads(16L) x_cpu$matmul(x_cpu) }   19.5ms   20.3ms      23.2        0B        0</code></pre>
+</div>
 </div>
 <p><code>torch</code> also allows for interop-parallelization, but this is more advanced and code needs to be written in a specific way.</p>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -449,21 +463,21 @@ Quiz: Data Loading
 <p><img src="../assets/tiny-imagenet.png" class="img-fluid"></p>
 <p>We will now consider different ways to write a <code>torch::dataset</code> implementation for this data. Assume we have some image paths stored in a character vector as well as in an array where they are already loaded into memory.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(image_paths)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(image_paths)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> chr [1:100] "/Users/sebi/Library/Caches/org.R-project.R/R/mlr3torch/datasets/tiny_imagenet/raw/tiny-imagenet-200/train/n0144"| __truncated__ ...</code></pre>
+<pre><code> chr [1:100] "/cluster/medbow/home/sfische6/.cache/R/mlr3torch/datasets/tiny_imagenet/raw/tiny-imagenet-200/train/n01443537/i"| __truncated__ ...</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> num [1:100, 1:3, 1:64, 1:64] 1 0.0784 0.4706 0.5608 0.5647 ...</code></pre>
+<pre><code> num [1:100, 1:3, 1:64, 1:64] 1 0.0784 0.4706 0.5647 0.5647 ...</code></pre>
 </div>
 </div>
 <p>An individual image can, for example, be loaded using the <code>torchvision::base_loader()</code> function:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torchvision)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(<span class="fu">base_loader</span>(image_paths[<span class="dv">1</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torchvision)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(<span class="fu">base_loader</span>(image_paths[<span class="dv">1</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> num [1:64, 1:64, 1:3] 1 1 1 1 1 ...</code></pre>
+<pre><code> num [1:64, 1:64, 1:3] 1 1 1 1 0.984 ...</code></pre>
 </div>
 </div>
 <p><strong>Question 1:</strong> Reading From Disk or RAM</p>
@@ -471,31 +485,31 @@ Quiz: Data Loading
 <ol type="1">
 <li><p>Loading the images from disk:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>ds_disk <span class="ot">=</span> <span class="fu">dataset</span>(<span class="st">"image_paths"</span>,</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_paths) {</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>image_paths <span class="ot">=</span> image_paths</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">torch_tensor</span>(torchvision<span class="sc">::</span><span class="fu">base_loader</span>(self<span class="sc">$</span>image_paths[i]))</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(self<span class="sc">$</span>image_paths)</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>)(image_paths)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>ds_disk <span class="ot">=</span> <span class="fu">dataset</span>(<span class="st">"image_paths"</span>,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_paths) {</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>image_paths <span class="ot">=</span> image_paths</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">torch_tensor</span>(torchvision<span class="sc">::</span><span class="fu">base_loader</span>(self<span class="sc">$</span>image_paths[i]))</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">length</span>(self<span class="sc">$</span>image_paths)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>)(image_paths)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></li>
 <li><p>Loading the images from an array:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>ds_ram <span class="ot">=</span> <span class="fu">dataset</span>(<span class="st">"image_array"</span>,</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_array) {</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>image_array <span class="ot">=</span> image_array</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">torch_tensor</span>(self<span class="sc">$</span>image_array[i, , , ])</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nrow</span>(self<span class="sc">$</span>image_array)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>)(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>ds_ram <span class="ot">=</span> <span class="fu">dataset</span>(<span class="st">"image_array"</span>,</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_array) {</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>image_array <span class="ot">=</span> image_array</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">torch_tensor</span>(self<span class="sc">$</span>image_array[i, , , ])</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nrow</span>(self<span class="sc">$</span>image_array)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>)(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></li>
 </ol>
 <details>
@@ -504,19 +518,19 @@ Click for answer
 </summary>
 <p>Generally, loading images from RAM is significantly faster than loading them from disk. Although the benchmark presented below may seem somewhat ‘unfair’ since <code>ds_ram</code> has already loaded the images into memory, this difference is evident in practice. When iterating over the dataset for multiple epochs, the first method will need to reload the images from disk for each epoch, while the second method only requires a single loading of the images into memory.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>iter <span class="ot">=</span> <span class="cf">function</span>(ds, ..., <span class="at">epochs =</span> <span class="dv">1</span>) {</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  dl <span class="ot">=</span> torch<span class="sc">::</span><span class="fu">dataloader</span>(ds, <span class="at">batch_size =</span> <span class="dv">16</span>, ...)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (epoch <span class="cf">in</span> <span class="fu">seq_len</span>(epochs)) {</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> dl) {</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>      batch</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">disk =</span> <span class="fu">iter</span>(ds_disk, <span class="at">epochs =</span> <span class="dv">10</span>),</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">ram =</span> <span class="fu">iter</span>(ds_ram, <span class="at">epochs =</span> <span class="dv">10</span>),</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>iter <span class="ot">=</span> <span class="cf">function</span>(ds, ..., <span class="at">epochs =</span> <span class="dv">1</span>) {</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  dl <span class="ot">=</span> torch<span class="sc">::</span><span class="fu">dataloader</span>(ds, <span class="at">batch_size =</span> <span class="dv">16</span>, ...)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (epoch <span class="cf">in</span> <span class="fu">seq_len</span>(epochs)) {</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> dl) {</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>      batch</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">disk =</span> <span class="fu">iter</span>(ds_disk, <span class="at">epochs =</span> <span class="dv">10</span>),</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">ram =</span> <span class="fu">iter</span>(ds_ram, <span class="at">epochs =</span> <span class="dv">10</span>),</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Some expressions had a GC in every iteration; so filtering is disabled.</code></pre>
 </div>
@@ -524,25 +538,25 @@ Click for answer
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 disk          198ms    200ms      4.89   108.7MB     9.79
-2 ram           172ms    176ms      5.67    94.4MB    11.3 </code></pre>
+1 disk          1.83s    1.83s     0.545   112.5MB     1.64
+2 ram        188.97ms 197.73ms     5.13     95.3MB    18.8 </code></pre>
 </div>
 </div>
 </details>
 <p><strong>Question 2:</strong> (Don’t) Copy that</p>
 <p>Consider now the next dataset implementation:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>ds_tensor <span class="ot">=</span> <span class="fu">dataset</span>(<span class="st">"tensor"</span>,</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_array) {</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor <span class="ot">=</span> <span class="fu">torch_tensor</span>(image_array)</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor[i, ..]</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nrow</span>(self<span class="sc">$</span>tensor)</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>)(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ds_tensor <span class="ot">=</span> <span class="fu">dataset</span>(<span class="st">"tensor"</span>,</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_array) {</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor <span class="ot">=</span> <span class="fu">torch_tensor</span>(image_array)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor[i, ..]</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nrow</span>(self<span class="sc">$</span>tensor)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>)(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Do you think this implementation is faster or slower than the <code>ds_ram</code> implementation? Explain why.</p>
 <details>
@@ -551,34 +565,34 @@ Click for answer
 </summary>
 <p>This implementation is faster than the <code>ds_ram</code> implementation. This is because the <code>ds_tensor</code> implementation copies the R array to a torch tensor only once, whereas the <code>ds_ram</code> implementation copies the R array to a torch tensor for each item.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">tensor =</span> <span class="fu">iter</span>(ds_tensor),</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">array =</span> <span class="fu">iter</span>(ds_ram),</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">tensor =</span> <span class="fu">iter</span>(ds_tensor),</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">array =</span> <span class="fu">iter</span>(ds_ram),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 tensor       3.55ms    3.8ms     262.    76.19KB     11.6
-2 array       14.56ms   15.5ms      63.6    9.44MB     13.8</code></pre>
+1 tensor       5.33ms   6.05ms     159.    92.29KB     6.80
+2 array        15.9ms  16.74ms      58.3    9.44MB    27.4 </code></pre>
 </div>
 </div>
 </details>
 <p><strong>Question 3</strong>: <code>$.getbatch()</code> vs <code>$.getitem()</code></p>
 <p>Which implementation is faster? Explain why.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ds_tensor_batch <span class="ot">=</span> <span class="fu">dataset</span>(<span class="st">"tensor_batch"</span>,</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_array) {</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor <span class="ot">=</span> <span class="fu">torch_tensor</span>(image_array)</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getbatch =</span> <span class="cf">function</span>(i) {</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor[i, .., drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nrow</span>(self<span class="sc">$</span>tensor)</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>)(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>ds_tensor_batch <span class="ot">=</span> <span class="fu">dataset</span>(<span class="st">"tensor_batch"</span>,</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(image_array) {</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor <span class="ot">=</span> <span class="fu">torch_tensor</span>(image_array)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getbatch =</span> <span class="cf">function</span>(i) {</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>tensor[i, .., drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nrow</span>(self<span class="sc">$</span>tensor)</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>)(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <details>
 <summary>
@@ -586,17 +600,17 @@ Click for answer
 </summary>
 <p>The <code>$.getbatch()</code> implementation is faster than the <code>$.getitem()</code> implementation. This is because when using the <code>$.getitem()</code> method, the batch for indices <code>ids</code> is obtained by calling <code>$.getitem(id)</code> for each index in <code>ids</code> and then stacking them together, which requires a new tensor allocation. Slicing the tensor, however, avoids this allocation when <code>shuffle = TRUE</code> (which is also the default).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">getbatch =</span> <span class="fu">iter</span>(ds_tensor_batch),</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">getitem =</span> <span class="fu">iter</span>(ds_tensor),</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">getbatch =</span> <span class="fu">iter</span>(ds_tensor_batch),</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">getitem =</span> <span class="fu">iter</span>(ds_tensor),</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 6
   expression      min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 getbatch     1.42ms   1.77ms      551.    12.3KB     4.65
-2 getitem      3.76ms   4.18ms      218.    54.7KB     7.05</code></pre>
+1 getbatch     3.48ms   5.05ms      202.      23KB     2.14
+2 getitem      5.41ms   5.88ms      163.    54.7KB     4.35</code></pre>
 </div>
 </div>
 </details>
@@ -627,17 +641,24 @@ Note
 <p>One thing we have ignored so far is that when training using a GPU, the data needs to be moved from RAM to the GPU. This is because a GPU has its own memory (VRAM), and the data needs to be moved to this memory before it can be used for training. The moving of the data to the GPU cannot be done on the processes that are loading the data but must be done in the main process, i.e., after the batch was received from (possibly parallelized) dataloader. One way to speed up the data loading process is to pin the memory of the data to the GPU. Before a tensor can be moved from RAM to VRAM, it needs to be in so-called page-locked memory, which can be enabled using the <code>pin_memory</code> parameter of <code>dataloader()</code>..</p>
 <p><img src="../assets/pinned-memory.png" class="img-fluid"></p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>iter_cuda <span class="ot">=</span> <span class="cf">function</span>(ds, <span class="at">pin_memory =</span> <span class="cn">TRUE</span>) {</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  dl <span class="ot">=</span> torch<span class="sc">::</span><span class="fu">dataloader</span>(ds, <span class="at">batch_size =</span> <span class="dv">16</span>, <span class="at">pin_memory =</span> pin_memory)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> dl) {</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    batch<span class="sc">$</span><span class="fu">cuda</span>()</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">not_pinned =</span> <span class="fu">iter_cuda</span>(ds_disk, <span class="at">pin_memory =</span> <span class="cn">FALSE</span>),</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">pinned =</span> <span class="fu">iter_cuda</span>(ds_disk, <span class="at">pin_memory =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>iter_cuda <span class="ot">=</span> <span class="cf">function</span>(ds, <span class="at">pin_memory =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  dl <span class="ot">=</span> torch<span class="sc">::</span><span class="fu">dataloader</span>(ds, <span class="at">batch_size =</span> <span class="dv">16</span>, <span class="at">pin_memory =</span> pin_memory)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> dl) {</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    batch<span class="sc">$</span><span class="fu">cuda</span>()</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">not_pinned =</span> <span class="fu">iter_cuda</span>(ds_disk, <span class="at">pin_memory =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">pinned =</span> <span class="fu">iter_cuda</span>(ds_disk, <span class="at">pin_memory =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 6
+  expression      min   median `itr/sec` mem_alloc `gc/sec`
+  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+1 not_pinned    217ms    226ms      4.49    10.6MB        0
+2 pinned        207ms    214ms      4.59    10.6MB        0</code></pre>
+</div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -651,7 +672,7 @@ Note
 <div class="callout-body-container callout-body">
 <p>In order to use parallel data loading or memory pinning with <code>mlr3torch</code>, these parameters can simply be specified in the learner:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>, <span class="at">num_workers =</span> <span class="dv">8</span>L, <span class="at">pin_memory =</span> <span class="cn">TRUE</span>, <span class="at">device =</span> <span class="st">"cuda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>, <span class="at">num_workers =</span> <span class="dv">8</span>L, <span class="at">pin_memory =</span> <span class="cn">TRUE</span>, <span class="at">device =</span> <span class="st">"cuda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -664,7 +685,7 @@ Note
 <h3 class="anchored" data-anchor-id="ignite-optimizers">‘Ignite’ Optimizers</h3>
 <p>In <code>torch</code>, different versions of optimizers exist:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>optim_adamw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>optim_adamw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;optim_adamw&gt; object generator
   Inherits from: &lt;inherit&gt;
@@ -673,12 +694,12 @@ Note
     loop_fun: function (group, param, g, p) 
     step: function (closure = NULL) 
     clone: function (deep = FALSE) 
-  Parent env: &lt;environment: 0x121963190&gt;
+  Parent env: &lt;environment: 0x1b61afc8&gt;
   Locked objects: FALSE
   Locked class: FALSE
   Portable: TRUE</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>optim_ignite_adamw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>optim_ignite_adamw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;optim_ignite_adamw&gt; object generator
 &lt;optim_ignite&gt; object generator
@@ -697,7 +718,7 @@ Note
     .set_param_group_options: function (opt, list) 
     .zero_grad: function (opt) 
     .get_param_groups: function (ptr) 
-  Parent env: &lt;environment: 0x12472df48&gt;
+  Parent env: &lt;environment: 0x19300170&gt;
   Locked objects: FALSE
   Locked class: FALSE
   Portable: TRUE</code></pre>
@@ -706,22 +727,22 @@ Note
 <p>The ‘ignite’ indicates that the optimizer is a version that is optimized for performance. Not for all optimizers does an ignite version exist, but for the most common ones, there does.</p>
 <p>Below, we compare the performance of the default optimizer and the ignite optimizer and see that the latter is considerably faster.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>adamw <span class="ot">=</span> <span class="fu">as_torch_optimizer</span>(torch<span class="sc">::</span>optim_adamw)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>ignite_adamw <span class="ot">=</span> <span class="fu">as_torch_optimizer</span>(torch<span class="sc">::</span>optim_ignite_adamw)</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>learner <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>, <span class="at">epochs =</span> <span class="dv">10</span>, <span class="at">neurons =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">100</span>), <span class="at">batch_size =</span> <span class="dv">32</span>, <span class="at">optimizer =</span> adamw)</span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>learner_ignite <span class="ot">=</span> learner<span class="sc">$</span><span class="fu">clone</span>(<span class="at">deep =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>learner_ignite<span class="sc">$</span><span class="fu">configure</span>(</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> ignite_adamw</span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>task_sonar <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"sonar"</span>)</span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>  learner<span class="sc">$</span><span class="fu">train</span>(task_sonar),</span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>  learner_ignite<span class="sc">$</span><span class="fu">train</span>(task_sonar),</span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>adamw <span class="ot">=</span> <span class="fu">as_torch_optimizer</span>(torch<span class="sc">::</span>optim_adamw)</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>ignite_adamw <span class="ot">=</span> <span class="fu">as_torch_optimizer</span>(torch<span class="sc">::</span>optim_ignite_adamw)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>learner <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>, <span class="at">epochs =</span> <span class="dv">10</span>, <span class="at">neurons =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">100</span>), <span class="at">batch_size =</span> <span class="dv">32</span>, <span class="at">optimizer =</span> adamw)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>learner_ignite <span class="ot">=</span> learner<span class="sc">$</span><span class="fu">clone</span>(<span class="at">deep =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>learner_ignite<span class="sc">$</span><span class="fu">configure</span>(</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> ignite_adamw</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>task_sonar <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"sonar"</span>)</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>bench<span class="sc">::</span><span class="fu">mark</span>(</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  learner<span class="sc">$</span><span class="fu">train</span>(task_sonar),</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>  learner_ignite<span class="sc">$</span><span class="fu">train</span>(task_sonar),</span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">check =</span> <span class="cn">FALSE</span></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Some expressions had a GC in every iteration; so filtering is disabled.</code></pre>
 </div>
@@ -729,8 +750,8 @@ Note
 <pre><code># A tibble: 2 × 6
   expression                            min   median `itr/sec` mem_alloc `gc/sec`
   &lt;bch:expr&gt;                       &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
-1 learner$train(task_sonar)           417ms    419ms      2.39    15.3MB     7.16
-2 learner_ignite$train(task_sonar)    193ms    196ms      4.79    10.7MB     6.39</code></pre>
+1 learner$train(task_sonar)           1.31s    1.31s     0.764    19.7MB    0.764
+2 learner_ignite$train(task_sonar) 630.47ms 630.47ms     1.59     13.4MB    0    </code></pre>
 </div>
 </div>
 </section>
@@ -747,17 +768,17 @@ Note
 <h4 class="anchored" data-anchor-id="torchscript">TorchScript</h4>
 <p>TorchScript is a subset of Python – i.e., its own programming language – that can be used to define compiled functions. In R, this is available via the <a href="https://torch.mlverse.org/docs/reference/jit_compile.html"><code>jit_compile</code></a> function.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="fu">jit_compile</span>(<span class="st">"</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="st">def f(x, w, bias):</span></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="st">  return x @ w + bias</span></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="st">"</span>)<span class="sc">$</span>f</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">torch_randn</span>(<span class="dv">10</span>, <span class="dv">10</span>)</span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>w <span class="ot">=</span> <span class="fu">torch_randn</span>(<span class="dv">10</span>, <span class="dv">1</span>)</span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>bias <span class="ot">=</span> <span class="fu">torch_randn</span>(<span class="dv">1</span>)</span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>out <span class="ot">=</span> <span class="fu">f</span>(x, w, bias)</span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="fu">jit_compile</span>(<span class="st">"</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="st">def f(x, w, bias):</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="st">  return x @ w + bias</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="st">"</span>)<span class="sc">$</span>f</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">torch_randn</span>(<span class="dv">10</span>, <span class="dv">10</span>)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>w <span class="ot">=</span> <span class="fu">torch_randn</span>(<span class="dv">10</span>, <span class="dv">1</span>)</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>bias <span class="ot">=</span> <span class="fu">torch_randn</span>(<span class="dv">1</span>)</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>out <span class="ot">=</span> <span class="fu">f</span>(x, w, bias)</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Float [1:10, 1:1]</code></pre>
 </div>
@@ -769,15 +790,15 @@ Note
 </ol>
 <p>Below, we define a function that takes a list of tensors and calculates their sum.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>sum_jit <span class="ot">=</span> <span class="fu">jit_compile</span>(<span class="st">"</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="st">def sum_jit(xs: List[Tensor]):</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="st">  output = torch.zeros_like(xs[0])</span></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="st">  for x in xs:</span></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="st">    output = output + x</span></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="st">  return output</span></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a><span class="st">"</span>)<span class="sc">$</span>sum_jit</span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sum_jit</span>(<span class="fu">list</span>(<span class="fu">torch_randn</span>(<span class="dv">1</span>), <span class="fu">torch_randn</span>(<span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>sum_jit <span class="ot">=</span> <span class="fu">jit_compile</span>(<span class="st">"</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="st">def sum_jit(xs: List[Tensor]):</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="st">  output = torch.zeros_like(xs[0])</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="st">  for x in xs:</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a><span class="st">    output = output + x</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="st">  return output</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="st">"</span>)<span class="sc">$</span>sum_jit</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a><span class="fu">sum_jit</span>(<span class="fu">list</span>(<span class="fu">torch_randn</span>(<span class="dv">1</span>), <span class="fu">torch_randn</span>(<span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 -0.7121
@@ -789,28 +810,28 @@ Note
 <h4 class="anchored" data-anchor-id="tracing">Tracing</h4>
 <p>The alternative to writing TorchScript is to write your module in R and to use <a href="https://torch.mlverse.org/docs/reference/jit_trace_module.html"><code>jit_trace</code></a> to compile it.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>f2 <span class="ot">=</span> <span class="cf">function</span>(x, w, bias) {</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span><span class="fu">matmul</span>(w) <span class="sc">+</span> bias</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co"># need to provide some example input</span></span>
-<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a><span class="co"># arguments are passed by position</span></span>
-<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>f2 <span class="ot">=</span> <span class="fu">jit_trace</span>(f2, <span class="fu">torch_randn</span>(<span class="dv">10</span>, <span class="dv">10</span>), <span class="fu">torch_randn</span>(<span class="dv">10</span>, <span class="dv">100</span>), <span class="fu">torch_randn</span>(<span class="dv">100</span>))</span>
-<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>out2 <span class="ot">=</span> <span class="fu">f2</span>(x, w, bias)</span>
-<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_equal</span>(out, out2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>f2 <span class="ot">=</span> <span class="cf">function</span>(x, w, bias) {</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  x<span class="sc">$</span><span class="fu">matmul</span>(w) <span class="sc">+</span> bias</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co"># need to provide some example input</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="co"># arguments are passed by position</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>f2 <span class="ot">=</span> <span class="fu">jit_trace</span>(f2, <span class="fu">torch_randn</span>(<span class="dv">10</span>, <span class="dv">10</span>), <span class="fu">torch_randn</span>(<span class="dv">10</span>, <span class="dv">100</span>), <span class="fu">torch_randn</span>(<span class="dv">100</span>))</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>out2 <span class="ot">=</span> <span class="fu">f2</span>(x, w, bias)</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_equal</span>(out, out2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
 </div>
 <p>An advantage of trace-compilation is that it can be applied to modules, which is currently not possible with <code>jit_compile</code>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>net <span class="ot">=</span> <span class="fu">nn_sequential</span>(</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_linear</span>(<span class="dv">10</span>, <span class="dv">100</span>),</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_relu</span>(),</span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_linear</span>(<span class="dv">100</span>, <span class="dv">10</span>)</span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>net_jit <span class="ot">=</span> <span class="fu">jit_trace</span>(net, <span class="fu">torch_randn</span>(<span class="dv">10</span>, <span class="dv">10</span>))</span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_equal</span>(<span class="fu">net</span>(x), <span class="fu">net_jit</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>net <span class="ot">=</span> <span class="fu">nn_sequential</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_linear</span>(<span class="dv">10</span>, <span class="dv">100</span>),</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_relu</span>(),</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">nn_linear</span>(<span class="dv">100</span>, <span class="dv">10</span>)</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>net_jit <span class="ot">=</span> <span class="fu">jit_trace</span>(net, <span class="fu">torch_randn</span>(<span class="dv">10</span>, <span class="dv">10</span>))</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_equal</span>(<span class="fu">net</span>(x), <span class="fu">net_jit</span>(x))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
@@ -831,26 +852,26 @@ Note
 </div>
 <p>In <code>mlr3torch</code>, trace compilation is also available and can be enabled by setting <code>jit_trace = TRUE</code> in the learner.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>learner <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>, <span class="at">jit_trace =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>learner <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>, <span class="at">jit_trace =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>You can also combine TorchScript with tracing:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>net_both <span class="ot">=</span> <span class="fu">nn_module</span>(</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>() {</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>linear <span class="ot">=</span> <span class="fu">nn_linear</span>(<span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  },</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">forward =</span> <span class="cf">function</span>(x) {</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span><span class="fu">linear</span>(<span class="fu">sum_jit</span>(x))</span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>)()</span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a><span class="fu">net_both</span>(<span class="fu">list</span>(<span class="fu">torch_randn</span>(<span class="dv">1</span>), <span class="fu">torch_randn</span>(<span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>net_both <span class="ot">=</span> <span class="fu">nn_module</span>(</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>() {</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>linear <span class="ot">=</span> <span class="fu">nn_linear</span>(<span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">forward =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span><span class="fu">linear</span>(<span class="fu">sum_jit</span>(x))</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>)()</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a><span class="fu">net_both</span>(<span class="fu">list</span>(<span class="fu">torch_randn</span>(<span class="dv">1</span>), <span class="fu">torch_randn</span>(<span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  1.0027
 [ CPUFloatType{1} ][ grad_fn = &lt;ViewBackward0&gt; ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">net_both</span>(<span class="fu">list</span>(<span class="fu">torch_randn</span>(<span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">net_both</span>(<span class="fu">list</span>(<span class="fu">torch_randn</span>(<span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
 0.01 *
@@ -870,30 +891,30 @@ Quiz: Just In Time
 <div class="callout-body-container callout-body">
 <p><strong>Question 1</strong>: Consider the trace-jitted function below. Can you predict the output of the last two lines? Can you explain why this happens?</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="cf">function</span>(a, b, multiply) {</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (multiply<span class="sc">$</span><span class="fu">item</span>()) {</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">*</span> b</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">+</span> b</span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>fjit <span class="ot">=</span> <span class="fu">jit_trace</span>(f, <span class="fu">torch_tensor</span>(<span class="dv">1</span>), <span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
-<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="cf">function</span>(a, b, multiply) {</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (multiply<span class="sc">$</span><span class="fu">item</span>()) {</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">*</span> b</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>    a <span class="sc">+</span> b</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>fjit <span class="ot">=</span> <span class="fu">jit_trace</span>(f, <span class="fu">torch_tensor</span>(<span class="dv">1</span>), <span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <details>
 <summary>
 Click for answer
 </summary>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  6
 [ CPUFloatType{1} ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  6
@@ -903,26 +924,26 @@ Click for answer
 </details>
 <p><strong>Question 2</strong>: Answer the same question for the following function:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="cf">function</span>(a, b, multiply) {</span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">torch_where</span>(multiply, a <span class="sc">*</span> b, a <span class="sc">+</span> b)</span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>fjit <span class="ot">=</span> <span class="fu">jit_trace</span>(f, <span class="fu">torch_tensor</span>(<span class="dv">1</span>), <span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
-<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
-<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">=</span> <span class="cf">function</span>(a, b, multiply) {</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">torch_where</span>(multiply, a <span class="sc">*</span> b, a <span class="sc">+</span> b)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>fjit <span class="ot">=</span> <span class="fu">jit_trace</span>(f, <span class="fu">torch_tensor</span>(<span class="dv">1</span>), <span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <details>
 <summary>
 Click for answer
 </summary>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  6
 [ CPUFloatType{1} ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fjit</span>(<span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="fu">torch_tensor</span>(<span class="dv">3</span>), <span class="fu">torch_tensor</span>(<span class="cn">FALSE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  5
@@ -953,32 +974,32 @@ Click for answer
 <li><code>callbacks</code>, which is a list of callbacks to use during training, in this case, we use the <code>t_clbk("history")</code> callback, which records the performance of the model on the validation set at regular intervals, enabling us to monitor and analyze the model’s performance over time.</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>task <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"sonar"</span>)</span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>mlp_learner <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>,</span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">neurons =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">50</span>), <span class="at">batch_size =</span> <span class="dv">256</span>, <span class="at">epochs =</span> <span class="dv">400</span>,</span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">t_opt</span>(<span class="st">"adam"</span>, <span class="at">lr =</span> <span class="fl">0.003</span>),</span>
-<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">predict_type =</span> <span class="st">"prob"</span>, <span class="at">jit_trace =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Validation / Performance Monitoring</span></span>
-<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">validate =</span> <span class="fl">0.3</span>, <span class="co"># how much data to use for validation</span></span>
-<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_valid =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>), <span class="co"># how to evaluate train performance</span></span>
-<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_train =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>), <span class="co"># how to evaluate validation performance</span></span>
-<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> <span class="fu">t_clbk</span>(<span class="st">"history"</span>), <span class="co"># history callbacks save train and validation performance</span></span>
-<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">eval_freq =</span> <span class="dv">10</span> <span class="co"># after how many training epochs to perform validation</span></span>
-<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span><span class="fu">train</span>(task)</span>
-<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>history <span class="ot">=</span> mlp_learner<span class="sc">$</span>model<span class="sc">$</span>callbacks<span class="sc">$</span>history</span>
-<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>task <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"sonar"</span>)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>mlp_learner <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>,</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">neurons =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">50</span>), <span class="at">batch_size =</span> <span class="dv">256</span>, <span class="at">epochs =</span> <span class="dv">400</span>,</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">t_opt</span>(<span class="st">"adam"</span>, <span class="at">lr =</span> <span class="fl">0.003</span>),</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">predict_type =</span> <span class="st">"prob"</span>, <span class="at">jit_trace =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Validation / Performance Monitoring</span></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">validate =</span> <span class="fl">0.3</span>, <span class="co"># how much data to use for validation</span></span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_valid =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>), <span class="co"># how to evaluate train performance</span></span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_train =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>), <span class="co"># how to evaluate validation performance</span></span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> <span class="fu">t_clbk</span>(<span class="st">"history"</span>), <span class="co"># history callbacks save train and validation performance</span></span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">eval_freq =</span> <span class="dv">10</span> <span class="co"># after how many training epochs to perform validation</span></span>
+<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb60-14"><a href="#cb60-14" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span><span class="fu">train</span>(task)</span>
+<span id="cb60-15"><a href="#cb60-15" aria-hidden="true" tabindex="-1"></a>history <span class="ot">=</span> mlp_learner<span class="sc">$</span>model<span class="sc">$</span>callbacks<span class="sc">$</span>history</span>
+<span id="cb60-16"><a href="#cb60-16" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Key: &lt;epoch&gt;
    epoch train.classif.logloss valid.classif.logloss
    &lt;num&gt;                 &lt;num&gt;                 &lt;num&gt;
-1:    10             0.6912086             0.6644606
-2:    20             0.6462799             0.6247280
-3:    30             0.5461739             0.5523349
-4:    40             0.5138571             0.4894380
-5:    50             0.4346012             0.4469736
-6:    60             0.3748591             0.4227901</code></pre>
+1:    10             0.6824812             0.6771714
+2:    20             0.6681115             0.6523378
+3:    30             0.5868252             0.6084727
+4:    40             0.4981805             0.5010781
+5:    50             0.4338508             0.4326870
+6:    60             0.3832736             0.3861396</code></pre>
 </div>
 </div>
 <p>Below we plot the training and validation for the different epochs:</p>
@@ -1000,22 +1021,22 @@ Click for answer
 </ul>
 <p>Now, let’s train the learner again using early stopping with a patience of 5 epochs:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span>param_set<span class="sc">$</span><span class="fu">set_values</span>(</span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">patience =</span> <span class="dv">5</span></span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span><span class="fu">train</span>(task)</span>
-<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span>internal_tuned_values<span class="sc">$</span>epochs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span>param_set<span class="sc">$</span><span class="fu">set_values</span>(</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">patience =</span> <span class="dv">5</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span><span class="fu">train</span>(task)</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span>internal_tuned_values<span class="sc">$</span>epochs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 160</code></pre>
+<pre><code>[1] 80</code></pre>
 </div>
 </div>
 <p>Beyond only tuning the number of epochs, <code>mlr3</code>’s internal tuning mechanism also allows tuning the number of epochs internally while using an offline tuning method to optimize other hyperparameters. To use this, we can set the parameters we want to tune using <code>to_tune()</code>, but need to set <code>internal = TRUE</code> for the <code>epochs</code> parameter.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3tuning)</span>
-<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span>param_set<span class="sc">$</span><span class="fu">set_values</span>(</span>
-<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="fu">to_tune</span>(<span class="at">upper =</span> <span class="dv">100</span>, <span class="at">internal =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">opt.lr =</span> <span class="fu">to_tune</span>(<span class="at">lower =</span> <span class="fl">1e-4</span>, <span class="at">upper =</span> <span class="fl">1e-1</span>, <span class="at">logscale =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3tuning)</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>mlp_learner<span class="sc">$</span>param_set<span class="sc">$</span><span class="fu">set_values</span>(</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="fu">to_tune</span>(<span class="at">upper =</span> <span class="dv">100</span>, <span class="at">internal =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">opt.lr =</span> <span class="fu">to_tune</span>(<span class="at">lower =</span> <span class="fl">1e-4</span>, <span class="at">upper =</span> <span class="fl">1e-1</span>, <span class="at">logscale =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We could now pass this learner to a tuner as usual.</p>
 </section>
@@ -1031,13 +1052,13 @@ Click for answer
 <p>In other words, the data augmentation must be compatible with the invariances of the machine learning problem. More formally, we can apply a function <span class="math inline">\(g\)</span> to the data <span class="math inline">\(x\)</span> to a data point <span class="math inline">\(g(x)\)</span> if for the true relationship <span class="math inline">\(f\)</span> we have that <span class="math inline">\(f(g(x)) = f(x)\)</span>.</p>
 <p>In <code>mlr3torch</code>, data augmentation is available via <code>PipeOp</code>s of the form <code>po("augment_")</code>. Currently, only augmentation operators from the <code>torchvision</code> package are available, but you can also add your own.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>augment <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"augment_random_resized_crop"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"augment_random_horizontal_flip"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"augment_random_vertical_flip"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>augment <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"augment_random_resized_crop"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"augment_random_horizontal_flip"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"augment_random_vertical_flip"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can just create a new <code>GraphLearner</code> that includes the augmentation steps as well as a ResNet-18 learner. When this learner is trained, it will apply the augmentation operations to the training data.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>resnet_augmented <span class="ot">=</span> <span class="fu">as_learner</span>(augment <span class="sc">%&gt;&gt;%</span> <span class="fu">lrn</span>(<span class="st">"classif.resnet18"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>resnet_augmented <span class="ot">=</span> <span class="fu">as_learner</span>(augment <span class="sc">%&gt;&gt;%</span> <span class="fu">lrn</span>(<span class="st">"classif.resnet18"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1146,6 +1167,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -1256,6 +1279,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

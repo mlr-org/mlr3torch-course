@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.39">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -69,10 +69,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-79108a0fc1995748cbd19a5b0e3e3e7c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -369,12 +369,12 @@ window.Quarto = {
 <div class="cell-output cell-output-stdout">
 <pre><code>   epoch valid.classif.logloss
    &lt;num&gt;                 &lt;num&gt;
-1:     1             2.8418245
-2:     2             4.4608140
-3:     3             3.5882424
-4:     4             1.8290476
-5:     5             0.8181607
-6:     6             0.6774717</code></pre>
+1:     1             2.7281849
+2:     2             4.3587426
+3:     3             3.7355613
+4:     4             2.3101531
+5:     5             1.1321136
+6:     6             0.7464907</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(mlp<span class="sc">$</span>model<span class="sc">$</span>callbacks<span class="sc">$</span>history) <span class="sc">+</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> epoch, <span class="at">y =</span> valid.classif.logloss)) <span class="sc">+</span></span>
@@ -408,12 +408,12 @@ You can enable early stopping by setting the <code>patience</code> parameter.
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span>internal_tuned_values</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$epochs
-[1] 38</code></pre>
+[1] 29</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mlp<span class="sc">$</span>internal_valid_scores</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$classif.logloss
-[1] 0.5938377</code></pre>
+[1] 0.5730894</code></pre>
 </div>
 </div>
 <p><strong>Question 3:</strong> Early Stopping and Dropout Tuning</p>
@@ -453,7 +453,7 @@ You can enable early stopping by setting the <code>patience</code> parameter.
 <span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>ti<span class="sc">$</span>result_learner_param_vals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$epochs
-[1] 30
+[1] 35
 
 $device
 [1] "auto"
@@ -498,7 +498,7 @@ $neurons
 [1] 100 100
 
 $p
-[1] 0.2969339
+[1] 0.4564755
 
 $activation
 &lt;nn_relu&gt; object generator
@@ -510,7 +510,7 @@ $activation
     clone: function (deep = FALSE, ..., replace_values = TRUE) 
   Private:
     .__clone_r6__: function (deep = FALSE) 
-  Parent env: &lt;environment: 0x11da66d18&gt;
+  Parent env: &lt;environment: 0x1d878f18&gt;
   Locked objects: FALSE
   Locked class: FALSE
   Portable: TRUE
@@ -605,6 +605,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -715,6 +717,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
