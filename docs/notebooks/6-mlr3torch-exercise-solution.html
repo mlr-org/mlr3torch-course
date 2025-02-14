@@ -174,10 +174,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../notebooks/7-training-efficiency.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../notebooks/8-usecase.html">
- <span class="dropdown-text">8. Use Case</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -218,10 +214,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../notebooks/8-usecase-exercise-task.html">
- <span class="dropdown-text">8. Use Case</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -256,10 +248,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li>
     <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../notebooks/8-usecase-exercise-solution.html">
- <span class="dropdown-text">8. Use Case</span></a>
   </li>  
     </ul>
   </li>
@@ -354,7 +342,7 @@ The parameter for the learning rate is <code>opt.lr</code>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>rr1<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msrs</span>(<span class="fu">c</span>(<span class="st">"classif.ce"</span>, <span class="st">"classif.fpr"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> classif.ce classif.fpr 
-  0.3706312   0.5849387 </code></pre>
+  0.3671537   0.6417584 </code></pre>
 </div>
 </div>
 <p>While the classification error is low, this is not a good measure due to the imbalanced class distribution. This is confirmed by the FPR, which is relatively high.</p>
@@ -373,7 +361,7 @@ Concatenate <code>po("encode")</code> with a <code>lrn("classif.mlp")</code> usi
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>rr2<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msrs</span>(<span class="fu">c</span>(<span class="st">"classif.ce"</span>, <span class="st">"classif.fpr"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> classif.ce classif.fpr 
-  0.3137347   0.8365021 </code></pre>
+  0.2864115   0.8770833 </code></pre>
 </div>
 </div>
 <p><strong>Question 3</strong>: Benchmarking</p>
@@ -395,7 +383,7 @@ Create a classification tree via <code>lrn("classif.rpart")</code>. A benchmark 
 <div class="cell-output cell-output-stdout">
 <pre><code>      nr task_id         learner_id resampling_id iters classif.ce classif.tpr
    &lt;int&gt;  &lt;char&gt;             &lt;char&gt;        &lt;char&gt; &lt;int&gt;      &lt;num&gt;       &lt;num&gt;
-1:     1    ilpd encode.classif.mlp            cv    10  0.2812683   0.9145299
+1:     1    ilpd encode.classif.mlp            cv    10  0.2966686   0.8249284
 2:     2    ilpd      classif.rpart            cv    10  0.3035652   0.8301628
 Hidden columns: resample_result</code></pre>
 </div>

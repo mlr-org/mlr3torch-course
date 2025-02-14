@@ -223,10 +223,6 @@ window.Quarto = {
     <a class="dropdown-item" href="../notebooks/7-training-efficiency.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../notebooks/8-usecase.html">
- <span class="dropdown-text">8. Use Case</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -267,10 +263,6 @@ window.Quarto = {
     <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../notebooks/8-usecase-exercise-task.html">
- <span class="dropdown-text">8. Use Case</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -305,10 +297,6 @@ window.Quarto = {
         <li>
     <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../notebooks/8-usecase-exercise-solution.html">
- <span class="dropdown-text">8. Use Case</span></a>
   </li>  
     </ul>
   </li>
@@ -1171,19 +1159,12 @@ The first statement is true because, in evaluation mode, the module uses the run
 <span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>nn_both <span class="ot">&lt;-</span> <span class="fu">nn_reg</span>(<span class="at">dropout =</span> <span class="cn">TRUE</span>, <span class="at">batch_norm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>nn_vanilla <span class="ot">&lt;-</span> <span class="fu">nn_reg</span>(<span class="at">dropout =</span> <span class="cn">FALSE</span>, <span class="at">batch_norm =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We evaluate the performance of the four neural networks created above using subsampling with 10 repetitions and an 80/20 train/test split. We don’t show the specific training code here, but only the resulting confidence intervals for the accuracy. While the intervals are too wide to be able to draw any final conclusions and we are only looking at a single dataset, both normalization techniques tend to lead to better results. Also, both normalization techniques improve stability, so that the confidence intervals are narrower.</p>
+<p>We evaluate the performance of the four neural networks created above using subsampling with 10 repetitions and an 80/20 train/test split. We don’t show the specific training code here, but only the resulting confidence intervals for the accuracy. While the intervals are too wide to be able to draw any final conclusions, both regularizaion techniques tend to lead to better results. Also, both normalization techniques improve stability, so that the confidence intervals are narrower.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="4-optimizer_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="4-optimizer_files/figure-html/unnamed-chunk-35-2.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
 </figure>
 </div>
 </div>

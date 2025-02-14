@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Convolutional Neural Networks – Deep Learning with (mlr3)torch</title>
+<title>CNN Exercises – Deep Learning with (mlr3)torch</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +19,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -140,10 +174,6 @@ ul.task-list li input[type="checkbox"] {
     <a class="dropdown-item" href="../notebooks/7-training-efficiency.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../notebooks/8-usecase.html">
- <span class="dropdown-text">8. Use Case</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -184,10 +214,6 @@ ul.task-list li input[type="checkbox"] {
     <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../notebooks/8-usecase-exercise-task.html">
- <span class="dropdown-text">8. Use Case</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -223,10 +249,6 @@ ul.task-list li input[type="checkbox"] {
     <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../notebooks/8-usecase-exercise-solution.html">
- <span class="dropdown-text">8. Use Case</span></a>
-  </li>  
     </ul>
   </li>
 </ul>
@@ -253,7 +275,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Convolutional Neural Networks</h1>
+<h1 class="title">CNN Exercises</h1>
 </div>
 
 
@@ -270,6 +292,78 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p><strong>Question 1</strong>: Manual Convolution</p>
+<p>In this exercise, your task is to implement a function that performs a 2D convolution operation manually on a 3D input image using a given 3D kernel.</p>
+<p>The input is a tensor with dimensions <code>[channels, height, width]</code> and the kernel is a tensor with dimensions <code>[channels, kH, kW]</code>. Your goal is to produce an output tensor of shape <code>[height - kH + 1, width - kW + 1]</code> by applying the convolution operation. Recall that output element is computed as the sum of the element-wise multiplication of the kernel and the corresponding patch of the input image.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>fconv2d <span class="ot">&lt;-</span> <span class="cf">function</span>(image, kernel, bias) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  ...</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can use the code below to check your implementation against the <code>conv2d</code> module from the <code>torch</code> package.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torch)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>conv <span class="ot">&lt;-</span> <span class="fu">nn_conv2d</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="at">kernel_size =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">3</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>kernel <span class="ot">&lt;-</span> conv<span class="sc">$</span>parameters<span class="sc">$</span>weight</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>bias <span class="ot">&lt;-</span> conv<span class="sc">$</span>parameters<span class="sc">$</span>bias</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>input <span class="ot">&lt;-</span> <span class="fu">torch_randn</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">28</span>, <span class="dv">28</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">torch_allclose</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fconv2d</span>(input<span class="sc">$</span><span class="fu">squeeze</span>(), kernel<span class="sc">$</span><span class="fu">squeeze</span>(), bias<span class="sc">$</span><span class="fu">squeeze</span>()),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">conv</span>(input),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">atol =</span> <span class="fl">1e-5</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<details>
+<summary>
+Hint
+</summary>
+<ol type="1">
+<li>Allocate a new empty tensor of the correct size to store the output.</li>
+<li>Using a nested loop, iterate over each valid spatial location in the input and multiply the corresponding patch of the input with the kernel (<code>torch_sum(patch * kernel)</code>) and add the bias.</li>
+</ol>
+</details>
+<p><strong>Question 2</strong>: Be edgey</p>
+<p>Construct a convolutional 2x2 kernel that extracts the edges of an image. Apply it using the <code>fconv2d</code> function from the previous exercise.</p>
+<p>As an input, we use an image from MNIST. You can use the <code>plot_2d_image</code> function from the helper script to plot the image.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torchvision)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"scripts/helper.R"</span>))</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>mnist <span class="ot">&lt;-</span> <span class="fu">mnist_dataset</span>(<span class="at">root =</span> <span class="st">"data"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>image <span class="ot">&lt;-</span> mnist<span class="sc">$</span><span class="fu">.getitem</span>(<span class="dv">13</span>)<span class="sc">$</span>x</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_2d_image</span>(image)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="5-cnn-exercise-task_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>To get started, use the code below and modify the values of the kernel.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>kernel <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="fl">0.53</span>, <span class="fl">0.34</span>, <span class="fl">0.22</span>, <span class="fl">0.1</span>), <span class="at">byrow =</span> <span class="cn">TRUE</span>, <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>kernel</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     [,1] [,2]
+[1,] 0.53 0.34
+[2,] 0.22 0.10</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>kernel <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(kernel)<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">1</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>imageout <span class="ot">&lt;-</span> <span class="fu">fconv2d</span>(<span class="fu">torch_tensor</span>(image)<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">1</span>), kernel, <span class="dv">0</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_2d_image</span>(imageout<span class="sc">$</span><span class="fu">squeeze</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="5-cnn-exercise-task_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 
 
 

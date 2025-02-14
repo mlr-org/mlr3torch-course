@@ -203,10 +203,6 @@ window.Quarto = {
     <a class="dropdown-item" href="../notebooks/7-training-efficiency.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../notebooks/8-usecase.html">
- <span class="dropdown-text">8. Use Case</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -247,10 +243,6 @@ window.Quarto = {
     <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="../notebooks/8-usecase-exercise-task.html">
- <span class="dropdown-text">8. Use Case</span></a>
-  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -285,10 +277,6 @@ window.Quarto = {
         <li>
     <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="../notebooks/8-usecase-exercise-solution.html">
- <span class="dropdown-text">8. Use Case</span></a>
   </li>  
     </ul>
   </li>
@@ -333,41 +321,95 @@ window.Quarto = {
 </header>
 
 
-<p>In this notebook, we will learn about convolutional neural networks (CNNs) that are used for image classification tasks.</p>
+<p>In this notebook, we explore convolutional neural networks (CNNs) used for image classification tasks. Image classification is fundamentally different from working with tabular data because images are highly structured and high-dimensional. For example, in an image, nearby pixels have strong spatial dependencies, whereas tabular data typically consists of independent or loosely related features, with each column representing a distinct attribute.</p>
 <section id="convolutional-layers" class="level2">
 <h2 class="anchored" data-anchor-id="convolutional-layers">Convolutional Layers</h2>
-<p>The central component of a CNN is the convolutional layer. It works by sliding a kernel over the input image, performing element-wise multiplication with the overlapping pixel values, and summing the results to produce a single output value for each position of the kernel.</p>
+<p>The central component of a CNN is the convolutional layer. It functions by sliding a kernel over the input image, performing element-wise multiplication with the overlapping pixel values, and summing the results to produce a single output value for each kernel position.</p>
 <p><img src="../assets/convolution.png" class="img-fluid"></p>
 <p><a href="https://www.ibm.com/think/topics/convolutional-neural-networks">Source</a></p>
-<p>CNNs encode several strong inductive biases about visual data:</p>
+<p>CNNs incorporate several strong inductive biases about visual data:</p>
 <ol type="1">
 <li><strong>Locality</strong>: Nearby pixels are more likely to be related than distant ones.</li>
 <li><strong>Translation Invariance</strong>: Features should be detected regardless of their position.</li>
-<li><strong>Hierarchical Composition</strong>: Complex patterns are built from simpler ones.</li>
 </ol>
-<p>These biases make CNNs particularly effective for image-related tasks because they align with our understanding of how visual information is structured. As an example, we will apply a convolutional layer to an image from MNIST.</p>
+<p>These biases make CNNs particularly effective for image-related tasks, as they align with our understanding of how visual information is structured.</p>
+<p>As a first example, we will apply a convolutional layer to an image from MNIST—a benchmark dataset widely used in the machine learning community. MNIST comprises 28×28 grayscale images of handwritten digits (ranging from 0 to 9). The classification task is to assign the correct digit to each image.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="5-cnn_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="480"></p>
+<p><img src="5-cnn_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="480"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>Such an image is a 3D tensor with dimensions <code>[1, 28, 28]</code>, where the first dimension are the number of channels (would be 3 for RGB images, but MNIST is grayscale), and the other two dimensions are the spatial dimensions of the image.</p>
+<p>When working with these images as tensors, each is represented a 3D tensor with dimensions <code>[1, 28, 28]</code>, where the first dimension are the number of channels (would be 3 for RGB images, but MNIST is grayscale), and the other two dimensions are the spatial dimensions (width and height) of the image.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(image)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Float [1:1, 1:28, 1:28]</code></pre>
 </div>
 </div>
-<p>To create a convolutional layer for a 2D image, we can use the <code>nn_conv2d</code> function.</p>
+<p>Such a convolutional layer has the following parameters:</p>
+<ul>
+<li><strong>in_channels</strong>: The number of channels in the input image (e.g., 1 for grayscale images and 3 for RGB images).</li>
+<li><strong>out_channels</strong>: The number of filters (or kernels) used by the layer. This determines the number of channels in the output feature map.</li>
+<li><strong>kernel_size</strong>: The size of the filter that moves over the image. For instance, a kernel size of 3 means a 3×3 filter.</li>
+<li><strong>padding</strong>: The number of pixels added to the borders of the input image. Padding can help control the spatial dimensions of the output.</li>
+<li><strong>stride</strong>: The step size with which the filter moves across the input image. A larger stride results in a smaller output feature map.</li>
+</ul>
+<p>The padding and the strides are visualized below:</p>
+<p><img src="../assets/padding_strides.png" class="img-fluid"></p>
+<p><a href="https://www.geeksforgeeks.org/cnn-introduction-to-padding/">Source</a></p>
+<p>For the input and output channels, we have the following:</p>
+<p><img src="../assets/input_output_channels.svg" class="img-fluid"> <a href="https://classic.d2l.ai/chapter_convolutional-neural-networks/channels.html">Source</a></p>
+<p>To create a convolutional layer for a 2D image, we can use the <code>torch::nn_conv2d</code> function.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>conv_layer <span class="ot">&lt;-</span> <span class="fu">nn_conv2d</span>(<span class="at">in_channels =</span> <span class="dv">1</span>, <span class="at">out_channels =</span> <span class="dv">1</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">padding =</span> <span class="dv">1</span>)</span>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>conv_layer <span class="ot">&lt;-</span> <span class="fu">nn_conv2d</span>(<span class="at">in_channels =</span> <span class="dv">1</span>, <span class="at">out_channels =</span> <span class="dv">1</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">padding =</span> <span class="dv">1</span>, <span class="at">stride =</span> <span class="dv">1</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(<span class="fu">conv_layer</span>(image))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Float [1:1, 1:28, 1:28]</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Parameters of a Convolutional Layer
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Question 1</strong>: Can you set the number of input channels of a convolutional layer freely?</p>
+<details>
+<summary>
+Click for answer
+</summary>
+No, the number of input channels is determined by the number of channels of the input tensor.
+</details>
+<p><strong>Question 2</strong>: Can you come up with a formula for the number of parameters of a convolutional layer? You can assume a symmetric kernel. Note that each kernel also has a bias term which is a scalar.</p>
+<details>
+<summary>
+Click for answer
+</summary>
+The formula is <code>out_channels * (kernel_size^2 * in_channels + 1)</code>.
+</details>
+<p><strong>Question 3</strong>: We have an input image of shape <code>(1, 28, 28)</code> and we want to apply a fully connected layer and a convolutional layer that produces an output tensor with the same number of elements.</p>
+<ol type="a">
+<li>A convolutional layer with 1 input channel and 1 ouput channel and a kernel of size 3x3 and padding of 1. (The output shape will therefore be <code>(1, 28, 28)</code>.)</li>
+<li>A fully connected layer (that treats the input as a vector of dimension <code>28 * 28 = 784</code>) that produces an output tensor with the same number of elements.</li>
+</ol>
+<p>How many parameters does each layer have? (Recall that the linear layer also has a bias term.)</p>
+<details>
+<summary>
+Click for answer
+</summary>
+<ol type="a">
+<li><span class="math inline">\(1 * (3 * 3 * 1 + 1) = 10\)</span></li>
+<li><span class="math inline">\(784 * (784 + 1) = 615440\)</span></li>
+</ol>
+</details>
 </div>
 </div>
 <p>Because we have encoded more information about the structural relationship between the input tensor and the output tensor (the same filter is applied to the entire image), the convolutional layer has far fewer parameters than a fully connected layer.</p>
@@ -377,26 +419,39 @@ window.Quarto = {
 <pre><code>$weight
 torch_tensor
 (1,1,.,.) = 
-  0.2229 -0.0028  0.1567
-  0.3100  0.3226  0.1191
- -0.3081  0.1674 -0.1031
+ -0.1359  0.0110 -0.1656
+  0.1257 -0.2840  0.2443
+ -0.2423 -0.2650 -0.2106
 [ CPUFloatType{1,1,3,3} ][ requires_grad = TRUE ]
 
 $bias
 torch_tensor
- 0.1376
+ 0.1510
 [ CPUFloatType{1} ][ requires_grad = TRUE ]</code></pre>
 </div>
 </div>
-<p>Below, we show the output of the first convolutional layer from a (trained) ResNet18 model applied to an image from MNIST (which has 28x28 pixels).</p>
+<p>Below, we show the output of the first convolutional layer from a (trained) ResNet18 model applied to an image from MNIST.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="5-cnn_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+<p><img src="5-cnn_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
 </figure>
 </div>
 </div>
+</div>
+</section>
+<section id="max-pooling" class="level2">
+<h2 class="anchored" data-anchor-id="max-pooling">Max Pooling</h2>
+<p>While convolutional layers extract local features from an image by applying a kernel over the input, max pooling is used to <strong>downsample</strong> the feature maps. Instead of applying a filter, max pooling simply partitions the input into non-overlapping (or sometimes overlapping) regions and selects the maximum value from each region.</p>
+<p><img src="../assets/maxpooling.png" class="img-fluid"> <a href="https://www.mdpi.com/2076-3417/12/17/8643">Source</a></p>
+<p>Below, we demonstrate it in action. We start by applying a convolutional layer to an MNIST image to obtain feature maps and then apply a 2×2 max pooling layer (with stride 2) on the convolution output. The two results are visualized side-by-side.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a max pooling layer with a 2x2 kernel and stride 2</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>pool_layer <span class="ot">&lt;-</span> <span class="fu">nn_max_pool2d</span>(<span class="at">kernel_size =</span> <span class="dv">2</span>, <span class="at">stride =</span> <span class="dv">2</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Now apply the max pooling layer to the result from the convolution.</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pooled_output <span class="ot">&lt;-</span> <span class="fu">pool_layer</span>(image_rgb2[<span class="dv">1</span>, <span class="at">drop =</span> <span class="cn">FALSE</span>]<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -404,51 +459,30 @@ torch_tensor
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Weights of a Fully Connected Layer
+Max Pooling
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Question 1</strong>: How many parameters does a fully connected layer with the same number of inputs <code>(1, 28, 28)</code> and outputs <code>(1, 28, 28)</code> have?</p>
+<p><strong>Question 1</strong>: How many parameters does a max pooling layer have?</p>
 <details>
 <summary>
-Answer
+Click for answer
 </summary>
-<p>The input has <span class="math inline">\(28 \times 28 = 784\)</span> pixels and the output as well. The weights of the fully connected layer are a <span class="math inline">\(784 \times 784\)</span> matrix and the bias also has 784 elements, so the number of parameters is <span class="math inline">\(784 \times 784 + 784 = 615440\)</span>, much more than our simple convolutional kernel.</p>
+A max pooling layer has no parameters.
+</details>
+<p><strong>Question 2</strong>: When applying a max pooling layer to an image of shape <code>(1, 28, 28)</code> and a kernel size of <code>10x10</code>, a stride of <code>1</code> and a padding of <code>0</code>, what is the shape of the output?</p>
+<details>
+<summary>
+Click for answer
+</summary>
+The output shape is <code>(1, 19, 19)</code>.
 </details>
 </div>
 </div>
 </section>
-<section id="max-pooling" class="level2">
-<h2 class="anchored" data-anchor-id="max-pooling">Max Pooling</h2>
-<p>While convolutional layers extract local features from an image by applying a kernel over the input, max pooling is used to <strong>downsample</strong> the feature maps. Instead of applying a filter, max pooling simply partitions the input into non-overlapping (or sometimes overlapping) regions and selects the maximum value from each region. Below, we demonstrate it in action. We start by applying a convolutional layer to an MNIST image to obtain feature maps and then apply a 2×2 max pooling layer (with stride 2) on the convolution output. The two results are visualized side-by-side.</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a max pooling layer with a 2x2 kernel and stride 2</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>pool_layer <span class="ot">&lt;-</span> <span class="fu">nn_max_pool2d</span>(<span class="at">kernel_size =</span> <span class="dv">2</span>, <span class="at">stride =</span> <span class="dv">2</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the convolutional layer to the image (as before)</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>conv_output <span class="ot">&lt;-</span> <span class="fu">conv_layer</span>(image)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Now apply the max pooling layer to the result from the convolution.</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>pooled_output <span class="ot">&lt;-</span> <span class="fu">pool_layer</span>(conv_output)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize the original convolution output and the pooled output.</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>p_conv <span class="ot">&lt;-</span> <span class="fu">plot_2d_image</span>(conv_output<span class="sc">$</span><span class="fu">squeeze</span>())</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>p_pool <span class="ot">&lt;-</span> <span class="fu">plot_2d_image</span>(pooled_output<span class="sc">$</span><span class="fu">squeeze</span>())</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Use cowplot to display the two images side-by-side for easy comparison.</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>cowplot<span class="sc">::</span><span class="fu">plot_grid</span>(p_conv, p_pool, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Convolution Output"</span>, <span class="st">"After Max Pooling"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="5-cnn_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="architecture-design" class="level2">
-<h2 class="anchored" data-anchor-id="architecture-design">Architecture Design</h2>
-<p>Another essential aspect of training neural networks efficiently and effectively is the design of the network architecture, which can be a challenging task. However, for many problems, there are predefined architectures that perform well and can be used. Unless there is a specific reason to design a new architecture, it is recommended to use such an architecture.</p>
+<section id="architecture-transfer-learning" class="level2">
+<h2 class="anchored" data-anchor-id="architecture-transfer-learning">Architecture &amp; Transfer Learning</h2>
+<p>While we have no covered individual components of CNNs, the question of how to configure and compose them is a challenging task, but essential for building efficient neural networks. However, for many problems, there are predefined architectures that perform well and can be used. Unless there is a specific reason to design a new architecture, it is recommended to use such an architecture.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -462,72 +496,7 @@ Note
 <p>Because the Python deep learning ecosystem is so large, many more architectures are implemented in Python than in R. One way to use them in R is to simply translate the PyTorch code to (R-)torch. While PyTorch and (R-)torch are quite similar, there are some differences, e.g., 1-based and 0-based indexing. The <code>torch</code> website contains a <a href="https://torch.mlverse.org/docs/articles/python-to-r">brief tutorial</a> on this topic.</p>
 </div>
 </div>
-<p>Nonetheless, we will cover important techniques that can be used to speed up the training process, namely <em>batch normalization</em> and <em>dropout</em>.</p>
-<p>To illustrate its effectiveness, we will define a simple CNN, with and without batch normalization, train it on CIFAR-10, and compare their performances.</p>
-<p>To build the neural networks, we will use <code>mlr3torch</code>, which allows building architectures from <code>PipeOp</code>s. Recall that the <code>po("torch_ingress_ltnsr")</code> is a special <code>PipeOp</code> that marks the input of the neural network. Note that <code>po("nn_relu_1")</code> is equivalent to <code>po("nn_relu", id = "nn_relu_1")</code>. We need to specify unique IDs for each <code>PipeOp</code> as this is required in mlr3pipelines graphs.</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>cnn_bn <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"torch_ingress_ltnsr"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_conv2d_1"</span>, <span class="at">out_channels =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">stride =</span> <span class="dv">1</span>, <span class="at">padding =</span> <span class="dv">1</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_batch_norm2d_1"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_relu_1"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_max_pool2d_1"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>, <span class="at">stride =</span> <span class="dv">2</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_conv2d_2"</span>, <span class="at">out_channels =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">stride =</span> <span class="dv">1</span>, <span class="at">padding =</span> <span class="dv">1</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_batch_norm2d_2"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_relu_2"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_max_pool2d_2"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>, <span class="at">stride =</span> <span class="dv">2</span>)</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>cnn <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"torch_ingress_ltnsr"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_conv2d_1"</span>, <span class="at">out_channels =</span> <span class="dv">32</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">stride =</span> <span class="dv">1</span>, <span class="at">padding =</span> <span class="dv">1</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_relu_1"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_max_pool2d_1"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>, <span class="at">stride =</span> <span class="dv">2</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_conv2d"</span>, <span class="at">out_channels =</span> <span class="dv">64</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">stride =</span> <span class="dv">1</span>, <span class="at">padding =</span> <span class="dv">1</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_relu_2"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_max_pool2d_2"</span>, <span class="at">kernel_size =</span> <span class="dv">2</span>, <span class="at">stride =</span> <span class="dv">2</span>)</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>head <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"nn_flatten"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_linear"</span>, <span class="at">out_features =</span> <span class="dv">128</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_relu"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_head"</span>)</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>model <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"torch_optimizer"</span>, <span class="at">optimizer =</span> <span class="fu">t_opt</span>(<span class="st">"adam"</span>, <span class="at">lr =</span> <span class="fl">0.003</span>)) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"torch_model_classif"</span>,</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">epochs =</span> <span class="dv">100</span>,</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">batch_size =</span> <span class="dv">256</span>,</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">predict_type =</span> <span class="st">"prob"</span>,</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">device =</span> <span class="st">"cuda"</span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>We evaluate the two models on the CIFAR-10 image classification task that we have introduced earlier. There, the goal is to classify images into 10 different classes.</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>net_bn <span class="ot">=</span> <span class="fu">as_learner</span>(cnn_bn <span class="sc">%&gt;&gt;%</span> head <span class="sc">%&gt;&gt;%</span> model)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>net_bn<span class="sc">$</span>id <span class="ot">=</span> <span class="st">"net_bn"</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>net <span class="ot">=</span> <span class="fu">as_learner</span>(cnn <span class="sc">%&gt;&gt;%</span> head <span class="sc">%&gt;&gt;%</span> model)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>net<span class="sc">$</span>id <span class="ot">=</span> <span class="st">"net"</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>cifar10 <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"cifar10"</span>)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>resampling <span class="ot">=</span> <span class="fu">rsmp</span>(<span class="st">"holdout"</span>)<span class="sc">$</span><span class="fu">instantiate</span>(cifar10)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>design <span class="ot">=</span> <span class="fu">benchmark_grid</span>(</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> cifar10,</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> <span class="fu">list</span>(net_bn, net),</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> resampling</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>design</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>      task learner resampling
-    &lt;char&gt;  &lt;char&gt;     &lt;char&gt;
-1: cifar10  net_bn    holdout
-2: cifar10     net    holdout</code></pre>
-</div>
-</div>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>bmr <span class="ot">=</span> <span class="fu">benchmark</span>(design)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>bmr<span class="sc">$</span><span class="fu">aggregate</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="transfer-learning" class="level2">
-<h2 class="anchored" data-anchor-id="transfer-learning">Transfer Learning</h2>
-<p>Transfer learning is a powerful technique in machine learning where a pre-trained model developed for a specific task is reused as the starting point for a model on a second, related task. Instead of training a model from scratch, which can be time-consuming and computationally expensive, transfer learning leverages the knowledge gained from a previously learned task to improve learning efficiency and performance on a new task.</p>
+<p>Beyond just using a predefined architecture, it is also possible to use <strong>transfer learning</strong>, which is a powerful technique in machine learning where a pre-trained model developed for a specific task is reused as the starting point for a model on a second, related task. Instead of training a model from scratch, which can be time-consuming and computationally expensive, transfer learning leverages the knowledge gained from a previously learned task to improve learning efficiency and performance on a new task.</p>
 <p>The advantages of transfer learning are:</p>
 <ol type="1">
 <li>Reduced Training Time: Leveraging a pre-trained model can significantly decrease the time required to train a new model, as the foundational feature extraction layers are already optimized.</li>
@@ -538,35 +507,101 @@ Note
 <p>This is visualized below:</p>
 <p><img src="../assets/transfer-learning.svg" class="img-fluid"></p>
 <p><a href="https://en.wikipedia.org/wiki/Transfer_learning">Source</a></p>
-<p><code>mlr3torch</code> offers various pretrained image networks that are available through the <a href="https://torchvision.mlverse.org/"><code>torchvision</code> package</a>. The ResNet-18 model is a popular pre-trained model that was pretrained on ImageNet. We can use the pretrained weights by setting the <code>pretrained</code> parameter to <code>TRUE</code>.</p>
+<p>The <a href="https://torchvision.mlverse.org/"><code>torchvision</code> package</a> offers various pretrained image networks that are available through the <a href="https://torchvision.mlverse.org/"><code>torchvision</code> package</a>. The ResNet-18 model is a well-known pre-trained model that was pretrained on ImageNet. It’s (complicated) architecture is shown below:</p>
+<p><img src="../assets/resnet18.png" class="img-fluid"></p>
+<p>Because it’s architecture is quite complex, we only visualize it below, but don’t define it from scratch.</p>
+<p><a href="https://www.researchgate.net/figure/Proposed-Modified-ResNet-18-architecture-for-Bangla-HCR-In-the-diagram-conv-stands-for_fig1_323063171">Source</a></p>
+<p>We can use the pretrained weights by setting the <code>pretrained</code> parameter to <code>TRUE</code> and specify the number of classes of our new task via the <code>num_classes</code> parameter (10 for MNIST).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>resnet <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"classif.resnet18"</span>,</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">pretrained =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">2</span>,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">256</span>,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">validate =</span> <span class="fl">0.3</span>,</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_valid =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>),</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">device =</span> <span class="st">"cuda"</span>,</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">predict_type =</span> <span class="st">"prob"</span>,</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">id =</span> <span class="st">"pretrained"</span></span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>resnet_no_pretrain <span class="ot">=</span> resnet<span class="sc">$</span><span class="fu">clone</span>(<span class="at">deep =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>resnet_no_pretrain<span class="sc">$</span>param_set<span class="sc">$</span><span class="fu">set_values</span>(</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">pretrained =</span> <span class="cn">FALSE</span></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>resnet_no_pretrain<span class="sc">$</span>id <span class="ot">=</span> <span class="st">"not_pretrained"</span></span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>grid <span class="ot">=</span> <span class="fu">benchmark_grid</span>(</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> <span class="fu">tsk</span>(<span class="st">"cifar10"</span>),</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> <span class="fu">list</span>(resnet, resnet_no_pretrain),</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> <span class="fu">rsmp</span>(<span class="st">"insample"</span>)</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>bmr <span class="ot">=</span> <span class="fu">benchmark</span>(grid, <span class="at">store_models =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>bmr<span class="sc">$</span><span class="fu">aggregate</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torchvision)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>resnet <span class="ot">&lt;-</span> <span class="fu">model_resnet18</span>(<span class="at">pretrained =</span> <span class="cn">FALSE</span>, <span class="at">num_classes =</span> <span class="dv">10</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>resnet_pretrained <span class="ot">&lt;-</span> <span class="fu">model_resnet18</span>(<span class="at">pretrained =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>resnet_pretrained<span class="sc">$</span>fc <span class="ot">&lt;-</span> <span class="fu">nn_linear</span>(<span class="dv">512</span>, <span class="dv">10</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>resnet_pretrained</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>An `nn_module` containing 11,181,642 parameters.
+
+── Modules ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+• conv1: &lt;nn_conv2d&gt; #9,408 parameters
+• bn1: &lt;nn_batch_norm2d&gt; #128 parameters
+• relu: &lt;nn_relu&gt; #0 parameters
+• maxpool: &lt;nn_max_pool2d&gt; #0 parameters
+• layer1: &lt;nn_sequential&gt; #147,968 parameters
+• layer2: &lt;nn_sequential&gt; #525,568 parameters
+• layer3: &lt;nn_sequential&gt; #2,099,712 parameters
+• layer4: &lt;nn_sequential&gt; #8,393,728 parameters
+• avgpool: &lt;nn_adaptive_avg_pool2d&gt; #0 parameters
+• fc: &lt;nn_linear&gt; #5,130 parameters</code></pre>
+</div>
 </div>
 <p>When fine-tuning a pretrained model like ResNet-18, it’s common to observe instabilities in gradients, which can manifest as fluctuating validation performance.</p>
-<p>To address this, one can for example freeze the pretrained layers (for some epochs) and only train the new output head. In <code>mlr3torch</code>, this can be achieved by using the <code>t_clbk("unfreeze")</code> callback.</p>
+<p>To fine-tune this model on MNIST, we need to also have a <code>dataloader</code>. In the case of MNIST, a predefined dataloader is available in the <code>torchvision</code> package. We transform both the input and the target to tensors (instead of R arrays).</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mnist_ds <span class="ot">&lt;-</span> <span class="fu">mnist_dataset</span>(<span class="at">root =</span> <span class="st">"data"</span>, <span class="at">download =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform =</span> torch_tensor, <span class="at">target_transform =</span> torch_tensor)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>mnist_ds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;mnist&gt;
+  Inherits from: &lt;dataset&gt;
+  Public:
+    .getitem: function (index) 
+    .length: function () 
+    check_exists: function () 
+    classes: 0 - zero 1 - one 2 - two 3 - three 4 - four 5 - five 6 - ...
+    clone: function (deep = FALSE) 
+    data: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0  ...
+    download: function () 
+    initialize: function (root, train = TRUE, transform = NULL, target_transform = NULL, 
+    load_state_dict: function (x, ..., .refer_to_state_dict = FALSE) 
+    processed_folder: active binding
+    raw_folder: active binding
+    resources: list
+    root_path: data
+    state_dict: function () 
+    target_transform: function (data, dtype = NULL, device = NULL, requires_grad = FALSE, 
+    targets: 6 1 5 2 10 3 2 4 2 5 4 6 4 7 2 8 3 9 7 10 5 1 10 2 2 3 5 ...
+    test_file: test.rds
+    train: TRUE
+    training_file: training.rds
+    transform: function (data, dtype = NULL, device = NULL, requires_grad = FALSE, </code></pre>
+</div>
+</div>
+<p>We can inspect the first element of the dataset.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>batch <span class="ot">&lt;-</span> mnist_ds[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(batch)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 2
+ $ x:Long [1:2, 1:28, 1:28]
+ $ y:Long [1:2]</code></pre>
+</div>
+</div>
+<p>In order to be able to fine-tune the pretrained model on MNIST, we need to make sure that the format of the input data is compatible with the pretrained model:</p>
+<ul>
+<li>The size of the training images of ResNet-18 were 224x224, while MNIST images are 28x28. We therefore need to resize them.</li>
+<li>ResNet-18 was pretrained on ImageNet, which uses RGB images (3 input channels), while MNIST is grayscale (1 input channel).</li>
+<li>The training images of ResNet-18 were first transformed to be in the range of <span class="math inline">\([0, 1]\)</span> and then normalized to have a mean of <span class="math inline">\([0.485, 0.456, 0.406]\)</span> and a standard deviation of <span class="math inline">\([0.229, 0.224, 0.225]\)</span>. Our MNIST images are integer values in the range of <span class="math inline">\([0, 255]\)</span> so we need to apply both transformations.</li>
+</ul>
+<p>We can address this my modifying the transformation from earlier. If we were to implement our own <code>dataset</code>, this would simply be part of the <code>$.getitem()</code> or <code>$.getbatch()</code> method.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>transform_mnist <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">torch_tensor</span>(x) <span class="sc">/</span> <span class="dv">255</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> x<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">1</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> x<span class="sc">$</span><span class="fu">expand</span>(<span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">28</span>, <span class="dv">28</span>))</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">transform_normalize</span>(x, <span class="at">mean =</span> <span class="fu">c</span>(<span class="fl">0.485</span>, <span class="fl">0.456</span>, <span class="fl">0.406</span>), <span class="at">std =</span> <span class="fu">c</span>(<span class="fl">0.229</span>, <span class="fl">0.224</span>, <span class="fl">0.225</span>))</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">transform_resize</span>(x, <span class="fu">c</span>(<span class="dv">224</span>, <span class="dv">224</span>))</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  x</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>mnist_train <span class="ot">&lt;-</span> <span class="fu">mnist_dataset</span>(<span class="at">root =</span> <span class="st">"data"</span>, <span class="at">download =</span> <span class="cn">TRUE</span>, <span class="at">train =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform =</span> transform_mnist, <span class="at">target_transform =</span> torch_tensor</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>mnist_test <span class="ot">&lt;-</span> <span class="fu">mnist_dataset</span>(<span class="at">root =</span> <span class="st">"data"</span>, <span class="at">download =</span> <span class="cn">TRUE</span>, <span class="at">train =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform =</span> transform_mnist, <span class="at">target_transform =</span> torch_tensor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now compare the pretrained and untrained resnet on the training task and evaluate it on the validation data. The results are shown below:</p>
+<p>When fine-tuning a pretrained model like ResNet-18, it’s common to observe instabilities in gradients, which can manifest as fluctuating validation performance.</p>
+<p>To address this, one can for example freeze the pretrained layers (for some epochs) and only train the new output head, a process known as <strong>freezing layers</strong>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">

@@ -13,7 +13,6 @@ The seven topics are:
 5. Convolutional Neural Networks
 6. Intro to mlr3torch (and mlr3 recap)
 7. Training Efficiency
-8. Use Case (WIP)
 
 ## Contributing
 

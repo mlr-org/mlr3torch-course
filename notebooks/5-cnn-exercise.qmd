@@ -1,0 +1,121 @@
+---
+title: "CNN Exercises"
+---
+
+{{< include _setup.qmd >}}
+
+**Question 1**: Manual Convolution
+
+In this exercise, your task is to implement a function that performs a 2D convolution operation manually on a 3D input image using a given 3D kernel.
+
+The input is a tensor with dimensions `[channels, height, width]` and the kernel is a tensor with dimensions `[channels, kH, kW]`. Your goal is to produce an output tensor of shape `[height - kH + 1, width - kW + 1]` by applying the convolution operation.
+Recall that output element is computed as the sum of the element-wise multiplication of the kernel and the corresponding patch of the input image.
+
+```{r}
+fconv2d <- function(image, kernel, bias) {
+  ...
+}
+```
+
+
+```{r, include = FALSE}
+fconv2d <- function(image, kernel, bias) {
+  channels <- image$size(1)
+  height <- image$size(2)
+  width <- image$size(3)
+  kH <- kernel$size(2)
+  kW  <- kernel$size(3)
+
+  new_image <- torch_zeros(1, height - kH + 1, width - kW + 1)
+
+  for (i in seq_len(height - kH + 1)) {
+    for (j in seq_len(width - kW + 1)) {
+      patch <- image[.., i:(i + kH - 1), j:(j + kW - 1)]
+      new_image[.., i, j] <- torch_sum(patch * kernel) + bias
+    }
+  }
+  new_image
+}
+```
+
+You can use the code below to check your implementation against the `conv2d` module from the `torch` package.
+```{r}
+library(torch)
+conv <- nn_conv2d(3, 1, kernel_size = c(3, 3))
+kernel <- conv$parameters$weight
+bias <- conv$parameters$bias
+
+input <- torch_randn(1, 3, 28, 28)
+torch_allclose(
+  fconv2d(input$squeeze(), kernel$squeeze(), bias$squeeze()),
+  conv(input),
+  atol = 1e-5
+)
+```
+
+<details>
+<summary>Hint</summary>
+1. Allocate a new empty tensor of the correct size to store the output.
+2. Using a nested loop, iterate over each valid spatial location in the input and multiply the corresponding patch of the input with the kernel (`torch_sum(patch * kernel)`) and add the bias.
+
+</details>
+
+::: {.content-visible when-meta=solutions}
+**Solution**
+```{r}
+fconv2d <- function(image, kernel, bias) {
+  channels <- image$size(1)
+  height <- image$size(2)
+  width <- image$size(3)
+  kH <- kernel$size(2)
+  kW  <- kernel$size(3)
+
+  new_image <- torch_zeros(1, height - kH + 1, width - kW + 1)
+
+  for (i in seq_len(height - kH + 1)) {
+    for (j in seq_len(width - kW + 1)) {
+      patch <- image[.., i:(i + kH - 1), j:(j + kW - 1)]
+      new_image[.., i, j] <- torch_sum(patch * kernel) + bias
+    }
+  }
+  new_image
+}
+```
+
+:::
+
+
+**Question 2**: Be edgey
+
+Construct a convolutional 2x2 kernel that extracts the edges of an image.
+Apply it using the `fconv2d` function from the previous exercise.
+
+As an input, we use an image from MNIST.
+You can use the `plot_2d_image` function from the helper script to plot the image.
+
+```{r}
+library(torchvision)
+source(here::here("scripts/helper.R"))
+mnist <- mnist_dataset(root = "data")
+image <- mnist$.getitem(13)$x
+plot_2d_image(image)
+```
+
+To get started, use the code below and modify the values of the kernel.
+
+```{r}
+kernel <- matrix(c(0.53, 0.34, 0.22, 0.1), byrow = TRUE, nrow = 2)
+kernel
+kernel <- torch_tensor(kernel)$unsqueeze(1)
+
+imageout <- fconv2d(torch_tensor(image)$unsqueeze(1), kernel, 0)
+plot_2d_image(imageout$squeeze())
+```
+
+::: {.content-visible when-meta=solutions}
+**Solution**
+```{r}
+edge_kernel <- torch_tensor(matrix(c(-1, -1, 1, 1), byrow = TRUE, nrow = 3))
+plot_2d_image(edge_kernel$squeeze())
+```
+:::

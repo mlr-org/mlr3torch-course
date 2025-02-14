@@ -722,7 +722,7 @@ nn_vanilla <- nn_reg(dropout = FALSE, batch_norm = FALSE)
 
 We evaluate the performance of the four neural networks created above using subsampling with 10 repetitions and an 80/20 train/test split.
 We don't show the specific training code here, but only the resulting confidence intervals for the accuracy.
-While the intervals are too wide to be able to draw any final conclusions and we are only looking at a single dataset, both normalization techniques tend to lead to better results.
+While the intervals are too wide to be able to draw any final conclusions, both regularizaion techniques tend to lead to better results.
 Also, both normalization techniques improve stability, so that the confidence intervals are narrower.
 
 ```{r, echo = FALSE, message = FALSE}
@@ -762,7 +762,4 @@ design <- benchmark_grid(task, lrns, resampling = rsmp("subsampling", repeats = 
 bmr <- benchmark(design, store_models = TRUE)
 
 autoplot(bmr, type = "ci", measure = msr("ci", msr("classif.acc")))
-autoplot(bmr)
-
-x = bmr$score()[, c("learner_id", "iteration", "classif.ce")]
 ```

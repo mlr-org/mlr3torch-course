@@ -613,8 +613,8 @@ evals <- 30
 ```
 
 ```{r, include = FALSE}
-tsk_cifar$filter(1)
 evals <- 1
+tsk_cifar$filter(1:10)
 ```
 
 ```{r}
@@ -647,4 +647,3 @@ Afterward, we can load the learner again using `readRDS()` and then call the `$u
 glrn_with_flattening <- readRDS(pth)
 glrn_with_flattening$unmarshal()
 ```
-

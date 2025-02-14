@@ -2,70 +2,112 @@
 title: "Convolutional Neural Networks"
 ---
 
-In this notebook, we will learn about convolutional neural networks (CNNs) that are used for image classification tasks.
+{{< include _setup.qmd >}}
+
+```{r, include = FALSE}
+source(here::here("scripts/helper.R"))
+```
+
+In this notebook, we explore convolutional neural networks (CNNs) used for image classification tasks.
+Image classification is fundamentally different from working with tabular data because images are highly structured and high-dimensional.
+For example, in an image, nearby pixels have strong spatial dependencies, whereas tabular data typically consists of independent or loosely related features, with each column representing a distinct attribute.
 
 ## Convolutional Layers
 
 The central component of a CNN is the convolutional layer.
-It works by sliding a kernel over the input image, performing element-wise multiplication with the overlapping pixel values, and summing the results to produce a single output value for each position of the kernel.
+It functions by sliding a kernel over the input image, performing element-wise multiplication with the overlapping pixel values, and summing the results to produce a single output value for each kernel position.
 
 ![](../assets/convolution.png)
 
 [Source](https://www.ibm.com/think/topics/convolutional-neural-networks)
 
-CNNs encode several strong inductive biases about visual data:
+CNNs incorporate several strong inductive biases about visual data:
 
 1. **Locality**: Nearby pixels are more likely to be related than distant ones.
 2. **Translation Invariance**: Features should be detected regardless of their position.
-3. **Hierarchical Composition**: Complex patterns are built from simpler ones.
 
-These biases make CNNs particularly effective for image-related tasks because they align with our understanding of how visual information is structured.
-As an example, we will apply a convolutional layer to an image from MNIST.
+These biases make CNNs particularly effective for image-related tasks, as they align with our understanding of how visual information is structured.
+
+As a first example, we will apply a convolutional layer to an image from MNIST—a benchmark dataset widely used in the machine learning community.
+MNIST comprises 28×28 grayscale images of handwritten digits (ranging from 0 to 9).
+The classification task is to assign the correct digit to each image.
 
 ```{r, echo = FALSE, message = FALSE, fig.width = 5, fig.height = 5}
 library(mlr3torch)
 library(torchvision)
 library(ggplot2)
 
-plot_2d_image <- function(image) {
-  image <- as.matrix(image)
-  tab <- as.table(image)
-  rownames(tab) <- seq_len(nrow(image))
-  colnames(tab) <- seq_len(ncol(image))
-  tbl <- as.data.frame(tab)
-  colnames(tbl) <- c("x", "y", "value")
-  tbl$x <- as.integer(tbl$x)
-  tbl$y <- as.integer(tbl$y)
-
-  # Plot with ggplot2
-  ggplot(tbl, aes(x = y, y = x, fill = value)) +
-    geom_tile() +
-    # Use an appropriate grayscale gradient
-    scale_fill_gradient(low = "white", high = "black") +
-    # Reverse y-axis so the image displays in the usual orientation
-    theme_void() +
-    scale_y_reverse() +
-    # Remove extra space around the plot
-    coord_fixed() +
-    theme(legend.position = "none")
-}
-
 image <- materialize(tsk("mnist")$data(3, cols = "image")[[1L]])[[1L]]
 plot_2d_image(image$squeeze())
 ```
 
-Such an image is a 3D tensor with dimensions `[1, 28, 28]`, where the first dimension are the number of channels (would be 3 for RGB images, but MNIST is grayscale), and the other two dimensions are the spatial dimensions of the image.
+When working with these images as tensors, each is represented a 3D tensor with dimensions `[1, 28, 28]`, where the first dimension are the number of channels (would be 3 for RGB images, but MNIST is grayscale), and the other two dimensions are the spatial dimensions (width and height) of the image.
 
 ```{r}
 str(image)
 ```
 
-To create a convolutional layer for a 2D image, we can use the `nn_conv2d` function.
+Such a convolutional layer has the following parameters:
+
+- **in_channels**: The number of channels in the input image (e.g., 1 for grayscale images and 3 for RGB images).
+- **out_channels**: The number of filters (or kernels) used by the layer. This determines the number of channels in the output feature map.
+- **kernel_size**: The size of the filter that moves over the image. For instance, a kernel size of 3 means a 3×3 filter.
+- **padding**: The number of pixels added to the borders of the input image. Padding can help control the spatial dimensions of the output.
+- **stride**: The step size with which the filter moves across the input image. A larger stride results in a smaller output feature map.
+
+The padding and the strides are visualized below:
+
+![](../assets/padding_strides.png)
+
+[Source](https://www.geeksforgeeks.org/cnn-introduction-to-padding/)
+
+For the input and output channels, we have the following:
+
+![](../assets/input_output_channels.svg)
+[Source](https://classic.d2l.ai/chapter_convolutional-neural-networks/channels.html)
+
+To create a convolutional layer for a 2D image, we can use the `torch::nn_conv2d` function.
 
 ```{r}
-conv_layer <- nn_conv2d(in_channels = 1, out_channels = 1, kernel_size = 3, padding = 1)
+conv_layer <- nn_conv2d(in_channels = 1, out_channels = 1, kernel_size = 3, padding = 1, stride = 1)
 str(conv_layer(image))
 ```
+
+:::{.callout-note}
+## Parameters of a Convolutional Layer
+
+**Question 1**: Can you set the number of input channels of a convolutional layer freely?
+
+<details>
+<summary>Click for answer</summary>
+No, the number of input channels is determined by the number of channels of the input tensor.
+</details>
+
+**Question 2**: Can you come up with a formula for the number of parameters of a convolutional layer?
+You can assume a symmetric kernel.
+Note that each kernel also has a bias term which is a scalar.
+
+<details>
+<summary>Click for answer</summary>
+The formula is `out_channels * (kernel_size^2 * in_channels + 1)`.
+</details>
+
+**Question 3**: We have an input image of shape `(1, 28, 28)` and we want to apply a fully connected layer and a convolutional layer that produces an output tensor with the same number of elements.
+
+a) A convolutional layer with 1 input channel and 1 ouput channel and a kernel of size 3x3 and padding of 1.
+  (The output shape will therefore be `(1, 28, 28)`.)
+b) A fully connected layer (that treats the input as a vector of dimension `28 * 28 = 784`) that produces an output tensor with the same number of elements.
+
+How many parameters does each layer have?
+(Recall that the linear layer also has a bias term.)
+
+<details>
+<summary>Click for answer</summary>
+a) $1 * (3 * 3 * 1 + 1) = 10$
+b) $784 * (784 + 1) = 615440$
+</details>
+:::
+
 
 Because we have encoded more information about the structural relationship between the input tensor and the output tensor (the same filter is applied to the entire image), the convolutional layer has far fewer parameters than a fully connected layer.
 
@@ -73,7 +115,7 @@ Because we have encoded more information about the structural relationship betwe
 conv_layer$parameters
 ```
 
-Below, we show the output of the first convolutional layer from a (trained) ResNet18 model applied to an image from MNIST (which has 28x28 pixels).
+Below, we show the output of the first convolutional layer from a (trained) ResNet18 model applied to an image from MNIST.
 
 ```{r, echo = FALSE}
 conv_layer_pretrained <- model_resnet18(pretrained = TRUE)$conv1
@@ -84,45 +126,55 @@ cowplot::plot_grid(plotlist = ps, nrow = 5)
 ```
 
 
-::: {.callout-note}
-## Weights of a Fully Connected Layer
-
-**Question 1**: How many parameters does a fully connected layer with the same number of inputs `(1, 28, 28)` and outputs `(1, 28, 28)` have?
-
-<details>
-<summary>Answer</summary>
-
-The input has $28 \times 28 = 784$ pixels and the output as well. The weights of the fully connected layer are a $784 \times 784$ matrix and the bias also has 784 elements, so the number of parameters is $784 \times 784 + 784 = 615440$, much more than our simple convolutional kernel.
-
-</details>
-
-:::
-
 ## Max Pooling
 
 While convolutional layers extract local features from an image by applying a kernel over the input, max pooling is used to **downsample** the feature maps.
 Instead of applying a filter, max pooling simply partitions the input into non-overlapping (or sometimes overlapping) regions and selects the maximum value from each region.
-Below, we demonstrate it in action. We start by applying a convolutional layer to an MNIST image to obtain feature maps and then apply a 2×2 max pooling layer (with stride 2) on the convolution output. The two results are visualized side-by-side.
 
+![](../assets/maxpooling.png)
+[Source](https://www.mdpi.com/2076-3417/12/17/8643)
+
+Below, we demonstrate it in action. We start by applying a convolutional layer to an MNIST image to obtain feature maps and then apply a 2×2 max pooling layer (with stride 2) on the convolution output.
+The two results are visualized side-by-side.
 
 ```{r}
 # Create a max pooling layer with a 2x2 kernel and stride 2
 pool_layer <- nn_max_pool2d(kernel_size = 2, stride = 2)
 
 # Now apply the max pooling layer to the result from the convolution.
-pooled_output <- pool_layer(image_rgb2[1, ])
+pooled_output <- pool_layer(image_rgb2[1, drop = FALSE]$unsqueeze(1))
+```
 
-# Visualize the original convolution output and the pooled output.
-p_conv <- plot_2d_image(image_rgb2$squeeze())
-p_pool <- plot_2d_image(pooled_output$squeeze())
+```{r, include = FALSE}
+min1 = min(c(min(image_rgb2[1, ])$item(), min(pooled_output)$item()))
+max1 = min(c(max(image_rgb2[1, ])$item(), max(pooled_output)$item()))
+p_conv <- plot_2d_image(image_rgb2[1, ]$squeeze(), min = min1)
+p_pool <- plot_2d_image(pooled_output$squeeze(), min = min1, max = max1)
 
-# Use cowplot to display the two images side-by-side for easy comparison.
 cowplot::plot_grid(p_conv, p_pool, labels = c("Convolution Output", "After Max Pooling"))
 ```
 
-## Architecture Design
+:::{.callout-note}
+## Max Pooling
 
-Another essential aspect of training neural networks efficiently and effectively is the design of the network architecture, which can be a challenging task.
+**Question 1**: How many parameters does a max pooling layer have?
+
+<details>
+<summary>Click for answer</summary>
+A max pooling layer has no parameters.
+</details>
+
+**Question 2**: When applying a max pooling layer to an image of shape `(1, 28, 28)` and a kernel size of `10x10`, a stride of `1` and a padding of `0`, what is the shape of the output?
+
+<details>
+<summary>Click for answer</summary>
+The output shape is `(1, 19, 19)`.
+</details>
+:::
+
+## Architecture & Transfer Learning
+
+While we have no covered individual components of CNNs, the question of how to configure and compose them is a challenging task, but essential for building efficient neural networks.
 However, for many problems, there are predefined architectures that perform well and can be used.
 Unless there is a specific reason to design a new architecture, it is recommended to use such an architecture.
 
@@ -133,80 +185,8 @@ While PyTorch and (R-)torch are quite similar, there are some differences, e.g.,
 The `torch` website contains a [brief tutorial](https://torch.mlverse.org/docs/articles/python-to-r) on this topic.
 :::
 
-Nonetheless, we will cover important techniques that can be used to speed up the training process, namely *batch normalization* and *dropout*.
-
-
-
-To illustrate its effectiveness, we will define a simple CNN, with and without batch normalization, train it on CIFAR-10, and compare their performances.
-
-To build the neural networks, we will use `mlr3torch`, which allows building architectures from `PipeOp`s.
-Recall that the `po("torch_ingress_ltnsr")` is a special `PipeOp` that marks the input of the neural network.
-Note that `po("nn_relu_1")` is equivalent to `po("nn_relu", id = "nn_relu_1")`.
-We need to specify unique IDs for each `PipeOp` as this is required in mlr3pipelines graphs.
-
-```{r}
-cnn_bn = po("torch_ingress_ltnsr") %>>%
-  po("nn_conv2d_1", out_channels = 32, kernel_size = 3, stride = 1, padding = 1) %>>%
-  po("nn_batch_norm2d_1") %>>%
-  po("nn_relu_1") %>>%
-  po("nn_max_pool2d_1", kernel_size = 2, stride = 2) %>>%
-  po("nn_conv2d_2", out_channels = 64, kernel_size = 3, stride = 1, padding = 1) %>>%
-  po("nn_batch_norm2d_2") %>>%
-  po("nn_relu_2") %>>%
-  po("nn_max_pool2d_2", kernel_size = 2, stride = 2)
-
-cnn = po("torch_ingress_ltnsr") %>>%
-  po("nn_conv2d_1", out_channels = 32, kernel_size = 3, stride = 1, padding = 1) %>>%
-  po("nn_relu_1") %>>%
-  po("nn_max_pool2d_1", kernel_size = 2, stride = 2) %>>%
-  po("nn_conv2d", out_channels = 64, kernel_size = 3, stride = 1, padding = 1) %>>%
-  po("nn_relu_2") %>>%
-  po("nn_max_pool2d_2", kernel_size = 2, stride = 2)
-
-head = po("nn_flatten") %>>%
-  po("nn_linear", out_features = 128) %>>%
-  po("nn_relu") %>>%
-  po("nn_head")
-
-model = po("torch_optimizer", optimizer = t_opt("adam", lr = 0.003)) %>>%
-  po("torch_model_classif",
-    epochs = 100,
-    batch_size = 256,
-    predict_type = "prob",
-    device = "cuda"
-  )
-```
-
-We evaluate the two models on the CIFAR-10 image classification task that we have introduced earlier.
-There, the goal is to classify images into 10 different classes.
-
-```{r}
-net_bn = as_learner(cnn_bn %>>% head %>>% model)
-net_bn$id = "net_bn"
-net = as_learner(cnn %>>% head %>>% model)
-net$id = "net"
-
-cifar10 = tsk("cifar10")
-resampling = rsmp("holdout")$instantiate(cifar10)
-
-design = benchmark_grid(
-  task = cifar10,
-  learner = list(net_bn, net),
-  resampling = resampling
-)
-design
-```
-
-```{r, eval = cuda_is_available()}
-bmr = benchmark(design)
-bmr$aggregate()
-```
-
-
-
-## Transfer Learning
-
-Transfer learning is a powerful technique in machine learning where a pre-trained model developed for a specific task is reused as the starting point for a model on a second, related task. Instead of training a model from scratch, which can be time-consuming and computationally expensive, transfer learning leverages the knowledge gained from a previously learned task to improve learning efficiency and performance on a new task.
+Beyond just using a predefined architecture, it is also possible to use **transfer learning**, which is a powerful technique in machine learning where a pre-trained model developed for a specific task is reused as the starting point for a model on a second, related task.
+Instead of training a model from scratch, which can be time-consuming and computationally expensive, transfer learning leverages the knowledge gained from a previously learned task to improve learning efficiency and performance on a new task.
 
 The advantages of transfer learning are:
 
@@ -222,41 +202,126 @@ This is visualized below:
 
 [Source](https://en.wikipedia.org/wiki/Transfer_learning)
 
-`mlr3torch` offers various pretrained image networks that are available through the [`torchvision` package](https://torchvision.mlverse.org/).
-The ResNet-18 model is a popular pre-trained model that was pretrained on ImageNet.
-We can use the pretrained weights by setting the `pretrained` parameter to `TRUE`.
+The [`torchvision` package](https://torchvision.mlverse.org/) offers various pretrained image networks that are available through the [`torchvision` package](https://torchvision.mlverse.org/).
+The ResNet-18 model is a well-known pre-trained model that was pretrained on ImageNet.
+It's (complicated) architecture is shown below:
 
-```{r, eval = cuda_is_available()}
-resnet = lrn("classif.resnet18",
-  pretrained = TRUE,
-  epochs = 2,
-  batch_size = 256,
-  validate = 0.3,
-  measures_valid = msr("classif.logloss"),
-  device = "cuda",
-  predict_type = "prob",
-  id = "pretrained"
-)
-resnet_no_pretrain = resnet$clone(deep = TRUE)
-resnet_no_pretrain$param_set$set_values(
-  pretrained = FALSE
-)
-resnet_no_pretrain$id = "not_pretrained"
+![](../assets/resnet18.png)
 
-grid = benchmark_grid(
-  task = tsk("cifar10"),
-  learner = list(resnet, resnet_no_pretrain),
-  resampling = rsmp("insample")
-)
+Because it's architecture is quite complex, we only visualize it below, but don't define it from scratch.
 
-bmr = benchmark(grid, store_models = TRUE)
-bmr$aggregate()
+[Source](https://www.researchgate.net/figure/Proposed-Modified-ResNet-18-architecture-for-Bangla-HCR-In-the-diagram-conv-stands-for_fig1_323063171)
+
+We can use the pretrained weights by setting the `pretrained` parameter to `TRUE` and specify the number of classes of our new task via the `num_classes` parameter (10 for MNIST).
+
+```{r}
+library(torchvision)
+resnet <- model_resnet18(pretrained = FALSE, num_classes = 10)
+resnet_pretrained <- model_resnet18(pretrained = TRUE)
+resnet_pretrained$fc <- nn_linear(512, 10)
+
+resnet_pretrained
 ```
 
 When fine-tuning a pretrained model like ResNet-18, it's common to observe instabilities in gradients, which can manifest as fluctuating validation performance.
 
-To address this, one can for example freeze the pretrained layers (for some epochs) and only train the new output head.
-In `mlr3torch`, this can be achieved by using the `t_clbk("unfreeze")` callback.
+To fine-tune this model on MNIST, we need to also have a `dataloader`.
+In the case of MNIST, a predefined dataloader is available in the `torchvision` package.
+We transform both the input and the target to tensors (instead of R arrays).
+
+```{r}
+mnist_ds <- mnist_dataset(root = "data", download = TRUE,
+  transform = torch_tensor, target_transform = torch_tensor)
+mnist_ds
+```
+
+We can inspect the first element of the dataset.
+
+```{r}
+batch <- mnist_ds[1:2]
+str(batch)
+```
+
+In order to be able to fine-tune the pretrained model on MNIST, we need to make sure that the format of the input data is compatible with the pretrained model:
+
+* The size of the training images of ResNet-18 were 224x224, while MNIST images are 28x28.
+  We therefore need to resize them.
+* ResNet-18 was pretrained on ImageNet, which uses RGB images (3 input channels), while MNIST is grayscale (1 input channel).
+* The training images of ResNet-18 were first transformed to be in the range of $[0, 1]$ and then normalized to have a mean of $[0.485, 0.456, 0.406]$ and a standard deviation of $[0.229, 0.224, 0.225]$.
+  Our MNIST images are integer values in the range of $[0, 255]$ so we need to apply both transformations.
+
+We can address this my modifying the transformation from earlier.
+If we were to implement our own `dataset`, this would simply be part of the `$.getitem()` or `$.getbatch()` method.
+
+```{r}
+transform_mnist <- function(x) {
+  x <- torch_tensor(x) / 255
+  x <- x$unsqueeze(1)
+  x <- x$expand(c(3, 28, 28))
+  x <- transform_normalize(x, mean = c(0.485, 0.456, 0.406), std = c(0.229, 0.224, 0.225))
+  x <- transform_resize(x, c(224, 224))
+  x
+}
+mnist_train <- mnist_dataset(root = "data", download = TRUE, train = TRUE,
+  transform = transform_mnist, target_transform = torch_tensor
+)
+mnist_test <- mnist_dataset(root = "data", download = TRUE, train = FALSE,
+  transform = transform_mnist, target_transform = torch_tensor)
+```
+
+We can now compare the pretrained and untrained resnet on the training task and evaluate it on the validation data.
+The results are shown below:
+
+```{r, echo = FALSE, eval = torch::cuda_is_available()}
+library(data.table)
+xtrain = as_lazy_tensor(mnist_train, input_map = "x", dataset_shapes = list(x = c(NA, 3, 224, 224), y = c(NA, 1)))
+xtest = as_lazy_tensor(mnist_test, input_map = "x", dataset_shapes = list(x = c(NA, 3, 224, 224), y = c(NA, 1)))
+
+task_train = as_task_classif(data.table(
+  x = xtrain,
+  y = as.factor(mnist_train$targets)
+), target = "y")
+task_test = as_task_classif(data.table(
+  x = xtest,
+  y = as.factor(mnist_test$targets)
+), target = "y")
+task_train$filter(1)
+task_train$internal_valid_task = task_test$filter(1)
+
+lpretrained = lrn("classif.torch_model", network = resnet_pretrained, id = "pretrained",
+  batch_size = 128, epochs = 10, validate = "predefined", measures_valid = msr("classif.logloss"),
+  predict_type = "prob", ingress_tokens = list(
+    x = TorchIngressToken("x", mlr3torch:::batchgetter_lazy_tensor, shape = c(NA, 3, 224, 224))
+  ),
+  callbacks = t_clbk("history"), device = "cuda"
+)
+luntrained = lrn("classif.torch_model", network = resnet, id = "untrained",
+  batch_size = 128, epochs = 10, validate = "predefined", measures_valid = msr("classif.logloss"),
+  predict_type = "prob", ingress_tokens = list(
+    x = TorchIngressToken("x", mlr3torch:::batchgetter_lazy_tensor, shape = c(NA, 3, 224, 224))
+  ), callbacks = t_clbk("history"), device = "cuda"
+  )
+
+lpretrained$train(task_train)
+luntrained$train(task_train)
+
+tbl1 <- lpretrained$model$callbacks$history
+tbl1$logloss.pretrained = tbl1$valid.classif.logloss
+tbl2 <- luntrained$model$callbacks$history
+tbl1$logloss.untrained = tbl2$valid.classif.logloss
+tbl1 = melt(tbl1, id.vars = "epoch", measure.vars = c("logloss.pretrained", "logloss.untrained"),
+  variable.name = "model", value.name = "logloss")
+tbl1$pretrained = ifelse(tbl1$model == "logloss.pretrained", "true", "false")
+
+ggplot(tbl1, aes(x = epoch, y = logloss, color = pretrained)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Validation Logloss", x = "Epoch", y = "Logloss")
+```
+
+When fine-tuning a pretrained model like ResNet-18, it's common to observe instabilities in gradients, which can manifest as fluctuating validation performance.
+
+To address this, one can for example freeze the pretrained layers (for some epochs) and only train the new output head, a process known as **freezing layers**.
 
 :::{.callout-note}
 ## In-Context Learning

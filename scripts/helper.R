@@ -153,3 +153,26 @@ plot_adamw_trajectories <- function(lr = 0.1, weight_decay = 0.01, epochs = 10, 
 
   cowplot::plot_grid(plotlist = ps, ncol = 2)
 }
+
+plot_2d_image <- function(image, min = NULL, max = NULL) {
+  image <- as.matrix(image)
+  tab <- as.table(image)
+  rownames(tab) <- seq_len(nrow(image))
+  colnames(tab) <- seq_len(ncol(image))
+  tbl <- as.data.frame(tab)
+  colnames(tbl) <- c("x", "y", "value")
+  tbl$x <- as.integer(tbl$x)
+  tbl$y <- as.integer(tbl$y)
+
+  min = if (is.null(min)) NA else min
+  max = if (is.null(max)) NA else max
+
+  ggplot(tbl, aes(x = y, y = x, fill = value)) +
+    geom_tile() +
+    scale_fill_gradient(low = "white", high = "black",
+      limits = c(min, max)) +
+    theme_void() +
+    scale_y_reverse() +
+    coord_fixed() +
+    theme(legend.position = "none")
+}
