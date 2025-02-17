@@ -1,5 +1,6 @@
 ---
 title: "Setup Guide"
+from: markdown+emoji
 ---
 
 In order to be able to successfully run the notebooks and solve the exercises, make sure that you have the right environment set up.

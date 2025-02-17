@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.39">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Training Neural Networks with mlr3torch – Deep Learning with (mlr3)torch</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-79108a0fc1995748cbd19a5b0e3e3e7c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-fixed fullcontent">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Deep Learning with (mlr3)torch</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-general" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">General</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-general">    
+        <li>
+    <a class="dropdown-item" href="../notebooks/setup-guide.html">
+ <span class="dropdown-text">Setup</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/resources.html">
+ <span class="dropdown-text">Resources</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tutorials" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Tutorials</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-tutorials">    
+        <li>
+    <a class="dropdown-item" href="../notebooks/0-tutorial-intro.html">
+ <span class="dropdown-text">Intro</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../notebooks/1-tensor.html">
+ <span class="dropdown-text">1. Tensors</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/2-autograd.html">
+ <span class="dropdown-text">2. Autograd</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/3-modules-data.html">
+ <span class="dropdown-text">3. Modules and Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/4-optimizer.html">
+ <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/5-cnn.html">
+ <span class="dropdown-text">5. CNNs</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch.html">
+ <span class="dropdown-text">6. mlr3torch</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency.html">
+ <span class="dropdown-text">7. Training Efficiency</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-exercises" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Exercises</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-exercises">    
+        <li>
+    <a class="dropdown-item" href="../notebooks/0-exercise-intro.html">
+ <span class="dropdown-text">Intro</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-task.html">
+ <span class="dropdown-text">1. Tensors</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-task.html">
+ <span class="dropdown-text">2. Autograd</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-task.html">
+ <span class="dropdown-text">3. Modules and Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-task.html">
+ <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-task.html">
+ <span class="dropdown-text">5. CNNs</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-task.html">
+ <span class="dropdown-text">6. mlr3torch</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html">
+ <span class="dropdown-text">7. Training Efficiency</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-solutions" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Solutions</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-solutions">    
+        <li>
+    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-solution.html">
+ <span class="dropdown-text">1. Tensors</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-solution.html">
+ <span class="dropdown-text">2. Autograd</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-solution.html">
+ <span class="dropdown-text">3. Modules and Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-solution.html">
+ <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-solution.html">
+ <span class="dropdown-text">5. CNNs</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-solution.html">
+ <span class="dropdown-text">6. mlr3torch</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html">
+ <span class="dropdown-text">7. Training Efficiency</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/sebffischer/torch-eds"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Training Neural Networks with mlr3torch</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>Why Use <code>mlr3torch</code>?</strong></p>
+<p><code>mlr3torch</code> is a package that extends the <code>mlr3</code> framework with deep learning capabilities, allowing the application of deep learning techniques to both tabular and non-tabular data. The package implements many routines common in deep learning and allows users to focus on the actual problem at hand. Some advantages of using <code>mlr3torch</code> over ‘only’ <code>torch</code> are:</p>
+<ul>
+<li><p><strong>Less Code</strong>: Avoid writing repetitive boilerplate code by utilizing predefined network architectures or easily building custom ones tailored to your specific needs.</p></li>
+<li><p><strong>mlr3 Integration</strong>: Especially for users with experience in the <code>mlr3</code> framework, working with <code>mlr3torch</code> should feel familiar. Due to the integration into the <code>mlr3</code> framework, many <code>mlr3</code> features like hyperparameter tuning and resampling are readily available for <code>mlr3torch</code>.</p></li>
+<li><p><strong>mlr3pipelines Integration</strong>: <code>mlr3torch</code> allows to represent neural architectures as <code>mlr3pipelines::Graph</code> objects, offering a unified language for preprocessing and building neural networks.</p></li>
+</ul>
+<p>However, as <code>mlr3torch</code> is a framework, it is less flexible than <code>torch</code> itself, so knowing both is recommended. Another helpful R package that provides many useful functions to train neural networks is <a href="https://mlverse.github.io/luz/"><code>luz</code></a>.</p>
+<section id="mlr3-recap" class="level2">
+<h2 class="anchored" data-anchor-id="mlr3-recap"><code>mlr3</code> Recap</h2>
+<p>Before diving into <code>mlr3torch</code>, we will briefly review the core building blocks of the <code>mlr3</code> machine learning framework. For reference, we recommend the <a href="https://mlr3book.mlr-org.com/">mlr3 book</a> that explains the <code>mlr3</code> framework in more detail. Additionally, the <a href="https://mlr-org.com/">mlr3 website</a> contains more tutorials and overviews.</p>
+<section id="task" class="level3">
+<h3 class="anchored" data-anchor-id="task">Task</h3>
+<p>A task is a machine learning problem on a dataset. It consists of the data itself and some metadata such as the features or the target variable. To create an example task that comes with <code>mlr3</code>, we can use the <code>tsk()</code> function:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tsk</span>(<span class="st">"iris"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;TaskClassif:iris&gt; (150 x 5): Iris Flowers
+* Target: Species
+* Properties: multiclass
+* Features (4):
+  - dbl (4): Petal.Length, Petal.Width, Sepal.Length, Sepal.Width</code></pre>
+</div>
+</div>
+<p>To create a custom <code>Task</code> from a <code>data.frame</code>, we can use the <code>as_task_&lt;type&gt;</code> converters:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(iris)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+1          5.1         3.5          1.4         0.2  setosa
+2          4.9         3.0          1.4         0.2  setosa
+3          4.7         3.2          1.3         0.2  setosa
+4          4.6         3.1          1.5         0.2  setosa
+5          5.0         3.6          1.4         0.2  setosa
+6          5.4         3.9          1.7         0.4  setosa</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tsk_iris <span class="ot">&lt;-</span> <span class="fu">as_task_classif</span>(iris, <span class="at">id =</span> <span class="st">"iris"</span>, <span class="at">target =</span> <span class="st">"Species"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>tsk_iris</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;TaskClassif:iris&gt; (150 x 5)
+* Target: Species
+* Properties: multiclass
+* Features (4):
+  - dbl (4): Petal.Length, Petal.Width, Sepal.Length, Sepal.Width</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To get the help page for an <code>mlr3</code> object, you can call <code>tsk_iris$help()</code>.</p>
+</div>
+</div>
+<p>You can access the data of a task using the <code>$data()</code> method, which accepts arguments <code>rows</code> and <code>cols</code> to select specific rows and columns.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tsk_iris<span class="sc">$</span><span class="fu">data</span>(<span class="at">rows =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">"Sepal.Length"</span>, <span class="st">"Sepal.Width"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Sepal.Length Sepal.Width
+          &lt;num&gt;       &lt;num&gt;
+1:          5.1         3.5
+2:          4.9         3.0
+3:          4.7         3.2
+4:          4.6         3.1
+5:          5.0         3.6</code></pre>
+</div>
+</div>
+<p>Using the <code>mlr3viz</code> extension, we can get an overview of the target distribution:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3viz)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(tsk_iris)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="6-mlr3torch_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="learner" class="level3">
+<h3 class="anchored" data-anchor-id="learner">Learner</h3>
+<p>A learner is a machine learning algorithm that can be <code>$train()</code>ed on a <code>Task</code> and be used to make <code>$predict()</code>ions on it. An overview of all learners is shown on our <a href="https://mlr-org.com/learners.html">website</a>. We can construct one by passing the identifier of the learner to the <code>lrn()</code> function.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>lrn_tree <span class="ot">&lt;-</span> <span class="fu">lrn</span>(<span class="st">"classif.rpart"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we need to split the data into a training and test set and apply the learner on the former.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>split <span class="ot">&lt;-</span> <span class="fu">partition</span>(tsk_iris, <span class="at">ratio =</span> <span class="fl">0.8</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>lrn_tree<span class="sc">$</span><span class="fu">train</span>(tsk_iris, <span class="at">row_ids =</span> split<span class="sc">$</span>train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The trained model can be accessed via the <code>$model</code> slot of the learner:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(lrn_tree<span class="sc">$</span>model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>n= 120 
+
+node), split, n, loss, yval, (yprob)
+      * denotes terminal node
+
+1) root 120 75 virginica (0.33333333 0.29166667 0.37500000)  
+  2) Petal.Length&lt; 2.45 40  0 setosa (1.00000000 0.00000000 0.00000000) *
+  3) Petal.Length&gt;=2.45 80 35 virginica (0.00000000 0.43750000 0.56250000)  
+    6) Petal.Length&lt; 4.75 32  1 versicolor (0.00000000 0.96875000 0.03125000) *
+    7) Petal.Length&gt;=4.75 48  4 virginica (0.00000000 0.08333333 0.91666667) *</code></pre>
+</div>
+</div>
+<p>To make predictions on the test set, we can use the <code>$predict()</code> method of the learner:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> lrn_tree<span class="sc">$</span><span class="fu">predict</span>(tsk_iris, <span class="at">row_ids =</span> split<span class="sc">$</span>test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To make predictions on <code>data.frame</code>s, we can use the <code>$predict_newdata()</code> method of the learner:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> iris[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, ]</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>lrn_tree<span class="sc">$</span><span class="fu">predict_newdata</span>(new_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;PredictionClassif&gt; for 2 observations:
+ row_ids  truth response
+       1 setosa   setosa
+       2 setosa   setosa</code></pre>
+</div>
+</div>
+</section>
+<section id="performance-evaluation" class="level3">
+<h3 class="anchored" data-anchor-id="performance-evaluation">Performance Evaluation</h3>
+<p>To assess the quality of the predictions, we can use a <code>Measure</code>. <code>mlr3</code> comes with many predefined measures, and we can construct them by passing the name of the measure to the <code>msr()</code> function. Below, we construct the mean classification accuracy measure – which can only be applied to classification tasks – and use it to evaluate the predictions.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>acc <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"classif.acc"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>predictions<span class="sc">$</span><span class="fu">score</span>(acc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>classif.acc 
+  0.9333333 </code></pre>
+</div>
+</div>
+<p>For more elaborate evaluation strategies, we can use <code>rsmp()</code> to define a <code>Resampling</code> strategy that can be executed using <code>resample()</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>rsmp_cv <span class="ot">&lt;-</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>rr <span class="ot">&lt;-</span> <span class="fu">resample</span>(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">task       =</span> tsk_iris,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner    =</span> lrn_tree,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> rsmp_cv</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregate the results</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>rr<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msr</span>(<span class="st">"classif.acc"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>classif.acc 
+  0.9466667 </code></pre>
+</div>
+</div>
+</section>
+<section id="hyperparameter-tuning" class="level3">
+<h3 class="anchored" data-anchor-id="hyperparameter-tuning">Hyperparameter Tuning</h3>
+<p>Hyperparameter tuning is an essential process in machine learning to optimize the performance of models by selecting the best combination of hyperparameters. In the <code>mlr3</code> framework, hyperparameter tuning is facilitated by the <a href="https://github.com/mlr-org/mlr3tuning"><code>mlr3tuning</code></a> extension.</p>
+<p>We will now demonstrate how to tune the hyperparameters of the <code>classif.rpart</code> learner.</p>
+<ol type="1">
+<li><p><strong>Define the Search Space</strong>: Specify the range and distribution of hyperparameters to explore.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3tuning)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>lrn_tree<span class="sc">$</span><span class="fu">configure</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">cp =</span> <span class="fu">to_tune</span>(<span class="at">lower =</span> <span class="fl">0.001</span>, <span class="at">upper =</span> <span class="fl">0.1</span>),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxdepth =</span> <span class="fu">to_tune</span>(<span class="at">lower =</span> <span class="dv">1</span>, <span class="at">upper =</span> <span class="dv">30</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p><strong>Choose a Resampling Strategy</strong>: Determine how to evaluate each hyperparameter configuration’s performance.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>rsmp_tune <span class="ot">&lt;-</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p><strong>Select a Tuner</strong>: Decide on the algorithm that will search through the hyperparameter space.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>tuner <span class="ot">&lt;-</span> <span class="fu">tnr</span>(<span class="st">"random_search"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p><strong>Select a Measure</strong>: Define the metric to optimize during tuning.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>msr_tune <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"classif.acc"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p><strong>Execute Tuning</strong>: Run the tuning process to find the optimal hyperparameters. Here we also specify our budget of 10 evaluations.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>tune_result <span class="ot">&lt;-</span> <span class="fu">tune</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> tsk_iris,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> lrn_tree,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> rsmp_tune,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> msr_tune,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> tuner,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">term_evals =</span> <span class="dv">10</span>L</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p><strong>Apply the Best Hyperparameters</strong>: Update the learner with the best-found hyperparameters and retrain the model.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>lrn_tree<span class="sc">$</span>param_set<span class="sc">$</span>values <span class="ot">&lt;-</span> tune_result<span class="sc">$</span>result_learner_param_vals</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>lrn_tree<span class="sc">$</span><span class="fu">train</span>(tsk_iris)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Quiz: Tuning Performance
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Question 1</strong>: Estimating the performance of a tuned model:</p>
+<p>Through the tuning archive, we can access the performance of the best-found hyperparameter configuration.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>tune_result<span class="sc">$</span>archive<span class="sc">$</span>data[<span class="fu">order</span>(classif.acc, <span class="at">decreasing =</span> <span class="cn">TRUE</span>), ][<span class="dv">1</span>, classif.acc]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.94</code></pre>
+</div>
+</div>
+<p>Do you think this is a good estimate for the performance of the final model? Explain your answer.</p>
+<details>
+<summary>
+Click for answer
+</summary>
+One reason why we would expect the performance of the final model to be worse than the performance of the best-found hyperparameter configuration is due to <em>optimization bias</em>: We choose the model configuration with the highest validation performance. This selection process biases the result since the chosen model is the best among several trials that are all affected by randomness.
+</details>
+</div>
+</div>
+<p>These two steps can also be encapsulated in the <code>AutoTuner</code> class, which first finds the best hyperparameters and then trains the model with them.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>at <span class="ot">&lt;-</span> <span class="fu">auto_tuner</span>(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> lrn_tree,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> rsmp_tune,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> msr_tune,</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">term_evals =</span> <span class="dv">10</span>L,</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> tuner</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The <code>AutoTuner</code> can be used just like any other <code>Learner</code>. To get a valid performance estimate of the tuning process, we can <code>resample()</code> it on the task. This is called <em>nested resampling</em>: the outer resampling is for evaluation and the inner resampling is for tuning.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>rr <span class="ot">&lt;-</span> <span class="fu">resample</span>(tsk_iris, at, rsmp_tune)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>rr<span class="sc">$</span><span class="fu">aggregate</span>(acc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>classif.acc 
+       0.94 </code></pre>
+</div>
+</div>
+</section>
+<section id="learning-pipelines" class="level3">
+<h3 class="anchored" data-anchor-id="learning-pipelines">Learning Pipelines</h3>
+<p>In many cases, we don’t only fit a single learner but a whole learning pipeline. Common use cases include the preprocessing of the data, e.g., for imputing missing values, scaling the data, or encoding categorical features, but many other operations are possible. The <code>mlr3</code> extension <a href="https://mlr3pipelines.mlr-org.com/"><code>mlr3pipelines</code></a> is a toolbox for defining such learning pipelines. Its core building block is the <code>PipeOp</code> that can be constructed using the <code>po()</code> function.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3pipelines)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>pca <span class="ot">&lt;-</span> <span class="fu">po</span>(<span class="st">"pca"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Just like a learner, it has a <code>$train()</code> and <code>$predict()</code> method, and we can apply it to a <code>Task</code> using these methods.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>pca<span class="sc">$</span><span class="fu">train</span>(<span class="fu">list</span>(tsk_iris))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$output
+&lt;TaskClassif:iris&gt; (150 x 5)
+* Target: Species
+* Properties: multiclass
+* Features (4):
+  - dbl (4): PC1, PC2, PC3, PC4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>pca<span class="sc">$</span><span class="fu">predict</span>(<span class="fu">list</span>(tsk_iris))[[<span class="dv">1</span>L]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;TaskClassif:iris&gt; (150 x 5)
+* Target: Species
+* Properties: multiclass
+* Features (4):
+  - dbl (4): PC1, PC2, PC3, PC4</code></pre>
+</div>
+</div>
+<p>Usually, such <code>PipeOp</code>s are combined with a <code>Learner</code> into a full learning <code>Graph</code>. This is possible using the <code>%&gt;&gt;%</code> chain operator.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3pipelines)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>graph <span class="ot">&lt;-</span> <span class="fu">po</span>(<span class="st">"pca"</span>) <span class="sc">%&gt;&gt;%</span> <span class="fu">lrn</span>(<span class="st">"classif.rpart"</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(graph)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Graph with 2 PipeOps:
+            ID         State      sccssors prdcssors
+        &lt;char&gt;        &lt;char&gt;        &lt;char&gt;    &lt;char&gt;
+           pca &lt;&lt;UNTRAINED&gt;&gt; classif.rpart          
+ classif.rpart &lt;&lt;UNTRAINED&gt;&gt;                     pca</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>graph<span class="sc">$</span><span class="fu">plot</span>(<span class="at">horizontal =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="6-mlr3torch_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The resulting <code>Graph</code> can be converted back into a <code>Learner</code> using the <code>as_learner()</code> function and used just like any other <code>Learner</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>glrn <span class="ot">&lt;-</span> <span class="fu">as_learner</span>(graph)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>glrn<span class="sc">$</span><span class="fu">train</span>(tsk_iris)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="brief-introduction-to-mlr3torch" class="level2">
+<h2 class="anchored" data-anchor-id="brief-introduction-to-mlr3torch">Brief Introduction to <code>mlr3torch</code></h2>
+<p><code>mlr3torch</code> builds upon the same components as <code>mlr3</code>, only that we use Deep <code>Learner</code>s, and can also work on non-tabular data. A simple example learner is the <code>lrn("classif.mlp")</code> learner, which is a Multi-Layer Perceptron (MLP) for classification tasks.</p>
+<section id="using-a-predefined-torch-learner" class="level3">
+<h3 class="anchored" data-anchor-id="using-a-predefined-torch-learner">Using a Predefined Torch Learner</h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mlr3torch)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>lrn_mlp <span class="ot">&lt;-</span> <span class="fu">lrn</span>(<span class="st">"classif.mlp"</span>,</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">neurons =</span> <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">50</span>),</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">256</span>,</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">epochs =</span> <span class="dv">30</span>, <span class="co"># Number of training epochs</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">device =</span> <span class="st">"auto"</span>, <span class="co"># Uses GPU if available, otherwise CPU</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">TRUE</span>, <span class="co"># because iris is sorted</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">optimizer =</span> <span class="fu">t_opt</span>(<span class="st">"adamw"</span>),</span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">loss =</span> <span class="fu">t_loss</span>(<span class="st">"cross_entropy"</span>)</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This MLP can be used just like the classification tree above.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>lrn_mlp<span class="sc">$</span><span class="fu">train</span>(tsk_iris, <span class="at">row_ids =</span> split<span class="sc">$</span>train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The trained <code>nn_module</code> can be accessed via the <code>$model</code> slot of the learner:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>lrn_mlp<span class="sc">$</span>model<span class="sc">$</span>network</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>An `nn_module` containing 2,953 parameters.
+
+── Modules ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+• 0: &lt;nn_linear&gt; #250 parameters
+• 1: &lt;nn_relu&gt; #0 parameters
+• 2: &lt;nn_dropout&gt; #0 parameters
+• 3: &lt;nn_linear&gt; #2,550 parameters
+• 4: &lt;nn_relu&gt; #0 parameters
+• 5: &lt;nn_dropout&gt; #0 parameters
+• 6: &lt;nn_linear&gt; #153 parameters</code></pre>
+</div>
+</div>
+<p>Besides the trained network, the <code>$model</code> of the learner also contains the <code>$state_dict()</code> of the optimizer and other information.</p>
+<p>Having trained the neural network on the training set, we can now make predictions on the test set:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> lrn_mlp<span class="sc">$</span><span class="fu">predict</span>(tsk_iris, <span class="at">row_ids =</span> split<span class="sc">$</span>test)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>predictions<span class="sc">$</span><span class="fu">score</span>(<span class="fu">msr</span>(<span class="st">"classif.acc"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>classif.acc 
+        0.5 </code></pre>
+</div>
+</div>
+<p>Using the benchmarking facilities of <code>mlr3</code>, we can also easily compare the classification tree with our MLP:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>rsmp_cv <span class="ot">&lt;-</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>benchmark_grid <span class="ot">&lt;-</span> <span class="fu">benchmark_grid</span>(</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">tasks =</span> tsk_iris,</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">learners =</span> <span class="fu">list</span>(lrn_tree, lrn_mlp),</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> rsmp_cv</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>rr_benchmark <span class="ot">&lt;-</span> <span class="fu">benchmark</span>(benchmark_grid)</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>results_benchmark <span class="ot">&lt;-</span> rr_benchmark<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msr</span>(<span class="st">"classif.acc"</span>))</span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>results_benchmark</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      nr task_id    learner_id resampling_id iters classif.acc
+   &lt;int&gt;  &lt;char&gt;        &lt;char&gt;        &lt;char&gt; &lt;int&gt;       &lt;num&gt;
+1:     1    iris classif.rpart            cv     3   0.9533333
+2:     2    iris   classif.mlp            cv     3   0.6666667
+Hidden columns: resample_result</code></pre>
+</div>
+</div>
+</section>
+<section id="validation-performance" class="level3">
+<h3 class="anchored" data-anchor-id="validation-performance">Validation Performance</h3>
+<p>Tracking validation performance is crucial for understanding how well your neural network is learning and to detect issues such as overfitting. In the <code>mlr3</code> machine learning framework, this can be easily done by specifying the <code>$validate</code> field of a <code>Learner</code>. Note that this is not possible for all <code>Learner</code>s, but only for those with the <code>"validation"</code> property. This includes boosting algorithms such as XGBoost or CatBoost, and also the <code>mlr3torch</code> learners.</p>
+<p>Below, we set the validation ratio to 30% of the training data, specify the measures to record, and set the callbacks of the learner to record the history of the training process.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>lrn_mlp<span class="sc">$</span><span class="fu">configure</span>(</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">validate =</span> <span class="fl">0.3</span>,</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">callbacks =</span> <span class="fu">t_clbk</span>(<span class="st">"history"</span>),</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">predict_type =</span> <span class="st">"prob"</span>,</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_valid =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>),</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">measures_train =</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>)</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <code>$configure()</code> method of a <code>Learner</code> allows you to simultaneously set fields and hyperparameters of a learner.</p>
+</div>
+</div>
+<p>When we now train the learner, 30% of the training data is used for validation, and the loss is recorded in the history of the learner.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>lrn_mlp<span class="sc">$</span><span class="fu">train</span>(tsk_iris)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After training, the results of the callback can be accessed via the model.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(lrn_mlp<span class="sc">$</span>model<span class="sc">$</span>callbacks<span class="sc">$</span>history)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Key: &lt;epoch&gt;
+   epoch train.classif.logloss valid.classif.logloss
+   &lt;num&gt;                 &lt;num&gt;                 &lt;num&gt;
+1:     1              1.391005              1.186262
+2:     2              1.418184              1.142519
+3:     3              1.185711              1.108973
+4:     4              1.391693              1.080590
+5:     5              1.200895              1.056801
+6:     6              1.172990              1.038634</code></pre>
+</div>
+</div>
+<p>Additionally, the final validation scores can be accessed via the <code>$internal_valid_scores</code> field of the learner.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>lrn_mlp<span class="sc">$</span>internal_valid_scores</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$classif.logloss
+[1] 0.8735379</code></pre>
+</div>
+</div>
+</section>
+<section id="defining-a-custom-torch-learner" class="level3">
+<h3 class="anchored" data-anchor-id="defining-a-custom-torch-learner">Defining a Custom Torch Learner</h3>
+<p><code>mlr3torch</code> also allows defining custom architectures by assembling special <code>PipeOp</code>s in a <code>Graph</code>. As a starting point in the graph, we need to mark the entry of the Neural Network using an ingress pipeop. Because we are working with a task with only one numeric feature, we can use <code>po("torch_ingress_num")</code>. There also exist inputs for categorical features (<code>po("torch_ingress_cat")</code>) and generic tensors (<code>po("torch_ingress_ltnsr")</code>).</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>ingress <span class="ot">&lt;-</span> <span class="fu">po</span>(<span class="st">"torch_ingress_num"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The next steps in the graph are the actual layers of the neural network.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>architecture <span class="ot">&lt;-</span> <span class="fu">po</span>(<span class="st">"nn_linear_1"</span>, <span class="at">out_features =</span> <span class="dv">100</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_relu_1"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_linear_2"</span>, <span class="at">out_features =</span> <span class="dv">100</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_relu_2"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"nn_head"</span>)</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>architecture<span class="sc">$</span><span class="fu">plot</span>(<span class="at">horizontal =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="6-mlr3torch_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>After specifying the architecture, we need to set the remaining parts for the learner, which are the loss, optimizer, and the remaining training configuration such as the epochs, device, or the batch size.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>graph <span class="ot">&lt;-</span> ingress <span class="sc">%&gt;&gt;%</span> architecture <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"torch_loss"</span>, <span class="at">loss =</span> <span class="st">"cross_entropy"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"torch_optimizer"</span>, <span class="at">optimizer =</span> <span class="fu">t_opt</span>(<span class="st">"adamw"</span>)) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"torch_model_classif"</span>, <span class="at">epochs =</span> <span class="dv">10</span>, <span class="at">batch_size =</span> <span class="dv">256</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Just like before, we can convert the graph into a <code>Learner</code> using <code>as_learner()</code> and train it on the task:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>glrn <span class="ot">&lt;-</span> <span class="fu">as_learner</span>(graph)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>glrn<span class="sc">$</span><span class="fu">train</span>(tsk_iris, <span class="at">row_ids =</span> split<span class="sc">$</span>train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="working-with-non-tabular-data" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-non-tabular-data">Working with Non-Tabular Data</h3>
+<p>In the <code>mlr3</code> ecosystem, the data of a task is always stored in a <code>data.frame</code> or <code>data.table</code>. To work with non-tabular data, the <code>mlr3torch</code> package offers a custom datatype, the <code>lazy_tensor</code>, which can be stored in a <code>data.table</code>.</p>
+<p>As an example to showcase this, we can use the CIFAR-10 dataset, which is a dataset of 60,000 32x32 color images in 10 classes, with 6,000 images per class.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>tsk_cifar <span class="ot">&lt;-</span> <span class="fu">tsk</span>(<span class="st">"cifar10"</span>)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>tsk_cifar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;TaskClassif:cifar10&gt; (60000 x 2): CIFAR-10 Classification
+* Target: class
+* Properties: multiclass
+* Features (1):
+  - lt (1): image</code></pre>
+</div>
+</div>
+<p>The image below shows some examples from the dataset:</p>
+<p><img src="../assets/cifar10.jpg" class="img-fluid"></p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To avoid having to re-download the dataset every time, you can set the <code>mlr3torch.cache</code> option to <code>TRUE</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">mlr3torch.cache =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<p>When accessing the data, only the images are represented as <code>lazy_tensor</code>s, the labels are still stored as a factor column:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>tsk_cifar<span class="sc">$</span><span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        class           image
+       &lt;fctr&gt;   &lt;lazy_tensor&gt;
+1:       frog &lt;tnsr[3x32x32]&gt;
+2:      truck &lt;tnsr[3x32x32]&gt;
+3:      truck &lt;tnsr[3x32x32]&gt;
+4:       deer &lt;tnsr[3x32x32]&gt;
+5: automobile &lt;tnsr[3x32x32]&gt;
+6: automobile &lt;tnsr[3x32x32]&gt;</code></pre>
+</div>
+</div>
+<p>A <code>lazy_tensor</code> column is built upon <code>torch::dataset</code> class that we have seen earlier. This means it does not necessarily store the data in memory, but only stores the information on how to load the data.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>image_vec <span class="ot">&lt;-</span> tsk_cifar<span class="sc">$</span><span class="fu">data</span>(<span class="at">cols =</span> <span class="st">"image"</span>)[[<span class="dv">1</span>L]]</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(image_vec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;ltnsr[6]&gt;
+[1] &lt;tnsr[3x32x32]&gt; &lt;tnsr[3x32x32]&gt; &lt;tnsr[3x32x32]&gt; &lt;tnsr[3x32x32]&gt; &lt;tnsr[3x32x32]&gt; &lt;tnsr[3x32x32]&gt;</code></pre>
+</div>
+</div>
+<p>To access the data as <code>torch_tensor</code>s, we can call the <code>materialize()</code> function. We see that the underlying tensors are integer-valued.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>image_tensor <span class="ot">&lt;-</span> <span class="fu">materialize</span>(image_vec)[[<span class="dv">1</span>L]]</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(image_tensor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Long [1:3, 1:32, 1:32]</code></pre>
+</div>
+</div>
+<p>To construct the CIFAR-10 task ourselves, we need to first:</p>
+<ol type="1">
+<li>Construct a <code>torch::dataset</code> that returns the images as <code>torch_tensor</code>s.</li>
+<li>Create a <code>factor()</code> vector that contains the labels.</li>
+</ol>
+<p>We can access the CIFAR-10 dataset via the <code>torchvision</code> package. For simplicity, we will only load the training data.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>cifar10_original <span class="ot">&lt;-</span> torchvision<span class="sc">::</span><span class="fu">cifar10_dataset</span>(<span class="at">root =</span> <span class="st">"data/cifar10"</span>, <span class="at">train =</span> <span class="cn">TRUE</span>, <span class="at">download =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>image_array <span class="ot">&lt;-</span> cifar10_original<span class="sc">$</span>x</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> int [1:50000, 1:32, 1:32, 1:3] 59 154 255 28 170 159 164 28 134 125 ...</code></pre>
+</div>
+</div>
+<p>The array contains 50,000 images (rows) of shape <code>32x32x3</code>. The last dimension contains the channels, i.e., the RGB values of the pixels. We reshape this so the channel dimension is the first dimension, which is the standard format for images in <code>torch</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>image_array <span class="ot">&lt;-</span> <span class="fu">aperm</span>(image_array, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">3</span>))</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 50000     3    32    32</code></pre>
+</div>
+</div>
+<p>Next, we convert it to doubles in the range <code>[0, 1]</code> by dividing by 255.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>image_array <span class="ot">&lt;-</span> image_array <span class="sc">/</span> <span class="dv">255</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we create a <code>torch::dataset()</code> that loads individual images as a <code>torch_tensor</code>. To convert this to a <code>lazy_tensor</code> later, the <code>$.getitem()</code> method needs to return a named list.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>dataset_cifar10 <span class="ot">&lt;-</span> <span class="fu">dataset</span>(<span class="st">"cifar10"</span>,</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">initialize =</span> <span class="cf">function</span>(x) {</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>    self<span class="sc">$</span>x <span class="ot">&lt;-</span> x</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">.getitem =</span> <span class="cf">function</span>(i) {</span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">list</span>(<span class="at">image =</span> <span class="fu">torch_tensor</span>(self<span class="sc">$</span>x[i, , , ]))</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>  },</span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">.length =</span> <span class="cf">function</span>() {</span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">nrow</span>(self<span class="sc">$</span>x)</span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The above object is not yet a dataset, but a dataset constructor, so we create the actual dataset by calling it with the image array.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>cifar10 <span class="ot">&lt;-</span> <span class="fu">dataset_cifar10</span>(image_array)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can check that this works correctly by accessing the first image.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(cifar10<span class="sc">$</span><span class="fu">.getitem</span>(<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>List of 1
+ $ image:Float [1:3, 1:32, 1:32]</code></pre>
+</div>
+</div>
+<p>To convert this to a <code>lazy_tensor</code>, we can use the <code>as_lazy_tensor()</code> function. The only thing we need to specify is the output shapes of the tensors, which we set to <code>c(NA, 3, 32, 32)</code>. The <code>NA</code> is used to indicate that the first dimension (batch dimension) can be of any size.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>cifar10_lt <span class="ot">&lt;-</span> <span class="fu">as_lazy_tensor</span>(cifar10, <span class="at">dataset_shapes =</span> <span class="fu">list</span>(<span class="at">image =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">3</span>, <span class="dv">32</span>, <span class="dv">32</span>)))</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cifar10_lt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;ltnsr[6]&gt;
+[1] &lt;tnsr[3x32x32]&gt; &lt;tnsr[3x32x32]&gt; &lt;tnsr[3x32x32]&gt; &lt;tnsr[3x32x32]&gt; &lt;tnsr[3x32x32]&gt; &lt;tnsr[3x32x32]&gt;</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>To check that transformations on images were applied correctly, it can be useful to inspect the images, e.g., using <code>torchvision::tensor_image_browse()</code>.</p>
+</div>
+</div>
+<p>Next, we create the <code>factor</code> vector that contains the labels. For that, we use the data stored in the original <code>torchvision::cifar10_dataset()</code> object.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>labels <span class="ot">&lt;-</span> <span class="fu">factor</span>(cifar10_original<span class="sc">$</span>y, <span class="at">labels =</span> cifar10_original<span class="sc">$</span>classes[<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>])</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(labels)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Factor w/ 10 levels "airplane","automobile",..: 7 10 10 5 2 2 3 8 9 4 ...</code></pre>
+</div>
+</div>
+<p>Next, we create a <code>data.table</code> that contains the images and labels.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>cifar10_dt <span class="ot">&lt;-</span> <span class="fu">data.table</span>(<span class="at">image =</span> cifar10_lt, <span class="at">label =</span> labels)</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(cifar10_dt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             image      label
+     &lt;lazy_tensor&gt;     &lt;fctr&gt;
+1: &lt;tnsr[3x32x32]&gt;       frog
+2: &lt;tnsr[3x32x32]&gt;      truck
+3: &lt;tnsr[3x32x32]&gt;      truck
+4: &lt;tnsr[3x32x32]&gt;       deer
+5: &lt;tnsr[3x32x32]&gt; automobile
+6: &lt;tnsr[3x32x32]&gt; automobile</code></pre>
+</div>
+</div>
+<p>This table can now be converted to an <code>mlr3::Task</code> using the <code>as_task_&lt;type&gt;</code> converters.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>tsk_cifar <span class="ot">&lt;-</span> <span class="fu">as_task_classif</span>(cifar10_dt, <span class="at">id =</span> <span class="st">"cifar10"</span>, <span class="at">target =</span> <span class="st">"label"</span>)</span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>tsk_cifar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;TaskClassif:cifar10&gt; (50000 x 2)
+* Target: label
+* Properties: multiclass
+* Features (1):
+  - lt (1): image</code></pre>
+</div>
+</div>
+<p>We will now try to train a simple multi-layer perceptron – the one we have defined above – on the images. One problem that we have is that the images are of shape <code>(3, 32, 32)</code>, but the <code>nn_linear</code> layer expects a flat input of size <code>3072</code> (<span class="math inline">\(3 \times 32^2\)</span>).</p>
+<p>This is where the <code>lazy_tensor</code> datatype comes in handy. We can use preprocessing <code>PipeOp</code>s – in this case <code>po("trafo_reshape")</code> – to transform the data. Here, the <code>-1</code> in the shape <code>c(-1, 3072)</code> indicates that the first dimension (batch dimension) can be of any size.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>reshaper <span class="ot">&lt;-</span> <span class="fu">po</span>(<span class="st">"trafo_reshape"</span>, <span class="at">shape =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">3072</span>))</span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>tsk_cifar_flat <span class="ot">&lt;-</span> reshaper<span class="sc">$</span><span class="fu">train</span>(<span class="fu">list</span>(tsk_cifar))[[<span class="dv">1</span>L]]</span>
+<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a>tsk_cifar_flat<span class="sc">$</span><span class="fu">head</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        label         image
+       &lt;fctr&gt; &lt;lazy_tensor&gt;
+1:       frog  &lt;tnsr[3072]&gt;
+2:      truck  &lt;tnsr[3072]&gt;
+3:      truck  &lt;tnsr[3072]&gt;
+4:       deer  &lt;tnsr[3072]&gt;
+5: automobile  &lt;tnsr[3072]&gt;
+6: automobile  &lt;tnsr[3072]&gt;</code></pre>
+</div>
+</div>
+<p>This transformation is not applied eagerly, but only when the data is actually loaded.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this case, as all the images are stored in memory, we could have also applied the transformation directly to the <code>array</code> representing the images, but decided not to do this for demonstration purposes.</p>
+</div>
+</div>
+<p>We can now use almost the same graph that we used for the iris dataset for the flattened CIFAR-10 task. The only thing we need to exchange is the ingress operator, as the new task has as data a <code>lazy_tensor</code> instead of numeric vectors.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>graph <span class="ot">&lt;-</span> <span class="fu">po</span>(<span class="st">"torch_ingress_ltnsr"</span>) <span class="sc">%&gt;&gt;%</span> architecture <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"torch_loss"</span>, <span class="at">loss =</span> <span class="fu">t_loss</span>(<span class="st">"cross_entropy"</span>)) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"torch_optimizer"</span>, <span class="at">optimizer =</span> <span class="fu">t_opt</span>(<span class="st">"adam"</span>)) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">po</span>(<span class="st">"torch_model_classif"</span>, <span class="at">epochs =</span> <span class="dv">10</span>, <span class="at">batch_size =</span> <span class="dv">256</span>, <span class="at">predict_type =</span> <span class="st">"prob"</span>)</span>
+<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a>glrn <span class="ot">&lt;-</span> <span class="fu">as_learner</span>(graph)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>glrn<span class="sc">$</span><span class="fu">train</span>(tsk_cifar_flat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Alternatively, we can integrate the flattening step into the graph from which the <code>GraphLearner</code> was created.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>graph_with_flattening <span class="ot">&lt;-</span> reshaper <span class="sc">%&gt;&gt;%</span> graph</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>glrn_with_flattening <span class="ot">&lt;-</span> <span class="fu">as_learner</span>(graph_with_flattening)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This learner can now be applied directly to the (unflattened) task.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>glrn_with_flattening<span class="sc">$</span><span class="fu">train</span>(tsk_cifar)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="seemless-integration-resampling-and-tuning" class="level3">
+<h3 class="anchored" data-anchor-id="seemless-integration-resampling-and-tuning">Seemless Integration: Resampling and Tuning</h3>
+<p>Because neural networks are also just another <code>Learner</code>, we can seamlessly leverage the functionalities from the <code>mlr3</code> ecosystem. We can, for example, not only train the learner on a task, but also resample it.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">resample</span>(tsk_cifar, glrn_with_flattening, <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;ResampleResult&gt; with 3 resampling iterations
+ task_id
+ cifar10
+ cifar10
+ cifar10
+                                                                                                                           learner_id
+ trafo_reshape.torch_ingress_ltnsr.nn_linear_1.nn_relu_1.nn_linear_2.nn_relu_2.nn_head.torch_loss.torch_optimizer.torch_model_classif
+ trafo_reshape.torch_ingress_ltnsr.nn_linear_1.nn_relu_1.nn_linear_2.nn_relu_2.nn_head.torch_loss.torch_optimizer.torch_model_classif
+ trafo_reshape.torch_ingress_ltnsr.nn_linear_1.nn_relu_1.nn_linear_2.nn_relu_2.nn_head.torch_loss.torch_optimizer.torch_model_classif
+ resampling_id iteration     prediction_test warnings errors
+            cv         1 &lt;PredictionClassif&gt;        0      0
+            cv         2 &lt;PredictionClassif&gt;        0      0
+            cv         3 &lt;PredictionClassif&gt;        0      0</code></pre>
+</div>
+</div>
+<p>Or if we have the computational resources to optimize the hyperparameters of the neural network, we can also use the <code>mlr3tuning</code> package. Just like earlier, we need to define the tuner, search search space, resampling strategy, tuning measure and our budget. Here, we only tune the latent dimensions of the first two layers and the number of epochs.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In practice, we would not optimizer the number of epochs using offline tuning as shown here, but instead using <em>early stopping</em>, which is significantly more efficient and will be covered later.</p>
+</div>
+</div>
+<p>We here show a different way of defining the search space than earlier, but could have achieved the same, by setting the respective hyperparameters to <code>to_tune()</code> values.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>search_space <span class="ot">&lt;-</span> <span class="fu">ps</span>(</span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">nn_linear_1.out_features =</span> <span class="fu">p_int</span>(<span class="dv">50</span>, <span class="dv">500</span>),</span>
+<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">nn_linear_2.out_features =</span> <span class="fu">p_int</span>(<span class="dv">50</span>, <span class="dv">500</span>),</span>
+<span id="cb93-4"><a href="#cb93-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">torch_model_classif.epochs =</span> <span class="fu">p_int</span>(<span class="dv">10</span>, <span class="dv">100</span>)</span>
+<span id="cb93-5"><a href="#cb93-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we define a simple random search tuner, use 3-fold cross-validation and use the logloss as the tuning measure and set the budget to 30 evaluations.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a>tuner <span class="ot">&lt;-</span> <span class="fu">tnr</span>(<span class="st">"random_search"</span>)</span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a>resampling <span class="ot">&lt;-</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>)</span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>measure <span class="ot">&lt;-</span> <span class="fu">msr</span>(<span class="st">"classif.logloss"</span>)</span>
+<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a>evals <span class="ot">&lt;-</span> <span class="dv">30</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>ti <span class="ot">&lt;-</span> <span class="fu">tune</span>(</span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">task =</span> tsk_cifar,</span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">learner =</span> glrn_with_flattening,</span>
+<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">resampling =</span> resampling,</span>
+<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> measure,</span>
+<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">search_space =</span> search_space,</span>
+<span id="cb95-7"><a href="#cb95-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">tuner =</span> tuner,</span>
+<span id="cb95-8"><a href="#cb95-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">term_evals =</span> evals</span>
+<span id="cb95-9"><a href="#cb95-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="saving-an-mlr3torch-learner" class="level3">
+<h3 class="anchored" data-anchor-id="saving-an-mlr3torch-learner">Saving an <code>mlr3torch</code> Learner</h3>
+<p>We have seen earlier that torch tensors cannot simply be saved using <code>saveRDS()</code>. The same also applies to the <code>mlr3torch</code> learners. To save an <code>mlr3torch</code> learner, we need to call the <code>$marshal()</code> method first.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a>pth <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".rds"</span>)</span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>glrn_with_flattening<span class="sc">$</span><span class="fu">marshal</span>()</span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(glrn_with_flattening, pth)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Afterward, we can load the learner again using <code>readRDS()</code> and then call the <code>$unmarshal()</code> method.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a>glrn_with_flattening <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(pth)</span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a>glrn_with_flattening<span class="sc">$</span><span class="fu">unmarshal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>CC BY SA 4.0</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
