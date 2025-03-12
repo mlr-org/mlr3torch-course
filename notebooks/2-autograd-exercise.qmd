@@ -107,11 +107,11 @@ There is also a tutorial on this on the `torch` [website](https://torch.mlverse.
 To construct our own autograd function, we need to define:
 
 1. The forward pass:
-   - How to calculate outputs from input
+   - How to calculate outputs from inputs
    - What to save for the backward pass
 
 2. The backward pass:
-   - How to calculate the gradient of the output with respect to the input
+   - How to calculate the gradient of the output with respect to the inputs, using the information saved during the forward pass
 
 The task is to re-create the ReLU activation function, which is a common activation function in neural networks and which is defined as:
 
@@ -131,12 +131,13 @@ $$
 
 In `torch`, a custom autograd function can be constructed using `autograd_function()` and it accepts arguments `forward` and `backward` which are functions that define the forward and backward pass:
 They both take as first argument a `ctx`, which is a communication object that is used to save information during the forward pass to be able to compute the gradient in the backward pass (e.g. for $f(x) = x * a$, to calculate the gradient of $f$ with respect to $a$ we need to know the input value $x$).
-The return value of the backward pass should be a list of gradients with respect to the inputs.
+The return value of the backward pass should be a list of gradients of the final node of the autograd graph with respect to the inputs.
 To check whether a gradient for an input is needed (has `requires_grad = TRUE`), you can use `ctx$needs_input_grad` which is a named list with boolean values for each input.
 
 The backward function additionally takes a second argument `grad_output`, which is the gradient of the output:
-E.g., if our function is $f(x)$ and we calculate the gradient of $g(x) = h(f(x))$, then `grad_output` is the derivative of $g$ with respect to its input, evaluated at $f(x)$.
+E.g., if our function is $f(x)$ and we calculate the gradient of $g(x) = h(f(x))$, then `grad_output` is the derivative of $h$ with respect to its input, evaluated at $f(x)$.
 This is essentially the chain rule: $\frac{\partial g}{\partial x} = \frac{\partial h}{\partial f} \cdot \frac{\partial f}{\partial x}$.
+The autograd function therefore does not calculate the gradient of $g$ with respect to $x$, but the gradient of the final node of the autograd graph with respect to $x$.
 
 Fill out the missing parts (`...`) in the code below.
 

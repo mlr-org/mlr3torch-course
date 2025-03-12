@@ -10,7 +10,7 @@ markdown:
   extensions: [emoji]
 
 website:
-  title: "Deep Learning with (mlr3)torch"
+  title: "Deep Learning with mlr3 & torch"
   page-footer:
     center: "CC BY SA 4.0"
   navbar:
@@ -26,9 +26,6 @@ website:
           href: "notebooks/resources.html"
       - text: "Tutorials"
         menu:
-          - text: "Intro"
-            href: "notebooks/0-tutorial-intro.html"
-          - text: "---"
           - text: "1. Tensors"
             href: "notebooks/1-tensor.html"
           - text: "2. Autograd"

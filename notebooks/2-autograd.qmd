@@ -4,7 +4,8 @@ title: "Autograd"
 
 {{< include _setup.qmd >}}
 
-Automatic differentiation (autograd) is one of `torch`'s key features, enabling the automatic computation of gradients for optimization tasks like training neural networks. Unlike numerical differentiation, which approximates gradients using finite differences, autograd computes exact gradients by tracking operations as they are performed and automatically applying the chain rule of calculus. This makes it possible to efficiently compute gradients of complex functions with respect to many parameters—a critical requirement for training modern neural networks.
+Automatic differentiation (autograd) is one of `torch`'s key features, enabling the automatic computation of gradients for optimization tasks like training neural networks. Unlike numerical differentiation, which approximates gradients using finite differences, autograd computes exact gradients by tracking operations as they are performed and automatically applying the chain rule of calculus.
+This makes it possible to efficiently compute gradients of complex functions with respect to many parameters — a critical requirement for training modern neural networks.
 
 Autograd works by building a dynamic computational graph of operations, where each node represents a tensor and each edge represents a mathematical operation.
 
@@ -48,24 +49,27 @@ We can use the weights and input to perform a forward pass:
 
 ```{r}
 u <- a * x
-y <- u + b
+y_hat <- u + b
 ```
 
-When you perform operations on tensors with gradient tracking, torch builds a computational graph on the fly. In the figure below:
+When you perform operations on tensors with gradient tracking, torch builds a computational graph on the fly.
+In the figure below:
 
 * Blue tensors are those for which we want to calculate gradients.
+* The grey node is a constant tensor.
 * The violet node is an intermediate tensor.
 * The yellow boxes are differentiable functions.
 * The green node is the final tensor with respect to which we want to calculate gradients.
 
-```{mermaid, fig.align = "center"}
+```{mermaid}
+%%| fig-align: center
 graph TD
     a[a] --> mul[Multiply]
     x[x] --> mul
     mul --> u[u]
     u --> add[Add]
     b[b] --> add
-    add --> y[y]
+    add --> y_hat[y_hat]
 
     %% Styling
     classDef input fill:#a8d5ff,stroke:#333
@@ -77,27 +81,27 @@ graph TD
 
     class a,b input
     class mul,add op
-    class y output
+    class y_hat output
     class u intermediate
     class x nograd
 ```
 
-Each intermediate tensor knows how to calculate gradients with respect to its inputs.
+Each tensor that is a function output knows how to calculate gradients with respect to its inputs.
 
 ```{r}
-y$grad_fn
+y_hat$grad_fn
 u$grad_fn
 ```
 
-To calculate the gradients $\frac{\partial y}{\partial a}$ and $\frac{\partial y}{\partial b}$, we can traverse this computational graph backwards, invoke the differentiation functions, and multiply the individual derivatives according to the chain rule.
+To calculate the gradients $\frac{\partial \hat{y}}{\partial a}$ and $\frac{\partial \hat{y}}{\partial b}$, we can traverse this computational graph backwards, invoke the differentiation functions, and multiply the individual derivatives according to the chain rule.
 
-In `torch`, this is done by calling `$backward()` on `y`.
+In `torch`, this is done by calling `$backward()` on `y_hat`.
 Note that `$backward()` can only be called on scalar tensors.
 Afterwards, the gradients are accessible in the `$grad` field of the tensors `a` and `b`:
 
 ```{r}
 # Compute gradients
-y$backward()
+y_hat$backward()
 
 # Access gradients
 print(a$grad)  # dy/da = x = 3
@@ -107,7 +111,7 @@ print(b$grad)  # dy/db = 1
 Note that for the intermediate value `u`, no gradient is stored.
 
 :::{.callout-tip}
-When you want to perform an operation on tensors that require gradients without tracking this specific operation, you can use `with_no_grad(...)`.
+When you want to perform an operation on tensors that require gradients without tracking this specific operation, you can use the context manager `with_no_grad({...})`.
 :::
 
 In the next section, we will show how we can use gradients to train our simple linear model.
@@ -158,7 +162,7 @@ b <- torch_randn(1, requires_grad = TRUE)
 
 To optimize the parameters $a$ and $b$, we further need to define the *loss function* that quantifies the discrepancy between our predictions $\hat{y}$ and the observed values $y$. The standard loss for linear regression is the L2 loss:
 
-$$ \mathcal{L}y, \hat{y}) = (y - \hat{y})^2$$
+$$ \mathcal{L}(y, \hat{y}) = (y - \hat{y})^2$$
 
 This allows us to define the empirical risk function that assigns the average loss over all observations to a given pair of parameters $a$ and $b$:
 
@@ -216,26 +220,26 @@ Gradient descent uses this property to iteratively:
 
 1. Calculate the gradient at the current position.
 2. Take a small step in the opposite direction of the gradient, so the negative gradient.
-3. Repeat until we reach a minimum.
+3. Repeat until we converge.
 
 Note that the gradient only tells us in which direction we have to go, not how far. The length of the step should not be:
 
-- **Too large** because the gradient approximation -- and with it the notion of *steepest descent* -- only holds in a small neighborhood.
-- **Too small** as otherwise the convergence will be slow.
+- **too large** because the gradient approximation -- and with it the notion of *steepest descent* -- only holds in a small neighborhood.
+- **too small** as otherwise the convergence will be slow.
 
 The general update formula for the weights $a$ and $b$ is:
 
-$$a_{t+1} = a_t - \eta \frac{\partial R}{\partial a_t}$$
-$$b_{t+1} = b_t - \eta \frac{\partial R}{\partial b_t}$$
+$$a_{t+1} = a_t - \eta \frac{\partial \hat{R}}{\partial a_t}$$
+$$b_{t+1} = b_t - \eta \frac{\partial \hat{R}}{\partial b_t}$$
 
-where $\eta$ is the learning rate / step size, and $R$ is the empirical risk function.
+where $\eta$ is the learning rate / step size, and $\hat{R}$ is the empirical risk function.
 
 In practice, when dealing with large datasets, computing the gradient over the entire dataset can be computationally expensive.
-Instead, we often use **Stochastic Gradient Descent (SGD)**, where the gradient is estimated using only a few observations (a so called 'batch'), but more on that later.
+Instead, we often use **Stochastic Gradient Descent (SGD)**, where the gradient is estimated using only a few observations (a so called 'batch'), but more details on that will be given later.
 
-We start by implementing a single gradient step.
-Note that if we repeatedly call `loss$backward()`, the gradients in `a` and `b` would accumulate, so we set them to `0` before performing the update.
-The return value of the update will be the parameter values and the loss so we can plot them later.
+We start by implementing a single stochastic gradient step.
+Note that if we repeatedly call `loss$backward()`, the gradients in `a` and `b` would accumulate, so we set them to `0` after performing the update.
+The return value of the update function are the parameter values and the loss so we can plot them later.
 Also, note that we mutate the parameters `a` and `b` in-place (suffix `_`).
 
 ```{r}
@@ -289,7 +293,7 @@ for (epoch in seq_len(epochs)) {
 history = rbindlist(history)
 ```
 
-This example demonstrates how we can use torch's autograd to implement gradient descent for fitting a simple linear regression model. The dashed red lines show the progression of the model during training, with increasing opacity for later steps. The blue line represents the true relationship.
+This example demonstrates how we can use torch's autograd to implement stochastic gradient descent for fitting a simple linear regression model. The dashed red lines show the progression of the model during training, with increasing opacity for later steps. The blue line represents the true relationship.
 
 ```{r, echo = FALSE}
 # Plot results with lines showing progression
@@ -303,10 +307,10 @@ for (i in plot_steps) {
     linetype = "dashed"
   )
 }
-p
+p + labs(title = "Estimated Linear Model over Time")
 ```
 
-We can also visualize the parameter updates over time:
+We can also visualize the parameter updates over time embedded in the empirical risk landscape:
 
 ```{r, echo = FALSE}
 # Plot parameter updates on the contour plot
