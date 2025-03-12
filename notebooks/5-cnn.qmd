@@ -175,9 +175,9 @@ The output shape is `(1, 19, 19)`.
 
 ## Architecture & Transfer Learning
 
-While we have no covered individual components of CNNs, the question of how to configure and compose them is a challenging task, but essential for building efficient neural networks.
+While we have now covered individual components of CNNs, the question of how to configure and compose them is a challenging task, but essential for building efficient neural networks.
 However, for many problems, there are predefined architectures that perform well and can be used.
-Unless there is a specific reason to design a new architecture, it is recommended to use such an architecture.
+Unless there is a specific reason to design a new architecture, it is recommended to use an established one.
 
 :::{.callout-note}
 Because the Python deep learning ecosystem is so large, many more architectures are implemented in Python than in R.
@@ -204,16 +204,15 @@ This is visualized below:
 [Source](https://en.wikipedia.org/wiki/Transfer_learning)
 
 The [`torchvision` package](https://torchvision.mlverse.org/) offers various pretrained image networks that are available through the [`torchvision` package](https://torchvision.mlverse.org/).
-The ResNet-18 model is a well-known pre-trained model that was pretrained on ImageNet.
-It's (complicated) architecture is shown below:
+The ResNet-18 model is a well-known model that was trained on ImageNet.
+Because it's architecture is quite complex, we only visualize it below, but don't define it from scratch.
 
 ![](../assets/resnet18.png)
 
-Because it's architecture is quite complex, we only visualize it below, but don't define it from scratch.
-
 [Source](https://www.researchgate.net/figure/Proposed-Modified-ResNet-18-architecture-for-Bangla-HCR-In-the-diagram-conv-stands-for_fig1_323063171)
 
-We can use the pretrained weights by setting the `pretrained` parameter to `TRUE` and specify the number of classes of our new task via the `num_classes` parameter (10 for MNIST).
+
+We can access the ResNet-18 model via torchvision and can obtain the pretrained weights by setting the `pretrained` parameter to `TRUE` and specifying the number of classes of our new task via the `num_classes` parameter (10 for MNIST).
 
 ```{r}
 library(torchvision)
@@ -224,10 +223,8 @@ resnet_pretrained$fc <- nn_linear(512, 10)
 resnet_pretrained
 ```
 
-When fine-tuning a pretrained model like ResNet-18, it's common to observe instabilities in gradients, which can manifest as fluctuating validation performance.
-
 To fine-tune this model on MNIST, we need to also have a `dataloader`.
-In the case of MNIST, a predefined dataloader is available in the `torchvision` package.
+In the case of MNIST, a predefined dataset is available in the `torchvision` package.
 We transform both the input and the target to tensors (instead of R arrays).
 
 ```{r}
@@ -236,7 +233,7 @@ mnist_ds <- mnist_dataset(root = "data", download = TRUE,
 mnist_ds
 ```
 
-We can inspect the first element of the dataset.
+We can inspect the first two elements of the dataset.
 
 ```{r}
 batch <- mnist_ds[1:2]
@@ -270,8 +267,7 @@ mnist_test <- mnist_dataset(root = "data", download = TRUE, train = FALSE,
   transform = transform_mnist, target_transform = torch_tensor)
 ```
 
-We can now compare the pretrained and untrained resnet on the training task and evaluate it on the validation data.
-The results are shown below:
+Below, we compare compare the results of training the pretrained and randomly initialized ResNet-18.
 
 ```{r, echo = FALSE, eval = torch::cuda_is_available()}
 library(data.table)
@@ -320,7 +316,7 @@ ggplot(tbl1, aes(x = epoch, y = logloss, color = pretrained)) +
   labs(title = "Validation Logloss", x = "Epoch", y = "Logloss")
 ```
 
-When fine-tuning a pretrained model like ResNet-18, it's common to observe instabilities in gradients, which can manifest as fluctuating validation performance.
+Note that when fine-tuning a pretrained model like ResNet-18, it's possible to observe instabilities in gradients, which can manifest as fluctuating validation performance.
 
 To address this, one can for example freeze the pretrained layers (for some epochs) and only train the new output head, a process known as **freezing layers**.
 
