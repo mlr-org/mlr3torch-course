@@ -1533,30 +1533,8 @@
     },
     "torch": {
       "Package": "torch",
-      "Version": "0.14.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "R6",
-        "Rcpp",
-        "bit64",
-        "callr",
-        "cli",
-        "coro",
-        "desc",
-        "glue",
-        "jsonlite",
-        "magrittr",
-        "methods",
-        "rlang",
-        "safetensors",
-        "scales",
-        "stats",
-        "tools",
-        "utils",
-        "withr"
-      ],
-      "Hash": "8265c605d3eebfb20311ee44d7bd4625"
+      "Version": "0.14.2",
+      "Source": "Repository"
     },
     "torchvision": {
       "Package": "torchvision",
