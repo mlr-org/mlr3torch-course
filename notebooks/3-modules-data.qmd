@@ -10,26 +10,27 @@ In the previous notebook, we explored how to use `torch`'s autograd system to fi
 
 1. Managed the weights.
 2. Defined the forward path for the model.
-3. Computed gradients and updated parameters using a simple update rule: `a$sub_(lr * a$grad)`
+3. Computed gradients and updated parameters using a simple update rule: `a$sub_(lr * a$grad)`.
 
 For more complex models, this approach becomes cumbersome. `torch` offers several high-level abstractions that simplify building and training neural networks:
 
 - `nn_module`: A class to organize model parameters and define the forward pass, i.e. the *neural network architecture*.
 - `dataset` and `dataloader`: Classes to handle data loading and batching, replacing our manual data handling.
-- `optim`: Classes that implement various optimization algorithms, replacing our simplistic gradient updates.
+- `optim`: Classes that implement various optimization algorithms, replacing our simple gradient updates.
 
 Let's explore how these components work together by building a neural network to classify spirals.
 Note that we only briefly touch on optimizers here and dedicate an additional notebook to them.
 
 ## Neural Network Architecture with `nn_module`
 
-The `nn_module` class serves several purposes:
+The `nn_module` class serves several purposes, it
 
-1. Acts as a container for learnable parameters.
-2. Provides train/eval modes, which are essential for layers like dropout and batch normalization.
-3. Defines the forward pass of the model.
+1. acts as a container for learnable parameters.
+2. provides train/eval modes, which are essential for layers like dropout and batch normalization.
+3. defines the forward pass of the model.
 
-Torch offers many common neural network modules out of the box. For example, the simple linear model we created earlier ($\hat{y} = a \times x + b$) can be constructed using the built-in `nn_linear` module:
+Torch offers many common neural network modules out of the box.
+For example, the simple linear model we created earlier ($\hat{y} = a \times x + b$) can be constructed using the built-in `nn_linear` module:
 
 ```{r}
 library(torch)
@@ -47,7 +48,7 @@ Note that while `nn_module`s behave like functions, they also maintain a *state*
 
 Implementing a custom `nn_module` is straightforward and requires defining two key methods:
 
-1. `initialize`: This constructor runs when the model is created. It defines the layers and their dimensions.
+1. `initialize`: This constructor runs when the module is created. It defines the layers and their dimensions.
    It can take arguments that allow to configure the network layer (such as the number of neurons in a layer).
 2. `forward`: This method defines how data flows through your network: it specifies the actual computation path from inputs to outputs.
 
@@ -178,15 +179,14 @@ Deep neural networks typically consist of many different layers (hence the name 
 Traditional machine learning and statistics rely on manual feature engineering to transform raw inputs, whereas deep neural networks have revolutionized this process by automatically learning hierarchical features directly from the data.
 
 One challenging problem is defining a neural network architecture for a given task.
-This is where architectural choices and their associated *inductive biases* become crucial.
-
+This is where architectural choices and their associated *inductive biases* come into play.
 An inductive bias represents a set of structural assumptions of how our predictive function looks like and behaves.
 These biases help the model generalize beyond its training data by favoring certain solutions over others.
 
 Some examples of inductive biases in different neural network architectures are convolutional neural networks, transformers, and multi-layer perceptrons (MLPs).
-Here, we will focus on MLPs, which are the most basic type of neural network (but are part of every other neural network).
+Here, we will focus on MLPs, which are the most basic type of neural network (but are an integral part of basically every other neural network).
 
-The different layers in a Multi-Layer Perceptron (MLP) consist mainly of an affine-linear transformation followed by a non-linear function, such as a ReLU activation function:
+The different layers in a Multi-Layer Perceptron (MLP) consist of an affine-linear transformation followed by a non-linear function, such as a ReLU activation function:
 
 ![](../assets/mlp-layer.png){width=40%}
 
@@ -238,7 +238,7 @@ The architecture of such an MLP layer is visualized below:
 
 [Source](https://tikz.net/neural_networks/)
 
-We can create a concrete network by calling the resulting `nn_module_generator` and specifying the required parameters.
+We can create a concrete network instance by calling the resulting `nn_module_generator` and specifying the required parameters.
 
 ```{r}
 # Create model instance
@@ -318,7 +318,7 @@ Finally, it's important to note that there is nothing inherently 'magical' about
 ## Dataset and DataLoader
 
 Besides the network architecture, another essential component of deep learning is the dataset.
-Two central classes are `dataset` and `dataloader`, which address separate concerns:
+The two central classes are `dataset` and `dataloader`, which address separate concerns:
 
 - `dataset`: Handles data storage and access to individual samples. The methods are:
   - `.getitem()`: Returns a single sample, regardless of the retrieval method (e.g., reading from disk or fetching from a database).
@@ -330,7 +330,7 @@ Two central classes are `dataset` and `dataloader`, which address separate conce
 We will start by creating a custom `dataset` class for the spiral problem.
 In its `$initialize()` method, it expects a `data.frame` with columns `"x1"`, `"x2"`, and `"label"`. We then convert these to tensors and store them in the object.
 
-Below, we implement `.getitem()`, but we could also implement `.getbatch()`, which retrieves a vector of indices
+Below, we implement `.getitem()`, but we could also implement `.getbatch()`, which retrieves a vector of indices.
 Note that implementing `.getbatch()` can sometimes offer performance benefits.
 
 ```{r}
@@ -357,15 +357,13 @@ Now that we have defined the dataset class generator, let's create training and 
 Training and validation datasets serve different purposes:
 
 - **Training data** is used to update the model's parameters and learn patterns.
-- **Validation data** helps evaluate how well the model generalizes to unseen data, detect overfitting, and guide model selection decisions.
+- **Validation data** helps evaluate how well the model generalizes to unseen data.
 
 Validation in deep learning is crucial for:
 
 1. **Detecting Overfitting**: If training loss decreases but validation loss increases, the model is likely overfitting to the training data.
 2. **Model Selection**: We can use validation performance to choose the best model architecture and hyperparameters.
 3. **Early Stopping**: We can halt training when validation performance stops improving to prevent overfitting.
-
-The validation set acts as a proxy for unseen data, providing an estimate of how well our model will generalize to new examples. It's important to keep this data separate from training to obtain an unbiased evaluation of model performance.
 
 ```{r}
 # Split data into train and validation sets
@@ -390,6 +388,7 @@ Constructing a `dataloader` is straightforward:
 train_loader <- dataloader(
   train_dataset,
   batch_size = 64,
+  # shuffling is important when your data is ordered
   shuffle = TRUE,
   drop_last = FALSE
 )
@@ -430,8 +429,13 @@ This will be covered in the *Training Efficiency* notebook.
 ## Training Loop
 
 To train our MLP on the data, we need to specify how the gradients will update the network parameters, which is the role of the optimizer. While we'll cover more complex optimizers in the next section, we'll use a vanilla SGD optimizer with a learning rate of `0.3` and pass it the parameters of the model we wish to optimize.
+Note that it is important to move the model to the correct device before passing it to the optimizer.
 
 ```{r}
+# Move model to device
+device <- if (cuda_is_available()) "cuda" else "cpu"
+model$to(device = device)
+
 optimizer <- optim_sgd(model$parameters, lr = 0.3)
 ```
 
@@ -445,10 +449,6 @@ Now, let's put everything together:
 ```{r}
 # Training settings
 n_epochs <- 50
-device <- if (cuda_is_available()) "cuda" else "cpu"
-
-# Move model to device
-model$to(device = device)
 
 # Training loop
 history <- list(loss = numeric(), train_acc = numeric(), valid_acc = numeric())
@@ -457,7 +457,6 @@ for(epoch in seq_len(n_epochs)) {
   model$train()  # Set to training mode
 
   # Training loop
-
   train_losses <- numeric()
   train_accs <- numeric()
   coro::loop(for(batch in train_loader) {

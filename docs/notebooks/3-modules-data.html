@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.3.433">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Modules and Data – Deep Learning with (mlr3)torch</title>
+<title>Deep Learning with mlr3 &amp; torch - Modules and Data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,7 +22,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -33,7 +33,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -79,13 +79,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 50,
-  "keyboard-shortcut": [
-    "f",
-    "/",
-    "s"
-  ],
-  "show-item-context": false,
+  "limit": 20,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -94,42 +88,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
-    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -137,145 +103,140 @@ window.Quarto = {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container mx-auto">
+      <div class="navbar-brand-container">
     <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">Deep Learning with (mlr3)torch</span>
+    <span class="navbar-title">Deep Learning with mlr3 &amp; torch</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-general" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-general" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">General</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-general">    
         <li>
-    <a class="dropdown-item" href="../notebooks/setup-guide.html">
+    <a class="dropdown-item" href="../notebooks/setup-guide.html" rel="" target="">
  <span class="dropdown-text">Setup</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/resources.html">
+    <a class="dropdown-item" href="../notebooks/resources.html" rel="" target="">
  <span class="dropdown-text">Resources</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tutorials" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tutorials" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">Tutorials</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-tutorials">    
         <li>
-    <a class="dropdown-item" href="../notebooks/0-tutorial-intro.html">
- <span class="dropdown-text">Intro</span></a>
-  </li>  
-        <li><hr class="dropdown-divider"></li>
-        <li>
-    <a class="dropdown-item" href="../notebooks/1-tensor.html">
+    <a class="dropdown-item" href="../notebooks/1-tensor.html" rel="" target="">
  <span class="dropdown-text">1. Tensors</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/2-autograd.html">
+    <a class="dropdown-item" href="../notebooks/2-autograd.html" rel="" target="">
  <span class="dropdown-text">2. Autograd</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/3-modules-data.html">
+    <a class="dropdown-item" href="../notebooks/3-modules-data.html" rel="" target="">
  <span class="dropdown-text">3. Modules and Data</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/4-optimizer.html">
+    <a class="dropdown-item" href="../notebooks/4-optimizer.html" rel="" target="">
  <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-cnn.html">
+    <a class="dropdown-item" href="../notebooks/5-cnn.html" rel="" target="">
  <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-mlr3torch.html">
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch.html" rel="" target="">
  <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-training-efficiency.html">
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency.html" rel="" target="">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-exercises" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-exercises" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">Exercises</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-exercises">    
         <li>
-    <a class="dropdown-item" href="../notebooks/0-exercise-intro.html">
+    <a class="dropdown-item" href="../notebooks/0-exercise-intro.html" rel="" target="">
  <span class="dropdown-text">Intro</span></a>
   </li>  
         <li><hr class="dropdown-divider"></li>
         <li>
-    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-task.html" rel="" target="">
  <span class="dropdown-text">1. Tensors</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-task.html" rel="" target="">
  <span class="dropdown-text">2. Autograd</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-task.html" rel="" target="">
  <span class="dropdown-text">3. Modules and Data</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-task.html" rel="" target="">
  <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-task.html" rel="" target="">
  <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-task.html" rel="" target="">
  <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html" rel="" target="">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-solutions" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-solutions" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">Solutions</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-solutions">    
         <li>
-    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">1. Tensors</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">2. Autograd</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">3. Modules and Data</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
     </ul>
@@ -283,14 +244,14 @@ window.Quarto = {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/sebffischer/torch-eds"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/mlr-org/mlr3torch-course" rel="" target=""><i class="bi bi-github" role="img">
 </i> 
-<span class="menu-text"></span></a>
+ <span class="menu-text"></span></a>
   </li>  
 </ul>
-          </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
 </div>
+          </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -317,9 +278,7 @@ window.Quarto = {
   </div>
   
 
-
 </header>
-
 
 <section id="from-linear-models-to-deep-neural-networks" class="level2">
 <h2 class="anchored" data-anchor-id="from-linear-models-to-deep-neural-networks">From Linear Models to Deep Neural Networks</h2>
@@ -327,23 +286,23 @@ window.Quarto = {
 <ol type="1">
 <li>Managed the weights.</li>
 <li>Defined the forward path for the model.</li>
-<li>Computed gradients and updated parameters using a simple update rule: <code>a$sub_(lr * a$grad)</code></li>
+<li>Computed gradients and updated parameters using a simple update rule: <code>a$sub_(lr * a$grad)</code>.</li>
 </ol>
 <p>For more complex models, this approach becomes cumbersome. <code>torch</code> offers several high-level abstractions that simplify building and training neural networks:</p>
 <ul>
 <li><code>nn_module</code>: A class to organize model parameters and define the forward pass, i.e.&nbsp;the <em>neural network architecture</em>.</li>
 <li><code>dataset</code> and <code>dataloader</code>: Classes to handle data loading and batching, replacing our manual data handling.</li>
-<li><code>optim</code>: Classes that implement various optimization algorithms, replacing our simplistic gradient updates.</li>
+<li><code>optim</code>: Classes that implement various optimization algorithms, replacing our simple gradient updates.</li>
 </ul>
 <p>Let’s explore how these components work together by building a neural network to classify spirals. Note that we only briefly touch on optimizers here and dedicate an additional notebook to them.</p>
 </section>
 <section id="neural-network-architecture-with-nn_module" class="level2">
 <h2 class="anchored" data-anchor-id="neural-network-architecture-with-nn_module">Neural Network Architecture with <code>nn_module</code></h2>
-<p>The <code>nn_module</code> class serves several purposes:</p>
+<p>The <code>nn_module</code> class serves several purposes, it</p>
 <ol type="1">
-<li>Acts as a container for learnable parameters.</li>
-<li>Provides train/eval modes, which are essential for layers like dropout and batch normalization.</li>
-<li>Defines the forward pass of the model.</li>
+<li>acts as a container for learnable parameters.</li>
+<li>provides train/eval modes, which are essential for layers like dropout and batch normalization.</li>
+<li>defines the forward pass of the model.</li>
 </ol>
 <p>Torch offers many common neural network modules out of the box. For example, the simple linear model we created earlier (<span class="math inline">\(\hat{y} = a \times x + b\)</span>) can be constructed using the built-in <code>nn_linear</code> module:</p>
 <div class="cell" data-layout-align="center">
@@ -375,7 +334,7 @@ torch_tensor
 <p>Note that while <code>nn_module</code>s behave like functions, they also maintain a <em>state</em>, primarily their parameter weights.</p>
 <p>Implementing a custom <code>nn_module</code> is straightforward and requires defining two key methods:</p>
 <ol type="1">
-<li><code>initialize</code>: This constructor runs when the model is created. It defines the layers and their dimensions. It can take arguments that allow to configure the network layer (such as the number of neurons in a layer).</li>
+<li><code>initialize</code>: This constructor runs when the module is created. It defines the layers and their dimensions. It can take arguments that allow to configure the network layer (such as the number of neurons in a layer).</li>
 <li><code>forward</code>: This method defines how data flows through your network: it specifies the actual computation path from inputs to outputs.</li>
 </ol>
 <p>Let’s implement a simple linear regression module ourselves.</p>
@@ -546,16 +505,15 @@ torch_tensor
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="3-modules-data_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+<p><img src="3-modules-data_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>While linear models are often useful and have helped us explain the <code>torch</code> API, they are limited in capturing the complex, non-linear patterns commonly present in real-world data, especially unstructured types like images, text, audio, and video. Deep neural networks typically consist of many different layers (hence the name “deep”) and combine linear and non-linear layers with various other components, allowing them to represent highly complex functions. Traditional machine learning and statistics rely on manual feature engineering to transform raw inputs, whereas deep neural networks have revolutionized this process by automatically learning hierarchical features directly from the data.</p>
-<p>One challenging problem is defining a neural network architecture for a given task. This is where architectural choices and their associated <em>inductive biases</em> become crucial.</p>
-<p>An inductive bias represents a set of structural assumptions of how our predictive function looks like and behaves. These biases help the model generalize beyond its training data by favoring certain solutions over others.</p>
-<p>Some examples of inductive biases in different neural network architectures are convolutional neural networks, transformers, and multi-layer perceptrons (MLPs). Here, we will focus on MLPs, which are the most basic type of neural network (but are part of every other neural network).</p>
-<p>The different layers in a Multi-Layer Perceptron (MLP) consist mainly of an affine-linear transformation followed by a non-linear function, such as a ReLU activation function:</p>
+<p>One challenging problem is defining a neural network architecture for a given task. This is where architectural choices and their associated <em>inductive biases</em> come into play. An inductive bias represents a set of structural assumptions of how our predictive function looks like and behaves. These biases help the model generalize beyond its training data by favoring certain solutions over others.</p>
+<p>Some examples of inductive biases in different neural network architectures are convolutional neural networks, transformers, and multi-layer perceptrons (MLPs). Here, we will focus on MLPs, which are the most basic type of neural network (but are an integral part of basically every other neural network).</p>
+<p>The different layers in a Multi-Layer Perceptron (MLP) consist of an affine-linear transformation followed by a non-linear function, such as a ReLU activation function:</p>
 <p><img src="../assets/mlp-layer.png" class="img-fluid" style="width:40.0%"></p>
 <p><a href="https://scikit-learn.org/1.5/modules/neural_networks_supervised.html">Source</a></p>
 <p>Our simple multi-layer perceptron has minimal inductive biases:</p>
@@ -605,7 +563,7 @@ Tip
 <p>The architecture of such an MLP layer is visualized below:</p>
 <p><img src="../assets/neural_networks-002.png" class="img-fluid" style="width:60.0%"></p>
 <p><a href="https://tikz.net/neural_networks/">Source</a></p>
-<p>We can create a concrete network by calling the resulting <code>nn_module_generator</code> and specifying the required parameters.</p>
+<p>We can create a concrete network instance by calling the resulting <code>nn_module_generator</code> and specifying the required parameters.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create model instance</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">nn_spiral_net</span>(</span>
@@ -723,7 +681,7 @@ Note
 </section>
 <section id="dataset-and-dataloader" class="level2">
 <h2 class="anchored" data-anchor-id="dataset-and-dataloader">Dataset and DataLoader</h2>
-<p>Besides the network architecture, another essential component of deep learning is the dataset. Two central classes are <code>dataset</code> and <code>dataloader</code>, which address separate concerns:</p>
+<p>Besides the network architecture, another essential component of deep learning is the dataset. The two central classes are <code>dataset</code> and <code>dataloader</code>, which address separate concerns:</p>
 <ul>
 <li><code>dataset</code>: Handles data storage and access to individual samples. The methods are:
 <ul>
@@ -734,7 +692,7 @@ Note
 <li><code>dataloader</code>: Given a <code>dataset</code>, handles batching, shuffling, and parallel loading.</li>
 </ul>
 <p>We will start by creating a custom <code>dataset</code> class for the spiral problem. In its <code>$initialize()</code> method, it expects a <code>data.frame</code> with columns <code>"x1"</code>, <code>"x2"</code>, and <code>"label"</code>. We then convert these to tensors and store them in the object.</p>
-<p>Below, we implement <code>.getitem()</code>, but we could also implement <code>.getbatch()</code>, which retrieves a vector of indices Note that implementing <code>.getbatch()</code> can sometimes offer performance benefits.</p>
+<p>Below, we implement <code>.getitem()</code>, but we could also implement <code>.getbatch()</code>, which retrieves a vector of indices. Note that implementing <code>.getbatch()</code> can sometimes offer performance benefits.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>spiral_dataset <span class="ot">&lt;-</span> <span class="fu">dataset</span>(</span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="st">"spiral_dataset"</span>,</span>
@@ -757,7 +715,7 @@ Note
 <p>Training and validation datasets serve different purposes:</p>
 <ul>
 <li><strong>Training data</strong> is used to update the model’s parameters and learn patterns.</li>
-<li><strong>Validation data</strong> helps evaluate how well the model generalizes to unseen data, detect overfitting, and guide model selection decisions.</li>
+<li><strong>Validation data</strong> helps evaluate how well the model generalizes to unseen data.</li>
 </ul>
 <p>Validation in deep learning is crucial for:</p>
 <ol type="1">
@@ -765,7 +723,6 @@ Note
 <li><strong>Model Selection</strong>: We can use validation performance to choose the best model architecture and hyperparameters.</li>
 <li><strong>Early Stopping</strong>: We can halt training when validation performance stops improving to prevent overfitting.</li>
 </ol>
-<p>The validation set acts as a proxy for unseen data, providing an estimate of how well our model will generalize to new examples. It’s important to keep this data separate from training to obtain an unbiased evaluation of model performance.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split data into train and validation sets</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>train_ids <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">500</span>, <span class="dv">400</span>)</span>
@@ -797,16 +754,17 @@ torch_tensor
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>train_loader <span class="ot">&lt;-</span> <span class="fu">dataloader</span>(</span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  train_dataset,</span>
 <span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>,</span>
-<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">drop_last =</span> <span class="cn">FALSE</span></span>
-<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>valid_loader <span class="ot">&lt;-</span> <span class="fu">dataloader</span>(</span>
-<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>  valid_dataset,</span>
-<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>,</span>
-<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">drop_last =</span> <span class="cn">FALSE</span></span>
-<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># shuffling is important when your data is ordered</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">drop_last =</span> <span class="cn">FALSE</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>valid_loader <span class="ot">&lt;-</span> <span class="fu">dataloader</span>(</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>  valid_dataset,</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">batch_size =</span> <span class="dv">64</span>,</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">shuffle =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">drop_last =</span> <span class="cn">FALSE</span></span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The most common way to iterate over the batches of a <code>dataloader</code> is to use the <code>coro::loop</code> function, which resembles a for loop:</p>
 <div class="cell" data-layout-align="center">
@@ -836,9 +794,13 @@ torch_tensor
 </section>
 <section id="training-loop" class="level2">
 <h2 class="anchored" data-anchor-id="training-loop">Training Loop</h2>
-<p>To train our MLP on the data, we need to specify how the gradients will update the network parameters, which is the role of the optimizer. While we’ll cover more complex optimizers in the next section, we’ll use a vanilla SGD optimizer with a learning rate of <code>0.3</code> and pass it the parameters of the model we wish to optimize.</p>
+<p>To train our MLP on the data, we need to specify how the gradients will update the network parameters, which is the role of the optimizer. While we’ll cover more complex optimizers in the next section, we’ll use a vanilla SGD optimizer with a learning rate of <code>0.3</code> and pass it the parameters of the model we wish to optimize. Note that it is important to move the model to the correct device before passing it to the optimizer.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>optimizer <span class="ot">&lt;-</span> <span class="fu">optim_sgd</span>(model<span class="sc">$</span>parameters, <span class="at">lr =</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Move model to device</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>device <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">cuda_is_available</span>()) <span class="st">"cuda"</span> <span class="cf">else</span> <span class="st">"cpu"</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>model<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>optimizer <span class="ot">&lt;-</span> <span class="fu">optim_sgd</span>(model<span class="sc">$</span>parameters, <span class="at">lr =</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>For the training loop, we only need methods from the optimizer class:</p>
 <ul>
@@ -849,69 +811,64 @@ torch_tensor
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Training settings</span></span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>n_epochs <span class="ot">&lt;-</span> <span class="dv">50</span></span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>device <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">cuda_is_available</span>()) <span class="st">"cuda"</span> <span class="cf">else</span> <span class="st">"cpu"</span></span>
-<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Move model to device</span></span>
-<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>model<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
-<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Training loop</span></span>
-<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">loss =</span> <span class="fu">numeric</span>(), <span class="at">train_acc =</span> <span class="fu">numeric</span>(), <span class="at">valid_acc =</span> <span class="fu">numeric</span>())</span>
-<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(epoch <span class="cf">in</span> <span class="fu">seq_len</span>(n_epochs)) {</span>
-<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">train</span>()  <span class="co"># Set to training mode</span></span>
-<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Training loop</span></span>
-<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a>  train_losses <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
-<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a>  train_accs <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
-<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> train_loader) {</span>
-<span id="cb56-19"><a href="#cb56-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Move batch to device</span></span>
-<span id="cb56-20"><a href="#cb56-20" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> batch<span class="sc">$</span>x<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
-<span id="cb56-21"><a href="#cb56-21" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> batch<span class="sc">$</span>y<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
-<span id="cb56-22"><a href="#cb56-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-23"><a href="#cb56-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Forward pass and average loss computation</span></span>
-<span id="cb56-24"><a href="#cb56-24" aria-hidden="true" tabindex="-1"></a>    output <span class="ot">&lt;-</span> <span class="fu">model</span>(x)</span>
-<span id="cb56-25"><a href="#cb56-25" aria-hidden="true" tabindex="-1"></a>    loss <span class="ot">&lt;-</span> <span class="fu">nnf_cross_entropy</span>(output, y)</span>
-<span id="cb56-26"><a href="#cb56-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-27"><a href="#cb56-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Backward pass</span></span>
-<span id="cb56-28"><a href="#cb56-28" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="sc">$</span><span class="fu">zero_grad</span>()</span>
-<span id="cb56-29"><a href="#cb56-29" aria-hidden="true" tabindex="-1"></a>    loss<span class="sc">$</span><span class="fu">backward</span>()</span>
-<span id="cb56-30"><a href="#cb56-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-31"><a href="#cb56-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Update parameters</span></span>
-<span id="cb56-32"><a href="#cb56-32" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="sc">$</span><span class="fu">step</span>()</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Training loop</span></span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>history <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">loss =</span> <span class="fu">numeric</span>(), <span class="at">train_acc =</span> <span class="fu">numeric</span>(), <span class="at">valid_acc =</span> <span class="fu">numeric</span>())</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(epoch <span class="cf">in</span> <span class="fu">seq_len</span>(n_epochs)) {</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">train</span>()  <span class="co"># Set to training mode</span></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Training loop</span></span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>  train_losses <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>  train_accs <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> train_loader) {</span>
+<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Move batch to device</span></span>
+<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> batch<span class="sc">$</span>x<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
+<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> batch<span class="sc">$</span>y<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
+<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Forward pass and average loss computation</span></span>
+<span id="cb56-19"><a href="#cb56-19" aria-hidden="true" tabindex="-1"></a>    output <span class="ot">&lt;-</span> <span class="fu">model</span>(x)</span>
+<span id="cb56-20"><a href="#cb56-20" aria-hidden="true" tabindex="-1"></a>    loss <span class="ot">&lt;-</span> <span class="fu">nnf_cross_entropy</span>(output, y)</span>
+<span id="cb56-21"><a href="#cb56-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-22"><a href="#cb56-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Backward pass</span></span>
+<span id="cb56-23"><a href="#cb56-23" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="sc">$</span><span class="fu">zero_grad</span>()</span>
+<span id="cb56-24"><a href="#cb56-24" aria-hidden="true" tabindex="-1"></a>    loss<span class="sc">$</span><span class="fu">backward</span>()</span>
+<span id="cb56-25"><a href="#cb56-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-26"><a href="#cb56-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Update parameters</span></span>
+<span id="cb56-27"><a href="#cb56-27" aria-hidden="true" tabindex="-1"></a>    optimizer<span class="sc">$</span><span class="fu">step</span>()</span>
+<span id="cb56-28"><a href="#cb56-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-29"><a href="#cb56-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Store training losses</span></span>
+<span id="cb56-30"><a href="#cb56-30" aria-hidden="true" tabindex="-1"></a>    train_losses <span class="ot">&lt;-</span> <span class="fu">c</span>(train_losses, loss<span class="sc">$</span><span class="fu">item</span>())</span>
+<span id="cb56-31"><a href="#cb56-31" aria-hidden="true" tabindex="-1"></a>    train_accs <span class="ot">&lt;-</span> <span class="fu">c</span>(train_accs, <span class="fu">mean</span>(<span class="fu">as_array</span>(output<span class="sc">$</span><span class="fu">argmax</span>(<span class="at">dim =</span> <span class="dv">2</span>) <span class="sc">==</span> y)))</span>
+<span id="cb56-32"><a href="#cb56-32" aria-hidden="true" tabindex="-1"></a>  })</span>
 <span id="cb56-33"><a href="#cb56-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-34"><a href="#cb56-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Store training losses</span></span>
-<span id="cb56-35"><a href="#cb56-35" aria-hidden="true" tabindex="-1"></a>    train_losses <span class="ot">&lt;-</span> <span class="fu">c</span>(train_losses, loss<span class="sc">$</span><span class="fu">item</span>())</span>
-<span id="cb56-36"><a href="#cb56-36" aria-hidden="true" tabindex="-1"></a>    train_accs <span class="ot">&lt;-</span> <span class="fu">c</span>(train_accs, <span class="fu">mean</span>(<span class="fu">as_array</span>(output<span class="sc">$</span><span class="fu">argmax</span>(<span class="at">dim =</span> <span class="dv">2</span>) <span class="sc">==</span> y)))</span>
-<span id="cb56-37"><a href="#cb56-37" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb56-34"><a href="#cb56-34" aria-hidden="true" tabindex="-1"></a>  history<span class="sc">$</span>loss <span class="ot">&lt;-</span> <span class="fu">c</span>(history<span class="sc">$</span>loss, <span class="fu">mean</span>(train_losses))</span>
+<span id="cb56-35"><a href="#cb56-35" aria-hidden="true" tabindex="-1"></a>  history<span class="sc">$</span>train_acc <span class="ot">&lt;-</span> <span class="fu">c</span>(history<span class="sc">$</span>train_acc, <span class="fu">mean</span>(train_accs))</span>
+<span id="cb56-36"><a href="#cb56-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-37"><a href="#cb56-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Validation loop</span></span>
 <span id="cb56-38"><a href="#cb56-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-39"><a href="#cb56-39" aria-hidden="true" tabindex="-1"></a>  history<span class="sc">$</span>loss <span class="ot">&lt;-</span> <span class="fu">c</span>(history<span class="sc">$</span>loss, <span class="fu">mean</span>(train_losses))</span>
-<span id="cb56-40"><a href="#cb56-40" aria-hidden="true" tabindex="-1"></a>  history<span class="sc">$</span>train_acc <span class="ot">&lt;-</span> <span class="fu">c</span>(history<span class="sc">$</span>train_acc, <span class="fu">mean</span>(train_accs))</span>
+<span id="cb56-39"><a href="#cb56-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set model to evaluation mode</span></span>
+<span id="cb56-40"><a href="#cb56-40" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">eval</span>()</span>
 <span id="cb56-41"><a href="#cb56-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-42"><a href="#cb56-42" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Validation loop</span></span>
-<span id="cb56-43"><a href="#cb56-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-44"><a href="#cb56-44" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Set model to evaluation mode</span></span>
-<span id="cb56-45"><a href="#cb56-45" aria-hidden="true" tabindex="-1"></a>  model<span class="sc">$</span><span class="fu">eval</span>()</span>
-<span id="cb56-46"><a href="#cb56-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-47"><a href="#cb56-47" aria-hidden="true" tabindex="-1"></a>  valid_accs <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
-<span id="cb56-48"><a href="#cb56-48" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> valid_loader) {</span>
-<span id="cb56-49"><a href="#cb56-49" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> batch<span class="sc">$</span>x<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
-<span id="cb56-50"><a href="#cb56-50" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> batch<span class="sc">$</span>y<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
-<span id="cb56-51"><a href="#cb56-51" aria-hidden="true" tabindex="-1"></a>    <span class="co"># IMPORTANT: Disable gradient tracking</span></span>
-<span id="cb56-52"><a href="#cb56-52" aria-hidden="true" tabindex="-1"></a>    output <span class="ot">&lt;-</span> <span class="fu">with_no_grad</span>(<span class="fu">model</span>(x))</span>
-<span id="cb56-53"><a href="#cb56-53" aria-hidden="true" tabindex="-1"></a>    valid_acc <span class="ot">&lt;-</span> <span class="fu">as_array</span>(output<span class="sc">$</span><span class="fu">argmax</span>(<span class="at">dim =</span> <span class="dv">2</span>) <span class="sc">==</span> y)</span>
-<span id="cb56-54"><a href="#cb56-54" aria-hidden="true" tabindex="-1"></a>    valid_accs <span class="ot">=</span> <span class="fu">c</span>(valid_accs, <span class="fu">mean</span>(valid_acc))</span>
-<span id="cb56-55"><a href="#cb56-55" aria-hidden="true" tabindex="-1"></a>  })</span>
-<span id="cb56-56"><a href="#cb56-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb56-57"><a href="#cb56-57" aria-hidden="true" tabindex="-1"></a>  history<span class="sc">$</span>valid_acc <span class="ot">&lt;-</span> <span class="fu">c</span>(history<span class="sc">$</span>valid_acc, <span class="fu">mean</span>(valid_accs))</span>
-<span id="cb56-58"><a href="#cb56-58" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb56-42"><a href="#cb56-42" aria-hidden="true" tabindex="-1"></a>  valid_accs <span class="ot">&lt;-</span> <span class="fu">numeric</span>()</span>
+<span id="cb56-43"><a href="#cb56-43" aria-hidden="true" tabindex="-1"></a>  coro<span class="sc">::</span><span class="fu">loop</span>(<span class="cf">for</span>(batch <span class="cf">in</span> valid_loader) {</span>
+<span id="cb56-44"><a href="#cb56-44" aria-hidden="true" tabindex="-1"></a>    x <span class="ot">&lt;-</span> batch<span class="sc">$</span>x<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
+<span id="cb56-45"><a href="#cb56-45" aria-hidden="true" tabindex="-1"></a>    y <span class="ot">&lt;-</span> batch<span class="sc">$</span>y<span class="sc">$</span><span class="fu">to</span>(<span class="at">device =</span> device)</span>
+<span id="cb56-46"><a href="#cb56-46" aria-hidden="true" tabindex="-1"></a>    <span class="co"># IMPORTANT: Disable gradient tracking</span></span>
+<span id="cb56-47"><a href="#cb56-47" aria-hidden="true" tabindex="-1"></a>    output <span class="ot">&lt;-</span> <span class="fu">with_no_grad</span>(<span class="fu">model</span>(x))</span>
+<span id="cb56-48"><a href="#cb56-48" aria-hidden="true" tabindex="-1"></a>    valid_acc <span class="ot">&lt;-</span> <span class="fu">as_array</span>(output<span class="sc">$</span><span class="fu">argmax</span>(<span class="at">dim =</span> <span class="dv">2</span>) <span class="sc">==</span> y)</span>
+<span id="cb56-49"><a href="#cb56-49" aria-hidden="true" tabindex="-1"></a>    valid_accs <span class="ot">=</span> <span class="fu">c</span>(valid_accs, <span class="fu">mean</span>(valid_acc))</span>
+<span id="cb56-50"><a href="#cb56-50" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb56-51"><a href="#cb56-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-52"><a href="#cb56-52" aria-hidden="true" tabindex="-1"></a>  history<span class="sc">$</span>valid_acc <span class="ot">&lt;-</span> <span class="fu">c</span>(history<span class="sc">$</span>valid_acc, <span class="fu">mean</span>(valid_accs))</span>
+<span id="cb56-53"><a href="#cb56-53" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The decision boundary plot shows how our neural network learned to separate the spiral classes, demonstrating its ability to learn non-linear patterns that a simple linear model couldn’t capture.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="3-modules-data_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+<p><img src="3-modules-data_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -921,7 +878,7 @@ torch_tensor
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="3-modules-data_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+<p><img src="3-modules-data_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -973,7 +930,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const onCopySuccess = function(e) {
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1005,50 +973,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
   });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-    }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
-      }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+  function tippyHover(el, contentFn) {
     const config = {
       allowHTML: true,
+      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1058,17 +987,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start',
+      placement: 'bottom-start'
     };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1080,130 +1000,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
-        }
-      }
-    }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
-          }
-        }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
-        }
-        return container.innerHTML
-      } else {
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(note);
-        }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      // TODO in 1.5, we should make sure this works without a callout special case
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
-      }
-    }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
-          }
-        } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
-          .then(res => res.text())
-          .then(html => {
-            const parser = new DOMParser();
-            const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
-            if (note !== null) {
-              const html = processXRef(id, note);
-              instance.setContent(html);
-            } 
-          }).finally(() => {
-            instance.enable();
-            instance.show();
-          });
-        }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
+      return note.innerHTML;
     });
   }
       let selectedAnnoteEl;
@@ -1247,7 +1044,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
-            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -1273,32 +1069,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1364,15 +1134,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <div class="nav-footer-left">
       &nbsp;
     </div>   
-    <div class="nav-footer-center">
-<p>CC BY SA 4.0</p>
-</div>
+    <div class="nav-footer-center">CC BY SA 4.0</div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
   </div>
 </footer>
-
 
 
 
