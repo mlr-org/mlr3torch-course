@@ -50,14 +50,14 @@ $$\theta^* = \arg \min_\theta \hat{\mathcal{R}}(\theta)$$
 
 This is done by iteratively updating the parameter vector $\theta$ using the gradient of the risk function with respect to the parameter vector. The simplified update formula for a parameter $\theta$ at time step $t$ is given by:
 
-$$\theta_{t+1} = \theta_t - \eta \frac{\partial \hat{\mathcal{R}}}{\partial \theta_t}$$
+$$\theta_{t+1} = \theta_t - \eta \nabla_{\theta_t} \hat{\mathcal{R}}$$
 
 Where:
 
 - $\theta_t$ is the current value of the parameter vector at time step $t$.
 - $\theta_{t+1}$ is the new value of the parameter after the update.
 - $\eta$ (eta) is the learning rate, which controls the step size.
-- $\frac{\partial \hat{\mathcal{R}}}{\partial \theta_t}$ is the derivative of the empirical risk function $\hat{\mathcal{R}}$ with respect to parameter $\theta$, evaluated at $\theta_t$.
+- $\nabla_{\theta_t} \hat{\mathcal{R}}$ is the gradient of the empirical risk function $\hat{\mathcal{R}}$ with respect to parameter $\theta$, evaluated at $\theta_t$.
 
 ::: {.callout-note}
 ## Quiz: Learning Rate
@@ -85,15 +85,15 @@ Before we cover these more advanced approaches (specifically their implementatio
 
 ## Mini-Batch Effects in SGD
 
-When using mini-batches, the gradient becomes a noisy estimate of the gradient over the full dataset. With $\nabla_{\theta} \hat{\mathcal{R}}^{(i)}_t := \frac{\partial \hat{\mathcal{R}}^{(i)}}{\partial \theta}$ being the gradient of the risk function with respect to the entire parameter vector estimated using $(x^{(i)}, y^{(i)})$, the mini-batch gradient is given by:
+When using mini-batches, the gradient becomes a noisy estimate of the gradient over the full dataset. With $\nabla_{\theta_t} \hat{\mathcal{R}}^{(i)}$ being the gradient of the risk function with respect to the entire parameter vector estimated using $(x^{(i)}, y^{(i)})$, the mini-batch gradient is given by:
 
-$$\nabla_{\theta} \hat{\mathcal{R}}^B_t = \frac{1}{|B|} \sum_{i \in B} \nabla_{\theta} \hat{\mathcal{R}}^{(i)}_t$$
+$$\nabla_{\theta_t} \hat{\mathcal{R}}^B = \frac{1}{|B|} \sum_{i \in B} \nabla_{\theta_t} \hat{\mathcal{R}}^{(i)}$$
 
 where $B$ is the batch of samples and $|B|$ is the batch size.
 
 The update formula for SGD is then given by:
 
-$$\theta_{t+1} = \theta_t - \eta \nabla_{\theta} \hat{\mathcal{R}}^B_t$$
+$$\theta_{t+1} = \theta_t - \eta \nabla_{\theta_t} \hat{\mathcal{R}}^B$$
 
 The difference between the full gradient and the mini-batch gradient is visualized in the image below:
 
@@ -563,8 +563,8 @@ opt2$load_state_dict(state_dict2)
 
 ## Embedded Regularization Techniques
 
-Besides the explicit regularization effects of weight decay and the implicit regularization effects of mini-batch gradient descent, there are also other regularization techniques that improve generalization of deep neural networks.
-Here, we focus on dropout and layer normalization, which are both embedded in neural network architectures.
+Besides the explicit regularization effects of weight decay and the implicit regularization effects of mini-batch gradient descent, there are also other techniques that improve generalization of deep neural networks.
+Here, we focus on dropout and batch normalization, which are both embedded in neural network architectures.
 
 ### Dropout
 
@@ -620,7 +620,7 @@ where:
 - $\sigma_B^2$ is the variance of the batch,
 - $\epsilon$ is a small constant added for numerical stability.
 
-During inference, the module uses the running mean and variance of the training data to normalize the input.
+During inference (i.e. in eval mode), the module uses the running mean and variance of the training data to normalize the input.
 
 In `torch`, different versions of batch normalization exist for different dimensions of the input tensor.
 Below, we illustrate the batch normalization module using a 1D input tensor (the batch dimension does not count here):
@@ -684,7 +684,7 @@ task <- tsk("spam")
 spam <- task$data()
 ```
 
-To demonstrate these dropout, we apply them to a simple spam classification task.
+To demonstrate these methods, we apply them to a simple spam classification task.
 The data has one binary target variable `type` (spam or no spam) and 57 numerical features.
 
 ```{r}
@@ -721,8 +721,7 @@ nn_vanilla <- nn_reg(dropout = FALSE, batch_norm = FALSE)
 
 We evaluate the performance of the four neural networks created above using subsampling with 10 repetitions and an 80/20 train/test split.
 We don't show the specific training code here, but only the resulting confidence intervals for the accuracy.
-While the intervals are too wide to be able to draw any final conclusions, both regularizaion techniques tend to lead to better results.
-Also, both normalization techniques improve stability, so that the confidence intervals are narrower.
+While the intervals are too wide to be able to draw any final conclusions, dropout here seems to have a positive effect on the generalization performance of the model, whereas batch normalization does not (which is not too surprising as it is usually used with convolutional layers).
 
 ```{r, echo = FALSE, message = FALSE}
 library(mlr3inferr)
@@ -751,7 +750,7 @@ for (l in lrns) {
     measures_valid = msr("classif.logloss"),
     validate = "test",
     batch_size = 128L,
-    jit_trace = FALSE,
+    jit_trace = TRUE,
     predict_type = "prob",
     tensor_dataset = TRUE
   )

@@ -47,10 +47,10 @@ When working with these images as tensors, each is represented a 3D tensor with 
 str(image)
 ```
 
-Such a convolutional layer has the following parameters:
+A convolutional layer has the following parameters:
 
 - **in_channels**: The number of channels in the input image (e.g., 1 for grayscale images and 3 for RGB images).
-- **out_channels**: The number of filters (or kernels) used by the layer. This determines the number of channels in the output feature map.
+- **out_channels**: The number of filters (or kernels) used by the layer. This determines the number of channels in the output.
 - **kernel_size**: The size of the filter that moves over the image. For instance, a kernel size of 3 means a 3×3 filter.
 - **padding**: The number of pixels added to the borders of the input image. Padding can help control the spatial dimensions of the output.
 - **stride**: The step size with which the filter moves across the input image. A larger stride results in a smaller output feature map.

@@ -329,13 +329,13 @@ Yes, because the size of the parameter vector depends on the scale of the featur
 <p>While the goal of the risk function is to define what we want, it’s the optimizer’s job to find the parameter vector <span class="math inline">\(\theta^*\)</span> that minimizes the empirical risk function. For simplicity, we will now refer to both the regularized and unregularized risk function as <span class="math inline">\(\hat{\mathcal{R}}\)</span>.</p>
 <p><span class="math display">\[\theta^* = \arg \min_\theta \hat{\mathcal{R}}(\theta)\]</span></p>
 <p>This is done by iteratively updating the parameter vector <span class="math inline">\(\theta\)</span> using the gradient of the risk function with respect to the parameter vector. The simplified update formula for a parameter <span class="math inline">\(\theta\)</span> at time step <span class="math inline">\(t\)</span> is given by:</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \frac{\partial \hat{\mathcal{R}}}{\partial \theta_t}\]</span></p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \nabla_{\theta_t} \hat{\mathcal{R}}\]</span></p>
 <p>Where:</p>
 <ul>
 <li><span class="math inline">\(\theta_t\)</span> is the current value of the parameter vector at time step <span class="math inline">\(t\)</span>.</li>
 <li><span class="math inline">\(\theta_{t+1}\)</span> is the new value of the parameter after the update.</li>
 <li><span class="math inline">\(\eta\)</span> (eta) is the learning rate, which controls the step size.</li>
-<li><span class="math inline">\(\frac{\partial \hat{\mathcal{R}}}{\partial \theta_t}\)</span> is the derivative of the empirical risk function <span class="math inline">\(\hat{\mathcal{R}}\)</span> with respect to parameter <span class="math inline">\(\theta\)</span>, evaluated at <span class="math inline">\(\theta_t\)</span>.</li>
+<li><span class="math inline">\(\nabla_{\theta_t} \hat{\mathcal{R}}\)</span> is the gradient of the empirical risk function <span class="math inline">\(\hat{\mathcal{R}}\)</span> with respect to parameter <span class="math inline">\(\theta\)</span>, evaluated at <span class="math inline">\(\theta_t\)</span>.</li>
 </ul>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -370,11 +370,11 @@ Click for answer
 <p>Before we cover these more advanced approaches (specifically their implementation in AdamW), we will first focus on the vanilla version of Stochastic Gradient Descent (SGD).</p>
 <section id="mini-batch-effects-in-sgd" class="level2">
 <h2 class="anchored" data-anchor-id="mini-batch-effects-in-sgd">Mini-Batch Effects in SGD</h2>
-<p>When using mini-batches, the gradient becomes a noisy estimate of the gradient over the full dataset. With <span class="math inline">\(\nabla_{\theta} \hat{\mathcal{R}}^{(i)}_t := \frac{\partial \hat{\mathcal{R}}^{(i)}}{\partial \theta}\)</span> being the gradient of the risk function with respect to the entire parameter vector estimated using <span class="math inline">\((x^{(i)}, y^{(i)})\)</span>, the mini-batch gradient is given by:</p>
-<p><span class="math display">\[\nabla_{\theta} \hat{\mathcal{R}}^B_t = \frac{1}{|B|} \sum_{i \in B} \nabla_{\theta} \hat{\mathcal{R}}^{(i)}_t\]</span></p>
+<p>When using mini-batches, the gradient becomes a noisy estimate of the gradient over the full dataset. With <span class="math inline">\(\nabla_{\theta_t} \hat{\mathcal{R}}^{(i)}\)</span> being the gradient of the risk function with respect to the entire parameter vector estimated using <span class="math inline">\((x^{(i)}, y^{(i)})\)</span>, the mini-batch gradient is given by:</p>
+<p><span class="math display">\[\nabla_{\theta_t} \hat{\mathcal{R}}^B = \frac{1}{|B|} \sum_{i \in B} \nabla_{\theta_t} \hat{\mathcal{R}}^{(i)}\]</span></p>
 <p>where <span class="math inline">\(B\)</span> is the batch of samples and <span class="math inline">\(|B|\)</span> is the batch size.</p>
 <p>The update formula for SGD is then given by:</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \nabla_{\theta} \hat{\mathcal{R}}^B_t\]</span></p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \nabla_{\theta_t} \hat{\mathcal{R}}^B\]</span></p>
 <p>The difference between the full gradient and the mini-batch gradient is visualized in the image below:</p>
 <p><img src="../assets/gd_vs_sgd.png" class="img-fluid"></p>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -914,7 +914,7 @@ Warning
 </section>
 <section id="embedded-regularization-techniques" class="level2">
 <h2 class="anchored" data-anchor-id="embedded-regularization-techniques">Embedded Regularization Techniques</h2>
-<p>Besides the explicit regularization effects of weight decay and the implicit regularization effects of mini-batch gradient descent, there are also other regularization techniques that improve generalization of deep neural networks. Here, we focus on dropout and layer normalization, which are both embedded in neural network architectures.</p>
+<p>Besides the explicit regularization effects of weight decay and the implicit regularization effects of mini-batch gradient descent, there are also other techniques that improve generalization of deep neural networks. Here, we focus on dropout and batch normalization, which are both embedded in neural network architectures.</p>
 <section id="dropout" class="level3">
 <h3 class="anchored" data-anchor-id="dropout">Dropout</h3>
 <p>Dropout is a regularization technique used to prevent overfitting in neural networks. During each training iteration, dropout randomly “drops” a subset of neurons by setting their activations to zero with a specified probability. This forces the network to distribute the learned representations more evenly across neurons. Dropout is most commonly used in the context of fully connected layers.</p>
@@ -995,7 +995,7 @@ Not necessarily, as dropout is a regularization technique that prevents overfitt
 <li><span class="math inline">\(\sigma_B^2\)</span> is the variance of the batch,</li>
 <li><span class="math inline">\(\epsilon\)</span> is a small constant added for numerical stability.</li>
 </ul>
-<p>During inference, the module uses the running mean and variance of the training data to normalize the input.</p>
+<p>During inference (i.e.&nbsp;in eval mode), the module uses the running mean and variance of the training data to normalize the input.</p>
 <p>In <code>torch</code>, different versions of batch normalization exist for different dimensions of the input tensor. Below, we illustrate the batch normalization module using a 1D input tensor (the batch dimension does not count here):</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">torch_randn</span>(<span class="dv">10</span>, <span class="dv">5</span>)</span>
@@ -1078,7 +1078,7 @@ The first statement is true because, in evaluation mode, the module uses the run
 </details>
 </div>
 </div>
-<p>To demonstrate these dropout, we apply them to a simple spam classification task. The data has one binary target variable <code>type</code> (spam or no spam) and 57 numerical features.</p>
+<p>To demonstrate these methods, we apply them to a simple spam classification task. The data has one binary target variable <code>type</code> (spam or no spam) and 57 numerical features.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="fu">nrow</span>(spam), <span class="fu">ncol</span>(spam))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1116,7 +1116,7 @@ The first statement is true because, in evaluation mode, the module uses the run
 <span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>nn_both <span class="ot">&lt;-</span> <span class="fu">nn_reg</span>(<span class="at">dropout =</span> <span class="cn">TRUE</span>, <span class="at">batch_norm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>nn_vanilla <span class="ot">&lt;-</span> <span class="fu">nn_reg</span>(<span class="at">dropout =</span> <span class="cn">FALSE</span>, <span class="at">batch_norm =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We evaluate the performance of the four neural networks created above using subsampling with 10 repetitions and an 80/20 train/test split. We don’t show the specific training code here, but only the resulting confidence intervals for the accuracy. While the intervals are too wide to be able to draw any final conclusions, both regularizaion techniques tend to lead to better results. Also, both normalization techniques improve stability, so that the confidence intervals are narrower.</p>
+<p>We evaluate the performance of the four neural networks created above using subsampling with 10 repetitions and an 80/20 train/test split. We don’t show the specific training code here, but only the resulting confidence intervals for the accuracy. While the intervals are too wide to be able to draw any final conclusions, dropout here seems to have a positive effect on the generalization performance of the model.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
