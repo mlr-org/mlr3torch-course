@@ -55,6 +55,7 @@ Then, we create a view of the tensor:
 
 ```{r}
 y <- x$view(c(3, 2))
+y
 ```
 
 To check that we created a view, we can modify one of the tensors and see if the other one changes:
@@ -128,6 +129,7 @@ According to the broadcasting rules, we start by adding a singleton dimension to
 
 ```{r}
 x1 <- x1$reshape(c(1, 2))
+x1
 ```
 
 Now, we have a tensor of shape `(1, 2)` and a tensor of shape `(2, 1)`.
@@ -135,12 +137,14 @@ Next, we extend the first tensor along the first dimension to match the second t
 
 ```{r}
 x1 <- x1$expand(c(2, 2))
+x1
 ```
 
 We do this analogously for the second (reshaped) tensor:
 
 ```{r}
 x2 <- x2$reshape(c(2, 1))$expand(c(2, 2))
+x2
 ```
 
 Now they both have the same shape `(2, 2)`, so we can add them:
@@ -187,7 +191,7 @@ If not, generate two random matrices with compatible shapes and multiply them.
 We can only multiply a matrix of shape `(n, k)` with a matrix of shape `(k, m)`, i.e., the the number of columns in the first matrix matches the number of rows in the second matrix.
 
 We can therefore not multiply the two matrices with each other in either order.
-To generate two random matrices with compatible shapes, we can generate two random matrices with shape `(10, 5)` and `(5, 10)`.
+As an example for two compatible matrices, we can generate two random matrices with shape `(10, 5)` and `(5, 10)`.
 
 ```{r}
 A <- torch_randn(10, 5)
@@ -238,7 +242,7 @@ y <- f(x)
 x
 ```
 
-Implement a new different version of this function that returns the same tensor but does not change the value of the input tensor in-place.
+Implement a new version of this function that returns the same tensor but does not change the value of the input tensor in-place.
 
 <details>
 <summary>Hint</summary>

@@ -5,7 +5,7 @@ title: "Torch Tensors"
 {{< include _setup.qmd >}}
 
 Tensors are the fundamental data structure in `torch`, serving as the backbone for both deep learning and scientific computing operations.
-While similar to R arrays, tensors offer enhanced capabilities that make them particularly suited for modern computational tasks, namely **GPU acceleration** and **automatic differentiation (autograd)**.
+While similar to R arrays, tensors offer enhanced capabilities that make them particularly suited for modern computational tasks, namely **GPU acceleration** and **automatic differentiation (autodiff/autograd)**.
 
 ## Creating Tensors
 
@@ -13,7 +13,6 @@ One way to create tensors is to convert R matrices (or analogously arrays or vec
 
 ```{r}
 library(torch)
-# From R matrices
 x_matrix <- matrix(1:6, nrow = 2, ncol = 3)
 x_matrix
 x_tensor <- torch_tensor(x_matrix)
@@ -142,7 +141,9 @@ You can convert between datatypes using the `$to()` method:
 ```{r}
 # Converting between datatypes
 x <- torch_ones(2, 3)  # Default float32
+x$dtype
 x_int <- x$to(dtype = torch_int32())
+x_int$dtype
 ```
 
 Note that floats are converted to integers by truncating, not by rounding.
@@ -203,7 +204,7 @@ You can easily convert torch tensors back to R using `as_array()`, `as.matrix()`
 
 * 0-dimensional tensors (scalars) are converted to R vectors with length 1:
 
-  ```{3}
+  ```{r}
   torch_scalar_tensor(1)$item() # as_array() also works
   ```
 
@@ -279,7 +280,7 @@ x[1:2, 1]
 xt[1:2, 1]
 ```
 
-One difference between indexing torch vectors and standard R vectors is the behavior regarding negative indices. While R vectors remove the element at the specified index, torch vectors return elements from the beginning.
+One difference between indexing torch vectors and standard R vectors is the behavior regarding negative indices. While R vectors remove the element at the specified index, torch vectors return elements from the end.
 
 ```{r}
 (1:3)[-1]
@@ -359,13 +360,13 @@ There are strict rules that define when two shapes are compatible:
 1. If tensors have a different number of dimensions, prepend 1's to the shape of the lower-dimensional tensor until they match.
 2. Two dimensions are compatible when:
    * They are equal, or
-   * One of them is 1 (which will be stretched to match the other)
+   * One of them is 1 (the element will be expanded to match the other)
 3. If any dimension pair is incompatible, broadcasting fails.
 
 ::: {.callout-note}
 ## Quiz: Broadcasting Rules
 
-**Question 1**: Does broadcasting work to add a tensor of shape `(2, 1, 3)`to a tensor of shape `(4, 3)`? What would be the resulting shape?
+**Question 1**: Does broadcasting work to add a tensor of shape `(2, 1, 3)`to a tensor of shape `(4, 3)`? If yes, what would be the resulting shape?
 
 <details>
 <summary>Click for answer</summary>
@@ -385,11 +386,11 @@ The resulting shape would be `(2, 4, 3)`. Here's why:
 <summary>Click for answer</summary>
 No, broadcasting would fail in this case. Here's why:
 
-1. Both tensors have the same number of dimensions (2), so no prepending is needed.
+1. Both tensors have the same number of dimensions (2), so no prepending of ones is needed.
 2. Going dimension by dimension:
    * First: 2 vs 3 -> Incompatible (neither is 1)
    * Second: 3 vs 2 -> Incompatible (neither is 1)
-3. Since both dimension pairs are incompatible, broadcasting fails.
+3. Since at least one pair is incompatible, broadcasting fails.
 </details>
 :::
 
@@ -491,12 +492,12 @@ x # was not modified
 
 
 :::{.callout-note}
-Another notable exception to value semantics are environments and `R6` classes, which are used in the `mlr3` ecosystem.
+Another notable exception to value semantics are environments and `R6` classes (which internally use environments), which are used in the `mlr3` ecosystem.
 :::
 
 When one tensor (`y`) shares underlying data with another tensor (`x`), this is called a *view*.
 It is also possible to obtain a view on a subset of a tensor, e.g., via slicing as shown below.
-There, `torch_arange()` creates a tensor with elements from 1 to 10.
+Here, `torch_arange()` creates a tensor with elements from 1 to 10.
 
 ```{r}
 x <- torch_arange(start = 1, end = 10, step = 1)
@@ -526,7 +527,7 @@ x[1] # is still 1
 ```
 
 ::: {.callout-warning}
-This is also the case for the `$reshape()` methods from the last section, which will in some cases create a view and in other cases allocate a new tensor with the desired shape. If you want to ensure that you create a view on a tensor, you can use the `$view()` method, which will fail if the required view is not possible.
+This is also the case for the `$reshape()` methods from earlier, which will in some cases create a view and in other cases allocate a new tensor with the desired shape. If you want to ensure that you create a view on a tensor, you can use the `$view()` method, which will fail if the required view is not possible.
 :::
 
 ::: {.callout-note}
