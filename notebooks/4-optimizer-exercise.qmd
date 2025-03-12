@@ -11,7 +11,7 @@ We start by generating some (highly non-linear) synthetic data using the `mlbenc
 
 ```{r, message = FALSE}
 library(torch)
-data <- mlbench::mlbench.friedman3(n = 3000, sd = 0.1)
+data <- mlbench::mlbench.friedman3(n = 1000, sd = 0.1)
 X <- torch_tensor(data$x)
 X[1:2, ]
 Y <- torch_tensor(data$y)$unsqueeze(2)
@@ -194,10 +194,10 @@ compare_configs(epochs = 30, weight_decay = list(0.5, 0.25, 0.125, 0.0625, 0.031
 
 *Beta 1*
 
-For the momentum parameter, we can observe that too large values for the momentum parameter lead to oscillations, possibly because the local information is not used enough.
+We can observe that too large values for the momentum parameter lead to oscillations, possibly because the local information is not used enough.
 Too small values lead to worse performance.
 
-```{r}
+```{r, warning = FALSE}
 compare_configs(epochs = 30, beta1 = list(0.5, 0.85, 0.9, 0.95, 0.99, 0.999))
 ```
 

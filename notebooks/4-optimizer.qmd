@@ -10,7 +10,8 @@ source(here::here("scripts", "helper.R"))
 
 In this notebook, we will focus on the *optimization* and *regularization* aspects of deep learning.
 
-Optimizers are algorithms that iteratively adjust the parameters of a neural network to minimize the loss function during training. They define how the networks *learn* from the data.
+Optimizers are algorithms that iteratively adjust the parameters of a neural network to minimize the loss function during training.
+They define how a network *learns* from data.
 
 Let's denote $\hat{\mathcal{R}}(\theta)$ as the empirical risk function, which assigns the empirical risk given data $\{(x^{(i)}, y^{(i)})\}_{i = 1}^n$ to a parameter vector $\theta$.
 Here, $f_\theta$ is the model's prediction function, $x^{(i)}$ is the $i$-th sample in the training data, and $y^{(i)}$ is the corresponding target value.
@@ -47,7 +48,7 @@ For simplicity, we will now refer to both the regularized and unregularized risk
 
 $$\theta^* = \arg \min_\theta \hat{\mathcal{R}}(\theta)$$
 
-This is done by iteratively updating the parameter vector $\theta$ using the gradient of the loss function with respect to the parameter vector. The simplified update formula for a parameter $\theta$ at time step $t$ is given by:
+This is done by iteratively updating the parameter vector $\theta$ using the gradient of the risk function with respect to the parameter vector. The simplified update formula for a parameter $\theta$ at time step $t$ is given by:
 
 $$\theta_{t+1} = \theta_t - \eta \frac{\partial \hat{\mathcal{R}}}{\partial \theta_t}$$
 
@@ -56,12 +57,12 @@ Where:
 - $\theta_t$ is the current value of the parameter vector at time step $t$.
 - $\theta_{t+1}$ is the new value of the parameter after the update.
 - $\eta$ (eta) is the learning rate, which controls the step size.
-- $\frac{\partial \hat{\mathcal{R}}}{\partial \theta_t}$ is the derivative of the empirical risk function $\hat{\mathcal{R}}$ with respect to parameter $\theta$, i.e., the gradient.
+- $\frac{\partial \hat{\mathcal{R}}}{\partial \theta_t}$ is the derivative of the empirical risk function $\hat{\mathcal{R}}$ with respect to parameter $\theta$, evaluated at $\theta_t$.
 
 ::: {.callout-note}
 ## Quiz: Learning Rate
 
-**Question 1**: Can you explain what happens when the learning rate is too high? What happens when it is too low?
+**Question 1**: Can you guess what happens when the learning rate is too high? What happens when it is too low?
 
 <details>
 <summary>Click for answer</summary>
@@ -84,17 +85,17 @@ Before we cover these more advanced approaches (specifically their implementatio
 
 ## Mini-Batch Effects in SGD
 
-When using mini-batches, the gradient becomes a noisy estimate of the gradient over the full dataset. With $\nabla L^{(i)}_t := \frac{\partial L^{(i)}}{\partial \theta_t}$ being the gradient of the loss function with respect to the entire parameter vector estimated using $(x^{(i)}, y^{(i)})$, the mini-batch gradient is given by:
+When using mini-batches, the gradient becomes a noisy estimate of the gradient over the full dataset. With $\nabla_{\theta} \hat{\mathcal{R}}^{(i)}_t := \frac{\partial \hat{\mathcal{R}}^{(i)}}{\partial \theta}$ being the gradient of the risk function with respect to the entire parameter vector estimated using $(x^{(i)}, y^{(i)})$, the mini-batch gradient is given by:
 
-$$\nabla L^B_t = \frac{1}{|B|} \sum_{i \in B} \nabla L^{(i)}_t$$
+$$\nabla_{\theta} \hat{\mathcal{R}}^B_t = \frac{1}{|B|} \sum_{i \in B} \nabla_{\theta} \hat{\mathcal{R}}^{(i)}_t$$
 
 where $B$ is the batch of samples and $|B|$ is the batch size.
 
 The update formula for SGD is then given by:
 
-$$\theta_{t+1} = \theta_t - \eta \nabla L^B_t$$
+$$\theta_{t+1} = \theta_t - \eta \nabla_{\theta} \hat{\mathcal{R}}^B_t$$
 
-This is visualized in the image below:
+The difference between the full gradient and the mini-batch gradient is visualized in the image below:
 
 ![](../assets/gd_vs_sgd.png)
 
@@ -116,14 +117,14 @@ This is visualized in the image below:
 
 <details>
 <summary>Click for answer</summary>
-In machine learning, we assume that the data is drawn from a distribution $P$.
+In machine learning, we assume that the data is drawn from a distribution $\mathbb{E}$.
 The gradient over the full dataset approximates the expectation over this distribution:
 
-$$\nabla \mathcal{R} = \mathbb{E}_{x \sim P} \nabla \mathcal{L}(f_\theta(x), y)$$
+$$\nabla_\theta \mathcal{R} = \mathbb{E} [\nabla_\theta L(f_\theta(x), y)]$$
 </details>
 :::
 
-Because deep learning models can have many parameters and computing gradients is expensive, understanding the effects of different batch sizes and convergence is important. The computational cost (which we define as the time it takes to perform one optimization step) of a gradient update using a batch size $b$ consists of:
+Because deep learning models can have many parameters and computing gradients is expensive, understanding the effects of different batch sizes and convergence is important. The computational cost (which we define as the time it takes to perform one optimization step) of a gradient update using a batch size $B$ consists of:
 
 1. Loading the batch into memory (if the data does not fit into RAM).
 2. The forward pass of the model.
@@ -147,9 +148,9 @@ The cost depends on many factors, but if the model is small, the cost of a batch
 **Question 2:**
 The standard error of the mini-batch gradient estimate (which characterizes the precision of the gradient estimate) can be written as:
 
-$$\text{SE}_{\nabla L^B_t} = \frac{\sigma_{\nabla L_t}}{\sqrt{|B|}}$$
+$$\text{SE}_{\nabla \hat{\mathcal{R}}^B_t} = \frac{\sigma_{\nabla \hat{\mathcal{R}}_t}}{\sqrt{|B|}}$$
 
-where $\sigma_{\nabla L_t}$ is the standard deviation of the gradient estimate relative to the batch size.
+where $\sigma_{\nabla \hat{\mathcal{R}}_t}$ is the standard deviation of the gradient estimate using a single observation.
 
 Describe the dynamics of the standard error when increasing the batch size: How do you need to increase a batch size from $1$ to achieve half the standard error? What about increasing a batch size from $100$?
 
@@ -179,14 +180,14 @@ However, due to the stochastic nature of SGD, optimizers will find local minima 
 ::: {.callout-note}
 ## Quiz: Local vs. Global Minima, Generalization
 
-Question 1: Do you believe SGD will find local or global minima? Explain your reasoning.
+**Question 1**: Do you believe SGD will find local or global minima? Explain your reasoning.
 
 <details>
 <summary>Click for answer</summary>
 Because the gradient only has **local** information about the loss function, SGD finds local minima.
 </details>
 
-Question 2: Assuming we have found a $\theta^*$ that has low training loss, does this ensure that we have found a good model?
+**Question 2**: Assuming we have found a $\theta^*$ that has low training loss, does this ensure that we have found a good model?
 
 <details>
 <summary>Click for answer</summary>
@@ -212,7 +213,7 @@ For more complex optimizers such as Adam, weight decay is not equivalent to addi
 
 If we integrate weight decay into the gradient update formula, we get the following:
 
-$$\theta_{t+1} = \theta_t - \eta \big(\frac{\partial L}{\partial \theta_t} - \lambda \theta_t\big)$$
+$$\theta_{t+1} = \theta_t - \eta \big(\nabla_{\theta} \hat{\mathcal{R}}^B_t- \lambda \theta_t\big)$$
 
 This formula shows that the weight decay term ($- \lambda \theta_t$) effectively shrinks the weights during each update, helping to prevent overfitting.
 
@@ -231,13 +232,13 @@ Momentum is a technique that helps accelerate gradient descent by using an expon
 The exponential moving momentum update can be expressed mathematically as:
 
 $$
-(1 - \beta) \sum_{\tau=1}^{t} \beta^{t-\tau} \nabla_{\theta} \mathcal{L}(\theta_{\tau-1})
+(1 - \beta) \sum_{\tau=1}^{t} \beta^{t-\tau} \nabla_{\theta} \hat{\mathcal{R}}^B_{\tau-1}
 $$
 
 In order to avoid having to keep track of all the gradients, we can calculate the update in two steps as follows:
 
 $$
-v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_\theta L(\theta_t)
+v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_\theta \hat{\mathcal{R}}^B_t
 $$
 
 $$
@@ -264,14 +265,14 @@ Before, we had one global learning rate $\eta$ for all parameters. However, lear
 
 Our vanilla SGD update formula is now generalized to handle adaptive learning rates:
 
-$$\theta_{t+1} = \theta_t - \eta_t \cdot \frac{\nabla_\theta L(\theta_t)}{\sqrt{v_t} + \epsilon}$$
+$$\theta_{t+1} = \theta_t - \eta_t \cdot \nabla_\theta \frac{v_t}{1 - \beta_1^t}$$
 
 Here, $\eta_t$ is now not a scalar learning rate, but a vector of learning rates for each parameter, and '$\cdot$' denotes the element-wise multiplication. Further, $\epsilon$ is a small constant for numerical stability.
 
 In AdamW, the adaptive learning rate is controlled by the second moment estimate (squared gradients):
 
-$$v_t = \beta_2 v_{t-1} + (1-\beta_2)(g_t)^2$$
-$$\hat{\eta}_t = \eta \frac{1}{\sqrt{v_t + \epsilon}}$$
+$$g_t = \beta_2 g_{t-1} + (1-\beta_2)(\nabla_\theta \hat{\mathcal{R}}^B_t)^2$$
+$$\hat{\eta}_t = \eta \frac{1}{\sqrt{g_t} + \epsilon}$$
 
 In words, this means: In steep directions where the gradient is large, the learning rate is small and vice versa. The parameters $\beta_2$ and $\epsilon$ are hyperparameters that control the decay rate and numerical stability of the second moment estimate.
 
@@ -432,8 +433,6 @@ While we have already covered dynamic learning rates, it can still be beneficial
 Like for adaptive learning rates, the learning rate is then not a constant scalar, but a function of the current epoch or iteration.
 Note that the learning rate schedulers discussed here can also be combined with adaptive learning rates such as in AdamW and are not mutually exclusive.
 
-$$\theta_{t+1} = \theta_t - \eta_t \cdot \frac{\nabla_\theta L(\theta_t)}{\sqrt{v_t} + \epsilon}$$
-
 **Decaying learning rates**:
 
 This includes gradient decay, cosine annealing, and cyclical learning rates. The general idea is to start with a high learning rate and then gradually decrease it over time.
@@ -511,7 +510,7 @@ opt$param_groups[[1L]]$lr
 
 ## Saving an Optimizer
 
-In order to resume training at a later stage, we can save the optimizer's state using `$state_dict()`.
+In order to resume training at a later stage, we can save the optimizer's state which is accessible via `$state_dict()`.
 
 ```{r}
 state_dict = opt$state_dict()
@@ -519,7 +518,7 @@ state_dict = opt$state_dict()
 
 This state dictionary contains:
 
-1. The `$param_groups` which contains the parameters and their associated hyperparameters.
+1. The `$param_groups` which contains the hyperparameters for each parameter group.
 2. The `$state` which contains the optimizer's internal state, such as the momentum and second moment estimates.
 
 ```{r}

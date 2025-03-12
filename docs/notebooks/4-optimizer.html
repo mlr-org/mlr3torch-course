@@ -370,11 +370,11 @@ Click for answer
 <p>Before we cover these more advanced approaches (specifically their implementation in AdamW), we will first focus on the vanilla version of Stochastic Gradient Descent (SGD).</p>
 <section id="mini-batch-effects-in-sgd" class="level2">
 <h2 class="anchored" data-anchor-id="mini-batch-effects-in-sgd">Mini-Batch Effects in SGD</h2>
-<p>When using mini-batches, the gradient becomes a noisy estimate of the gradient over the full dataset. With <span class="math inline">\(\nabla \hat{\mathcal{R}}^{(i)}_t := \frac{\partial \hat{\mathcal{R}}^{(i)}}{\partial \theta_t}\)</span> being the gradient of the risk function with respect to the entire parameter vector estimated using <span class="math inline">\((x^{(i)}, y^{(i)})\)</span>, the mini-batch gradient is given by:</p>
-<p><span class="math display">\[\nabla \hat{\mathcal{R}}^B_t = \frac{1}{|B|} \sum_{i \in B} \nabla \hat{\mathcal{R}}^{(i)}_t\]</span></p>
+<p>When using mini-batches, the gradient becomes a noisy estimate of the gradient over the full dataset. With <span class="math inline">\(\nabla_{\theta} \hat{\mathcal{R}}^{(i)}_t := \frac{\partial \hat{\mathcal{R}}^{(i)}}{\partial \theta}\)</span> being the gradient of the risk function with respect to the entire parameter vector estimated using <span class="math inline">\((x^{(i)}, y^{(i)})\)</span>, the mini-batch gradient is given by:</p>
+<p><span class="math display">\[\nabla_{\theta} \hat{\mathcal{R}}^B_t = \frac{1}{|B|} \sum_{i \in B} \nabla_{\theta} \hat{\mathcal{R}}^{(i)}_t\]</span></p>
 <p>where <span class="math inline">\(B\)</span> is the batch of samples and <span class="math inline">\(|B|\)</span> is the batch size.</p>
 <p>The update formula for SGD is then given by:</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \nabla \hat{\mathcal{R}}^B_t\]</span></p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \nabla_{\theta} \hat{\mathcal{R}}^B_t\]</span></p>
 <p>The difference between the full gradient and the mini-batch gradient is visualized in the image below:</p>
 <p><img src="../assets/gd_vs_sgd.png" class="img-fluid"></p>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -404,7 +404,7 @@ Click for answer
 Click for answer
 </summary>
 <p>In machine learning, we assume that the data is drawn from a distribution <span class="math inline">\(\mathbb{E}\)</span>. The gradient over the full dataset approximates the expectation over this distribution:</p>
-<span class="math display">\[\nabla \mathcal{R} = \mathbb{E}_{x \sim P} \nabla_\theta [\mathcal{R}(f_\theta(x), y)]\]</span>
+<span class="math display">\[\nabla_\theta \mathcal{R} = \mathbb{E} [\nabla_\theta L(f_\theta(x), y)]\]</span>
 </details>
 </div>
 </div>
@@ -435,7 +435,7 @@ False. Because GPUs can perform many operations simultaneously, the cost of perf
 </details>
 <p><strong>Question 2:</strong> The standard error of the mini-batch gradient estimate (which characterizes the precision of the gradient estimate) can be written as:</p>
 <p><span class="math display">\[\text{SE}_{\nabla \hat{\mathcal{R}}^B_t} = \frac{\sigma_{\nabla \hat{\mathcal{R}}_t}}{\sqrt{|B|}}\]</span></p>
-<p>where <span class="math inline">\(\sigma_{\nabla \hat{\mathcal{R}}_t}\)</span> is the standard deviation of the gradient estimate.</p>
+<p>where <span class="math inline">\(\sigma_{\nabla \hat{\mathcal{R}}_t}\)</span> is the standard deviation of the gradient estimate using a single observation.</p>
 <p>Describe the dynamics of the standard error when increasing the batch size: How do you need to increase a batch size from <span class="math inline">\(1\)</span> to achieve half the standard error? What about increasing a batch size from <span class="math inline">\(100\)</span>?</p>
 <details>
 <summary>
@@ -504,7 +504,7 @@ Note
 </div>
 </div>
 <p>If we integrate weight decay into the gradient update formula, we get the following:</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \big(\frac{\partial \hat{\mathcal{R}}}{\partial \theta_t} - \lambda \theta_t\big)\]</span></p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \big(\nabla_{\theta} \hat{\mathcal{R}}^B_t- \lambda \theta_t\big)\]</span></p>
 <p>This formula shows that the weight decay term (<span class="math inline">\(- \lambda \theta_t\)</span>) effectively shrinks the weights during each update, helping to prevent overfitting.</p>
 <p><img src="../assets/regularization.png" class="img-fluid"></p>
 <p><a href="https://www.linkedin.com/pulse/understanding-regularization-techniques-machine-javier-icaza-santos">Source</a></p>
@@ -519,11 +519,11 @@ Note
 </ul>
 <p>The exponential moving momentum update can be expressed mathematically as:</p>
 <p><span class="math display">\[
-(1 - \beta) \sum_{\tau=1}^{t} \beta^{t-\tau} \nabla_{\theta} \hat{\mathcal{R}}(\theta_{\tau-1})
+(1 - \beta) \sum_{\tau=1}^{t} \beta^{t-\tau} \nabla_{\theta} \hat{\mathcal{R}}^B_{\tau-1}
 \]</span></p>
 <p>In order to avoid having to keep track of all the gradients, we can calculate the update in two steps as follows:</p>
 <p><span class="math display">\[
-v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_\theta \hat{\mathcal{R} }(\theta_t)
+v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_\theta \hat{\mathcal{R}}^B_t
 \]</span></p>
 <p><span class="math display">\[
 \theta_{t+1} = \theta_t - \eta \frac{v_t}{1 - \beta_1^t}
@@ -545,10 +545,10 @@ v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_\theta \hat{\mathcal{R} }(\theta_t)
 <li>Be different for different parameters.</li>
 </ol>
 <p>Our vanilla SGD update formula is now generalized to handle adaptive learning rates:</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta_t \cdot \frac{\nabla_\theta \hat{\mathcal{R}}(\theta_t)}{\sqrt{v_t} + \epsilon}\]</span></p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta_t \cdot \nabla_\theta \frac{v_t}{1 - \beta_1^t}\]</span></p>
 <p>Here, <span class="math inline">\(\eta_t\)</span> is now not a scalar learning rate, but a vector of learning rates for each parameter, and ‘<span class="math inline">\(\cdot\)</span>’ denotes the element-wise multiplication. Further, <span class="math inline">\(\epsilon\)</span> is a small constant for numerical stability.</p>
 <p>In AdamW, the adaptive learning rate is controlled by the second moment estimate (squared gradients):</p>
-<p><span class="math display">\[v_t = \beta_2 v_{t-1} + (1-\beta_2)(g_t)^2\]</span> <span class="math display">\[\hat{\eta}_t = \eta \frac{1}{\sqrt{v_t + \epsilon}}\]</span></p>
+<p><span class="math display">\[g_t = \beta_2 g_{t-1} + (1-\beta_2)(\nabla_\theta \hat{\mathcal{R}}^B_t)^2\]</span> <span class="math display">\[\hat{\eta}_t = \eta \frac{1}{\sqrt{g_t} + \epsilon}\]</span></p>
 <p>In words, this means: In steep directions where the gradient is large, the learning rate is small and vice versa. The parameters <span class="math inline">\(\beta_2\)</span> and <span class="math inline">\(\epsilon\)</span> are hyperparameters that control the decay rate and numerical stability of the second moment estimate.</p>
 <p><img src="../assets/adagrad.png" class="img-fluid"></p>
 <p>When combining weight decay, adaptive learning rates, and momentum, we get the AdamW optimizer. It therefore has parameters:</p>
@@ -744,7 +744,6 @@ The <span class="math inline">\(\beta_2\)</span> parameter is varied. There is n
 <section id="learning-rate-schedules" class="level2">
 <h2 class="anchored" data-anchor-id="learning-rate-schedules">Learning Rate Schedules</h2>
 <p>While we have already covered dynamic learning rates, it can still be beneficial to use a <strong>learning rate scheduler</strong> to further improve convergence. Like for adaptive learning rates, the learning rate is then not a constant scalar, but a function of the current epoch or iteration. Note that the learning rate schedulers discussed here can also be combined with adaptive learning rates such as in AdamW and are not mutually exclusive.</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta_t \cdot \frac{\nabla_\theta \hat{\mathcal{R}}(\theta_t)}{\sqrt{v_t} + \epsilon}\]</span></p>
 <p><strong>Decaying learning rates</strong>:</p>
 <p>This includes gradient decay, cosine annealing, and cyclical learning rates. The general idea is to start with a high learning rate and then gradually decrease it over time.</p>
 <p><strong>Warmup</strong>:</p>
@@ -785,13 +784,13 @@ The <span class="math inline">\(\beta_2\)</span> parameter is varied. There is n
 </section>
 <section id="saving-an-optimizer" class="level2">
 <h2 class="anchored" data-anchor-id="saving-an-optimizer">Saving an Optimizer</h2>
-<p>In order to resume training at a later stage, we can save the optimizer’s state using <code>$state_dict()</code>.</p>
+<p>In order to resume training at a later stage, we can save the optimizer’s state which is accessible via <code>$state_dict()</code>.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>state_dict <span class="ot">=</span> opt<span class="sc">$</span><span class="fu">state_dict</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This state dictionary contains:</p>
 <ol type="1">
-<li>The <code>$param_groups</code> which contains the parameters and their associated hyperparameters.</li>
+<li>The <code>$param_groups</code> which contains the hyperparameters for each parameter group.</li>
 <li>The <code>$state</code> which contains the optimizer’s internal state, such as the momentum and second moment estimates.</li>
 </ol>
 <div class="cell" data-layout-align="center">
