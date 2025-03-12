@@ -471,6 +471,7 @@ for(epoch in seq_len(n_epochs)) {
     # Backward pass
     optimizer$zero_grad()
     loss$backward()
+    print(los$item())
 
     # Update parameters
     optimizer$step()

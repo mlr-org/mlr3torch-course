@@ -137,7 +137,7 @@ To check whether a gradient for an input is needed (has `requires_grad = TRUE`),
 The backward function additionally takes a second argument `grad_output`, which is the gradient of the output:
 E.g., if our function is $f(x)$ and we calculate the gradient of $g(x) = h(f(x))$, then `grad_output` is the derivative of $h$ with respect to its input, evaluated at $f(x)$.
 This is essentially the chain rule: $\frac{\partial g}{\partial x} = \frac{\partial h}{\partial f} \cdot \frac{\partial f}{\partial x}$.
-The autograd function therefore does not calculate the gradient of $g$ with respect to $x$, but the gradient of the final node of the autograd graph with respect to $x$.
+The `$backward()` method of the autograd function $fe would in this case therefore not return $\frac{\partial f}{\partial x}$, but $\frac{\partial g}{\partial x}$.
 
 Fill out the missing parts (`...`) in the code below.
 
