@@ -93,7 +93,7 @@ where $B$ is the batch of samples and $|B|$ is the batch size.
 
 The update formula for SGD is then given by:
 
-$$\theta_{t+1} = \theta_t - \eta \nabla_{\theta_t} \hat{\mathcal{R}}^B$$
+$$\theta_{t+1} = \theta_t - \eta \nabla_{\theta_t} \hat{\mathcal{R}}^{B_t}$$
 
 The difference between the full gradient and the mini-batch gradient is visualized in the image below:
 
@@ -148,9 +148,9 @@ The cost depends on many factors, but if the model is small, the cost of a batch
 **Question 2:**
 The standard error of the mini-batch gradient estimate (which characterizes the precision of the gradient estimate) can be written as:
 
-$$\text{SE}_{\nabla \hat{\mathcal{R}}^B_t} = \frac{\sigma_{\nabla \hat{\mathcal{R}}_t}}{\sqrt{|B|}}$$
+$$\text{SE}_{\nabla_{\theta_t} \hat{\mathcal{R}}^B} = \frac{\sigma_{\nabla_{\theta_t} \hat{\mathcal{R}}^{(i)}}}{\sqrt{|B|}}$$
 
-where $\sigma_{\nabla \hat{\mathcal{R}}_t}$ is the standard deviation of the gradient estimate using a single observation.
+where $\sigma_{\nabla_{\theta_t} \hat{\mathcal{R}}^{(i)}}$ is the standard deviation of the gradient estimate using a single observation.
 
 Describe the dynamics of the standard error when increasing the batch size: How do you need to increase a batch size from $1$ to achieve half the standard error? What about increasing a batch size from $100$?
 
@@ -213,7 +213,7 @@ For more complex optimizers such as Adam, weight decay is not equivalent to addi
 
 If we integrate weight decay into the gradient update formula, we get the following:
 
-$$\theta_{t+1} = \theta_t - \eta \big(\nabla_{\theta} \hat{\mathcal{R}}^B_t- \lambda \theta_t\big)$$
+$$\theta_{t+1} = \theta_t - \eta \big(\nabla_{\theta_t} \hat{\mathcal{R}}^B- \lambda \theta_t\big)$$
 
 This formula shows that the weight decay term ($- \lambda \theta_t$) effectively shrinks the weights during each update, helping to prevent overfitting.
 
@@ -232,13 +232,13 @@ Momentum is a technique that helps accelerate gradient descent by using an expon
 The exponential moving momentum update can be expressed mathematically as:
 
 $$
-(1 - \beta) \sum_{\tau=1}^{t} \beta^{t-\tau} \nabla_{\theta} \hat{\mathcal{R}}^B_{\tau-1}
+(1 - \beta) \sum_{\tau=1}^{t} \beta^{t-\tau} \nabla_{\theta_{\tau - 1}} \hat{\mathcal{R}}^{B_{\tau - 1}}
 $$
 
 In order to avoid having to keep track of all the gradients, we can calculate the update in two steps as follows:
 
 $$
-v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_\theta \hat{\mathcal{R}}^B_t
+v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_{\theta_t} \hat{\mathcal{R}}^{B_t}
 $$
 
 $$
@@ -265,14 +265,14 @@ Before, we had one global learning rate $\eta$ for all parameters. However, lear
 
 Our vanilla SGD update formula is now generalized to handle adaptive learning rates:
 
-$$\theta_{t+1} = \theta_t - \eta_t \cdot \nabla_\theta \frac{v_t}{1 - \beta_1^t}$$
+$$\theta_{t+1} = \theta_t - \eta_t \cdot \nabla_{\theta_t} \hat{\mathcal{R}}^{B_t}$$
 
 Here, $\eta_t$ is now not a scalar learning rate, but a vector of learning rates for each parameter, and '$\cdot$' denotes the element-wise multiplication. Further, $\epsilon$ is a small constant for numerical stability.
 
 In AdamW, the adaptive learning rate is controlled by the second moment estimate (squared gradients):
 
-$$g_t = \beta_2 g_{t-1} + (1-\beta_2)(\nabla_\theta \hat{\mathcal{R}}^B_t)^2$$
-$$\hat{\eta}_t = \eta \frac{1}{\sqrt{g_t} + \epsilon}$$
+$$g_t = \beta_2 g_{t-1} + (1-\beta_2)(\nabla_{\theta_t} \hat{\mathcal{R}}^{B_t})^2$$
+$$\hat{\eta}_t = \frac{\eta}{\sqrt{\frac{g_t}{1 - \beta_2^t}} + \epsilon}$$
 
 In words, this means: In steep directions where the gradient is large, the learning rate is small and vice versa. The parameters $\beta_2$ and $\epsilon$ are hyperparameters that control the decay rate and numerical stability of the second moment estimate.
 

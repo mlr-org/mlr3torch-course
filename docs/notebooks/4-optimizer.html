@@ -374,7 +374,7 @@ Click for answer
 <p><span class="math display">\[\nabla_{\theta_t} \hat{\mathcal{R}}^B = \frac{1}{|B|} \sum_{i \in B} \nabla_{\theta_t} \hat{\mathcal{R}}^{(i)}\]</span></p>
 <p>where <span class="math inline">\(B\)</span> is the batch of samples and <span class="math inline">\(|B|\)</span> is the batch size.</p>
 <p>The update formula for SGD is then given by:</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \nabla_{\theta_t} \hat{\mathcal{R}}^B\]</span></p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \nabla_{\theta_t} \hat{\mathcal{R}}^{B_t}\]</span></p>
 <p>The difference between the full gradient and the mini-batch gradient is visualized in the image below:</p>
 <p><img src="../assets/gd_vs_sgd.png" class="img-fluid"></p>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -434,8 +434,8 @@ Click for answer
 False. Because GPUs can perform many operations simultaneously, the cost of performing a gradient update using a batch size of <span class="math inline">\(2\)</span> is not twice the cost of a batch size of <span class="math inline">\(1\)</span>. The cost depends on many factors, but if the model is small, the cost of a batch with 2 observations might be almost the same as one with one observation.
 </details>
 <p><strong>Question 2:</strong> The standard error of the mini-batch gradient estimate (which characterizes the precision of the gradient estimate) can be written as:</p>
-<p><span class="math display">\[\text{SE}_{\nabla \hat{\mathcal{R}}^B_t} = \frac{\sigma_{\nabla \hat{\mathcal{R}}_t}}{\sqrt{|B|}}\]</span></p>
-<p>where <span class="math inline">\(\sigma_{\nabla \hat{\mathcal{R}}_t}\)</span> is the standard deviation of the gradient estimate using a single observation.</p>
+<p><span class="math display">\[\text{SE}_{\nabla_{\theta_t} \hat{\mathcal{R}}^B} = \frac{\sigma_{\nabla_{\theta_t} \hat{\mathcal{R}}^{(i)}}}{\sqrt{|B|}}\]</span></p>
+<p>where <span class="math inline">\(\sigma_{\nabla_{\theta_t} \hat{\mathcal{R}}^{(i)}}\)</span> is the standard deviation of the gradient estimate using a single observation.</p>
 <p>Describe the dynamics of the standard error when increasing the batch size: How do you need to increase a batch size from <span class="math inline">\(1\)</span> to achieve half the standard error? What about increasing a batch size from <span class="math inline">\(100\)</span>?</p>
 <details>
 <summary>
@@ -504,7 +504,7 @@ Note
 </div>
 </div>
 <p>If we integrate weight decay into the gradient update formula, we get the following:</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \big(\nabla_{\theta} \hat{\mathcal{R}}^B_t- \lambda \theta_t\big)\]</span></p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \big(\nabla_{\theta_t} \hat{\mathcal{R}}^B- \lambda \theta_t\big)\]</span></p>
 <p>This formula shows that the weight decay term (<span class="math inline">\(- \lambda \theta_t\)</span>) effectively shrinks the weights during each update, helping to prevent overfitting.</p>
 <p><img src="../assets/regularization.png" class="img-fluid"></p>
 <p><a href="https://www.linkedin.com/pulse/understanding-regularization-techniques-machine-javier-icaza-santos">Source</a></p>
@@ -519,11 +519,11 @@ Note
 </ul>
 <p>The exponential moving momentum update can be expressed mathematically as:</p>
 <p><span class="math display">\[
-(1 - \beta) \sum_{\tau=1}^{t} \beta^{t-\tau} \nabla_{\theta} \hat{\mathcal{R}}^B_{\tau-1}
+(1 - \beta) \sum_{\tau=1}^{t} \beta^{t-\tau} \nabla_{\theta_{\tau - 1}} \hat{\mathcal{R}}^{B_{\tau - 1}}
 \]</span></p>
 <p>In order to avoid having to keep track of all the gradients, we can calculate the update in two steps as follows:</p>
 <p><span class="math display">\[
-v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_\theta \hat{\mathcal{R}}^B_t
+v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_{\theta_t} \hat{\mathcal{R}}^{B_t}
 \]</span></p>
 <p><span class="math display">\[
 \theta_{t+1} = \theta_t - \eta \frac{v_t}{1 - \beta_1^t}
@@ -545,10 +545,10 @@ v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_\theta \hat{\mathcal{R}}^B_t
 <li>Be different for different parameters.</li>
 </ol>
 <p>Our vanilla SGD update formula is now generalized to handle adaptive learning rates:</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta_t \cdot \nabla_\theta \frac{v_t}{1 - \beta_1^t}\]</span></p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta_t \cdot \nabla_{\theta_t} \hat{\mathcal{R}}^{B_t}\]</span></p>
 <p>Here, <span class="math inline">\(\eta_t\)</span> is now not a scalar learning rate, but a vector of learning rates for each parameter, and ‘<span class="math inline">\(\cdot\)</span>’ denotes the element-wise multiplication. Further, <span class="math inline">\(\epsilon\)</span> is a small constant for numerical stability.</p>
 <p>In AdamW, the adaptive learning rate is controlled by the second moment estimate (squared gradients):</p>
-<p><span class="math display">\[g_t = \beta_2 g_{t-1} + (1-\beta_2)(\nabla_\theta \hat{\mathcal{R}}^B_t)^2\]</span> <span class="math display">\[\hat{\eta}_t = \eta \frac{1}{\sqrt{g_t} + \epsilon}\]</span></p>
+<p><span class="math display">\[g_t = \beta_2 g_{t-1} + (1-\beta_2)(\nabla_{\theta_t} \hat{\mathcal{R}}^{B_t})^2\]</span> <span class="math display">\[\hat{\eta}_t = \frac{\eta}{\sqrt{\frac{g_t}{1 - \beta_2^t}} + \epsilon}\]</span></p>
 <p>In words, this means: In steep directions where the gradient is large, the learning rate is small and vice versa. The parameters <span class="math inline">\(\beta_2\)</span> and <span class="math inline">\(\epsilon\)</span> are hyperparameters that control the decay rate and numerical stability of the second moment estimate.</p>
 <p><img src="../assets/adagrad.png" class="img-fluid"></p>
 <p>When combining weight decay, adaptive learning rates, and momentum, we get the AdamW optimizer. It therefore has parameters:</p>
@@ -1116,7 +1116,7 @@ The first statement is true because, in evaluation mode, the module uses the run
 <span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>nn_both <span class="ot">&lt;-</span> <span class="fu">nn_reg</span>(<span class="at">dropout =</span> <span class="cn">TRUE</span>, <span class="at">batch_norm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>nn_vanilla <span class="ot">&lt;-</span> <span class="fu">nn_reg</span>(<span class="at">dropout =</span> <span class="cn">FALSE</span>, <span class="at">batch_norm =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We evaluate the performance of the four neural networks created above using subsampling with 10 repetitions and an 80/20 train/test split. We don’t show the specific training code here, but only the resulting confidence intervals for the accuracy. While the intervals are too wide to be able to draw any final conclusions, dropout here seems to have a positive effect on the generalization performance of the model.</p>
+<p>We evaluate the performance of the four neural networks created above using subsampling with 10 repetitions and an 80/20 train/test split. We don’t show the specific training code here, but only the resulting confidence intervals for the accuracy. While the intervals are too wide to be able to draw any final conclusions, dropout here seems to have a positive effect on the generalization performance of the model, whereas batch normalization does not (which is not too surprising as it is usually used with convolutional layers).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">

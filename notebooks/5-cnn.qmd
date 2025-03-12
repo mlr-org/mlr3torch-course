@@ -59,7 +59,7 @@ The padding and the strides are visualized below:
 
 ![](../assets/padding_strides.png)
 
-[Source](https://www.geeksforgeeks.org/cnn-introduction-to-padding/)
+[Source](https://www.researchgate.net/figure/Summary-of-convolution-padding-stride-and-Max-Pooling_fig2_381448625)
 
 For the input and output channels, we have the following:
 
