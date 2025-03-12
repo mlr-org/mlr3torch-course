@@ -314,7 +314,7 @@ ggplot(tbl1, aes(x = epoch, y = logloss, color = pretrained)) +
 
 Note that when fine-tuning a pretrained model like ResNet-18, it's possible to observe instabilities in gradients, which can manifest as fluctuating validation performance.
 
-To address this, one can for example freeze the pretrained layers (for some epochs) and only train the new output head, a process known as **freezing layers**.
+To address this, one can for example keep the pretrained layers fixed (for some epochs) and only train the new output head, a process known as **freezing layers**.
 
 :::{.callout-note}
 ## In-Context Learning
