@@ -438,13 +438,13 @@ torch_tensor
 <h2 class="anchored" data-anchor-id="max-pooling">Max Pooling</h2>
 <p>While convolutional layers extract local features from an image by applying a kernel over the input, max pooling is used to <strong>downsample</strong> the feature maps. Instead of applying a filter, max pooling simply partitions the input into non-overlapping (or sometimes overlapping) regions and selects the maximum value from each region.</p>
 <p><img src="../assets/maxpooling.png" class="img-fluid"> <a href="https://www.mdpi.com/2076-3417/12/17/8643">Source</a></p>
-<p>Below, we demonstrate it in action. We start by applying a convolutional layer to an MNIST image to obtain feature maps and then apply a 2×2 max pooling layer (with stride 2) on the convolution output. The two results are visualized side-by-side.</p>
+<p>Below, we demonstrate it in action and compare the output of a convolutional layer with the results of applying a 2x2 max pooling operation with stride 2 to it.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a max pooling layer with a 2x2 kernel and stride 2</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>pool_layer <span class="ot">&lt;-</span> <span class="fu">nn_max_pool2d</span>(<span class="at">kernel_size =</span> <span class="dv">2</span>, <span class="at">stride =</span> <span class="dv">2</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Now apply the max pooling layer to the result from the convolution.</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pooled_output <span class="ot">&lt;-</span> <span class="fu">pool_layer</span>(image_rgb2[<span class="dv">1</span>, <span class="at">drop =</span> <span class="cn">FALSE</span>]<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Now apply the max pooling layer to one channel of the output from the convolution.</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pooled_output <span class="ot">&lt;-</span> <span class="fu">pool_layer</span>(conv_output[<span class="dv">1</span>, <span class="at">drop =</span> <span class="cn">FALSE</span>]<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
@@ -600,6 +600,7 @@ Note
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform =</span> transform_mnist, <span class="at">target_transform =</span> torch_tensor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Below, we compare compare the results of training the pretrained and randomly initialized ResNet-18.</p>
+<p><img src="assets/pretraine-vs-random.png" class="img-fluid"></p>
 <p>Note that when fine-tuning a pretrained model like ResNet-18, it’s possible to observe instabilities in gradients, which can manifest as fluctuating validation performance.</p>
 <p>To address this, one can for example freeze the pretrained layers (for some epochs) and only train the new output head, a process known as <strong>freezing layers</strong>.</p>
 <div class="callout callout-style-default callout-note callout-titled">

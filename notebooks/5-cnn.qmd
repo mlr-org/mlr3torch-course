@@ -116,6 +116,7 @@ Below, we show the output of the first convolutional layer from a (trained) ResN
 conv_layer_pretrained <- model_resnet18(pretrained = TRUE)$conv1
 image_rgb <- image$expand(c(3, 28, 28))
 image_rgb2 <- conv_layer_pretrained(image_rgb)
+conv_output <- image_rgb2
 ps <- lapply(1:25, function(i) plot_2d_image(image_rgb2[i, ..]))
 cowplot::plot_grid(plotlist = ps, nrow = 5)
 ```
@@ -129,16 +130,14 @@ Instead of applying a filter, max pooling simply partitions the input into non-o
 ![](../assets/maxpooling.png)
 [Source](https://www.mdpi.com/2076-3417/12/17/8643)
 
-Below, we demonstrate it in action.
- We start by applying a convolutional layer to an MNIST image to obtain feature maps and then apply a 2×2 max pooling layer (with stride 2) on the convolution output.
-The two results are visualized side-by-side.
+Below, we demonstrate it in action and compare the output of a convolutional layer with the results of applying a 2x2 max pooling operation with stride 2 to it.
 
 ```{r}
 # Create a max pooling layer with a 2x2 kernel and stride 2
 pool_layer <- nn_max_pool2d(kernel_size = 2, stride = 2)
 
-# Now apply the max pooling layer to the result from the convolution.
-pooled_output <- pool_layer(image_rgb2[1, drop = FALSE]$unsqueeze(1))
+# Now apply the max pooling layer to one channel of the output from the convolution.
+pooled_output <- pool_layer(conv_output[1, drop = FALSE]$unsqueeze(1))
 ```
 
 ```{r, echo = FALSE}
@@ -264,7 +263,7 @@ mnist_test <- mnist_dataset(root = "data", download = TRUE, train = FALSE,
 
 Below, we compare compare the results of training the pretrained and randomly initialized ResNet-18.
 
-```{r, echo = FALSE, eval = torch::cuda_is_available()}
+```{r, echo = FALSE, eval = FALSE}
 library(data.table)
 xtrain = as_lazy_tensor(mnist_train, input_map = "x", dataset_shapes = list(x = c(NA, 3, 224, 224), y = c(NA, 1)))
 xtest = as_lazy_tensor(mnist_test, input_map = "x", dataset_shapes = list(x = c(NA, 3, 224, 224), y = c(NA, 1)))
@@ -310,6 +309,8 @@ ggplot(tbl1, aes(x = epoch, y = logloss, color = pretrained)) +
   theme_minimal() +
   labs(title = "Validation Logloss", x = "Epoch", y = "Logloss")
 ```
+
+![](assets/pretraine-vs-random.png)
 
 Note that when fine-tuning a pretrained model like ResNet-18, it's possible to observe instabilities in gradients, which can manifest as fluctuating validation performance.
 
