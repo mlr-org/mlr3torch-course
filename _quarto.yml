@@ -16,7 +16,7 @@ website:
   navbar:
     right:
       - icon: "github"
-        href: "https://github.com/sebffischer/torch-eds"
+        href: "https://github.com/mlr-org/mlr3torch-course"
     left:
       - text: "General"
         menu:
