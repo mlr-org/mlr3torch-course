@@ -409,7 +409,7 @@ When accessing the data, only the images are represented as `lazy_tensor`s, the 
 tsk_cifar$head()
 ```
 
-A `lazy_tensor` column is built upon `torch::dataset` class that we have seen earlier.
+A `lazy_tensor` column is built upon the `torch::dataset` class that we have seen earlier.
 This means it does not necessarily store the data in memory, but only stores the information on how to load the data.
 
 ```{r}
@@ -563,6 +563,7 @@ Alternatively, we can integrate the flattening step into the graph from which th
 ```{r}
 graph_with_flattening <- reshaper %>>% graph
 glrn_with_flattening <- as_learner(graph_with_flattening)
+glrn_with_flattening$id = "with_flattening"
 ```
 
 This learner can now be applied directly to the (unflattened) task.
@@ -586,7 +587,7 @@ resample(tsk_cifar, glrn_with_flattening, rsmp("cv", folds = 3))
 ```
 
 Or if we have the computational resources to optimize the hyperparameters of the neural network, we can also use the `mlr3tuning` package.
-Just like earlier, we need to define the tuner, search search space, resampling strategy, tuning measure and our budget.
+Just like earlier, we need to define the tuner, search space, resampling strategy, tuning measure and our budget.
 Here, we only tune the latent dimensions of the first two layers and the number of epochs.
 
 :::{.callout-note}

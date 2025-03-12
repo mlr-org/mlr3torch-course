@@ -28,7 +28,7 @@ ilpd_num$select(setdiff(ilpd_num$feature_names, "gender"))
 
 Your task is to train a simple multi layer perceptron (`lrn("classif.mlp")`) with 2 hidden layers with 100 neurons each.
 Set the batch size to 32, the learning rate to 0.001 and the number of epochs to 20.
-Then, resample the learner on the task with a cross-validation with 5 folds and evaluate the results using classification error and false positive rate (FPR).
+Then, resample the learner on the task with a cross-validation with 10 folds and evaluate the results using classification error and false positive rate (FPR).
 Is the result good?
 
 <details>

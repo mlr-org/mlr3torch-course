@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Training Neural Networks with mlr3torch – Deep Learning with (mlr3)torch</title>
+<title>Training Neural Networks with mlr3torch – Deep Learning with mlr3 &amp; torch</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -141,7 +141,7 @@ window.Quarto = {
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">Deep Learning with (mlr3)torch</span>
+    <span class="navbar-title">Deep Learning with mlr3 &amp; torch</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -170,11 +170,6 @@ window.Quarto = {
  <span class="menu-text">Tutorials</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-tutorials">    
-        <li>
-    <a class="dropdown-item" href="../notebooks/0-tutorial-intro.html">
- <span class="dropdown-text">Intro</span></a>
-  </li>  
-        <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="../notebooks/1-tensor.html">
  <span class="dropdown-text">1. Tensors</span></a>
@@ -283,7 +278,7 @@ window.Quarto = {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/sebffischer/torch-eds"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/mlr-org/mlr3torch-course"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -831,7 +826,7 @@ Tip
 6: automobile &lt;tnsr[3x32x32]&gt;</code></pre>
 </div>
 </div>
-<p>A <code>lazy_tensor</code> column is built upon <code>torch::dataset</code> class that we have seen earlier. This means it does not necessarily store the data in memory, but only stores the information on how to load the data.</p>
+<p>A <code>lazy_tensor</code> column is built upon the <code>torch::dataset</code> class that we have seen earlier. This means it does not necessarily store the data in memory, but only stores the information on how to load the data.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>image_vec <span class="ot">&lt;-</span> tsk_cifar<span class="sc">$</span><span class="fu">data</span>(<span class="at">cols =</span> <span class="st">"image"</span>)[[<span class="dv">1</span>L]]</span>
 <span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(image_vec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1002,7 +997,8 @@ Note
 <p>Alternatively, we can integrate the flattening step into the graph from which the <code>GraphLearner</code> was created.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>graph_with_flattening <span class="ot">&lt;-</span> reshaper <span class="sc">%&gt;&gt;%</span> graph</span>
-<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>glrn_with_flattening <span class="ot">&lt;-</span> <span class="fu">as_learner</span>(graph_with_flattening)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>glrn_with_flattening <span class="ot">&lt;-</span> <span class="fu">as_learner</span>(graph_with_flattening)</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>glrn_with_flattening<span class="sc">$</span>id <span class="ot">=</span> <span class="st">"with_flattening"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This learner can now be applied directly to the (unflattened) task.</p>
 <div class="cell" data-layout-align="center">
@@ -1016,21 +1012,13 @@ Note
 <div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">resample</span>(tsk_cifar, glrn_with_flattening, <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;ResampleResult&gt; with 3 resampling iterations
- task_id
- cifar10
- cifar10
- cifar10
-                                                                                                                           learner_id
- trafo_reshape.torch_ingress_ltnsr.nn_linear_1.nn_relu_1.nn_linear_2.nn_relu_2.nn_head.torch_loss.torch_optimizer.torch_model_classif
- trafo_reshape.torch_ingress_ltnsr.nn_linear_1.nn_relu_1.nn_linear_2.nn_relu_2.nn_head.torch_loss.torch_optimizer.torch_model_classif
- trafo_reshape.torch_ingress_ltnsr.nn_linear_1.nn_relu_1.nn_linear_2.nn_relu_2.nn_head.torch_loss.torch_optimizer.torch_model_classif
- resampling_id iteration     prediction_test warnings errors
-            cv         1 &lt;PredictionClassif&gt;        0      0
-            cv         2 &lt;PredictionClassif&gt;        0      0
-            cv         3 &lt;PredictionClassif&gt;        0      0</code></pre>
+ task_id      learner_id resampling_id iteration     prediction_test warnings errors
+ cifar10 with_flattening            cv         1 &lt;PredictionClassif&gt;        0      0
+ cifar10 with_flattening            cv         2 &lt;PredictionClassif&gt;        0      0
+ cifar10 with_flattening            cv         3 &lt;PredictionClassif&gt;        0      0</code></pre>
 </div>
 </div>
-<p>Or if we have the computational resources to optimize the hyperparameters of the neural network, we can also use the <code>mlr3tuning</code> package. Just like earlier, we need to define the tuner, search search space, resampling strategy, tuning measure and our budget. Here, we only tune the latent dimensions of the first two layers and the number of epochs.</p>
+<p>Or if we have the computational resources to optimize the hyperparameters of the neural network, we can also use the <code>mlr3tuning</code> package. Just like earlier, we need to define the tuner, search space, resampling strategy, tuning measure and our budget. Here, we only tune the latent dimensions of the first two layers and the number of epochs.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">

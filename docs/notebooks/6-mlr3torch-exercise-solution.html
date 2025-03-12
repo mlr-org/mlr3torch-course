@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.39">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Training Neural Networks with mlr3torch – Deep Learning with (mlr3)torch</title>
+<title>Training Neural Networks with mlr3torch – Deep Learning with mlr3 &amp; torch</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -69,10 +69,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-79108a0fc1995748cbd19a5b0e3e3e7c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -112,7 +112,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">Deep Learning with (mlr3)torch</span>
+    <span class="navbar-title">Deep Learning with mlr3 &amp; torch</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -141,11 +141,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Tutorials</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-tutorials">    
-        <li>
-    <a class="dropdown-item" href="../notebooks/0-tutorial-intro.html">
- <span class="dropdown-text">Intro</span></a>
-  </li>  
-        <li><hr class="dropdown-divider"></li>
         <li>
     <a class="dropdown-item" href="../notebooks/1-tensor.html">
  <span class="dropdown-text">1. Tensors</span></a>
@@ -254,7 +249,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/sebffischer/torch-eds"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/mlr-org/mlr3torch-course"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -323,7 +318,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ilpd_num <span class="ot">=</span> ilpd<span class="sc">$</span><span class="fu">clone</span>(<span class="at">deep =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ilpd_num<span class="sc">$</span><span class="fu">select</span>(<span class="fu">setdiff</span>(ilpd_num<span class="sc">$</span>feature_names, <span class="st">"gender"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Your task is to train a simple multi layer perceptron (<code>lrn("classif.mlp")</code>) with 2 hidden layers with 100 neurons each. Set the batch size to 32, the learning rate to 0.001 and the number of epochs to 20. Then, resample the learner on the task with a cross-validation with 5 folds and evaluate the results using classification error and false positive rate (FPR). Is the result good?</p>
+<p>Your task is to train a simple multi layer perceptron (<code>lrn("classif.mlp")</code>) with 2 hidden layers with 100 neurons each. Set the batch size to 32, the learning rate to 0.001 and the number of epochs to 20. Then, resample the learner on the task with a cross-validation with 10 folds and evaluate the results using classification error and false positive rate (FPR). Is the result good?</p>
 <details>
 <summary>
 Hint
@@ -342,7 +337,7 @@ The parameter for the learning rate is <code>opt.lr</code>
 <span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>rr1<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msrs</span>(<span class="fu">c</span>(<span class="st">"classif.ce"</span>, <span class="st">"classif.fpr"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> classif.ce classif.fpr 
-  0.3294565   0.6943026 </code></pre>
+  0.3671537   0.6417584 </code></pre>
 </div>
 </div>
 <p>While the classification error is low, this is not a good measure due to the imbalanced class distribution. This is confirmed by the FPR, which is relatively high.</p>
@@ -361,7 +356,7 @@ Concatenate <code>po("encode")</code> with a <code>lrn("classif.mlp")</code> usi
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>rr2<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msrs</span>(<span class="fu">c</span>(<span class="st">"classif.ce"</span>, <span class="st">"classif.fpr"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> classif.ce classif.fpr 
-  0.2983343   0.8393382 </code></pre>
+  0.2864115   0.8770833 </code></pre>
 </div>
 </div>
 <p><strong>Question 3</strong>: Benchmarking</p>
@@ -383,7 +378,7 @@ Create a classification tree via <code>lrn("classif.rpart")</code>. A benchmark 
 <div class="cell-output cell-output-stdout">
 <pre><code>      nr task_id         learner_id resampling_id iters classif.ce classif.tpr
    &lt;int&gt;  &lt;char&gt;             &lt;char&gt;        &lt;char&gt; &lt;int&gt;      &lt;num&gt;       &lt;num&gt;
-1:     1    ilpd encode.classif.mlp            cv    10  0.2880479   0.9388197
+1:     1    ilpd encode.classif.mlp            cv    10  0.2966686   0.8249284
 2:     2    ilpd      classif.rpart            cv    10  0.3035652   0.8301628
 Hidden columns: resample_result</code></pre>
 </div>
@@ -521,8 +516,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -633,7 +626,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
