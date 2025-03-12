@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.433">
+<meta name="generator" content="quarto-1.6.39">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Deep Learning with (mlr3)torch - Convolutional Neural Networks</title>
+<title>Convolutional Neural Networks – Deep Learning with mlr3 &amp; torch</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,7 +22,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -33,7 +33,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -69,17 +69,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-e26003cea8cd680ca0c55a263523d882.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-79108a0fc1995748cbd19a5b0e3e3e7c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -88,14 +94,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -103,145 +137,140 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">Deep Learning with (mlr3)torch</span>
+    <span class="navbar-title">Deep Learning with mlr3 &amp; torch</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-general" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-general" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">General</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-general">    
         <li>
-    <a class="dropdown-item" href="../notebooks/setup-guide.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/setup-guide.html">
  <span class="dropdown-text">Setup</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/resources.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/resources.html">
  <span class="dropdown-text">Resources</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tutorials" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tutorials" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Tutorials</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-tutorials">    
         <li>
-    <a class="dropdown-item" href="../notebooks/0-tutorial-intro.html" rel="" target="">
- <span class="dropdown-text">Intro</span></a>
-  </li>  
-        <li><hr class="dropdown-divider"></li>
-        <li>
-    <a class="dropdown-item" href="../notebooks/1-tensor.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/1-tensor.html">
  <span class="dropdown-text">1. Tensors</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/2-autograd.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/2-autograd.html">
  <span class="dropdown-text">2. Autograd</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/3-modules-data.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/3-modules-data.html">
  <span class="dropdown-text">3. Modules and Data</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/4-optimizer.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/4-optimizer.html">
  <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-cnn.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/5-cnn.html">
  <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-mlr3torch.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch.html">
  <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-training-efficiency.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-exercises" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-exercises" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Exercises</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-exercises">    
         <li>
-    <a class="dropdown-item" href="../notebooks/0-exercise-intro.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/0-exercise-intro.html">
  <span class="dropdown-text">Intro</span></a>
   </li>  
         <li><hr class="dropdown-divider"></li>
         <li>
-    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-task.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-task.html">
  <span class="dropdown-text">1. Tensors</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-task.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-task.html">
  <span class="dropdown-text">2. Autograd</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-task.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-task.html">
  <span class="dropdown-text">3. Modules and Data</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-task.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-task.html">
  <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-task.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-task.html">
  <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-task.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-task.html">
  <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-solutions" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-solutions" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Solutions</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-solutions">    
         <li>
-    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-solution.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-solution.html">
  <span class="dropdown-text">1. Tensors</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-solution.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-solution.html">
  <span class="dropdown-text">2. Autograd</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-solution.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-solution.html">
  <span class="dropdown-text">3. Modules and Data</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-solution.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-solution.html">
  <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-solution.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-solution.html">
  <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-solution.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-solution.html">
  <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html" rel="" target="">
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
     </ul>
@@ -249,14 +278,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/sebffischer/torch-eds" rel="" target=""><i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/mlr-org/mlr3torch-course"> <i class="bi bi-github" role="img">
 </i> 
- <span class="menu-text"></span></a>
+<span class="menu-text"></span></a>
   </li>  
 </ul>
+          </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
 </div>
-          </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -283,7 +312,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
   
 
+
 </header>
+
 
 <p>In this notebook, we explore convolutional neural networks (CNNs) used for image classification tasks. Image classification is fundamentally different from working with tabular data because images are highly structured and high-dimensional. For example, in an image, nearby pixels have strong spatial dependencies, whereas tabular data typically consists of independent or loosely related features, with each column representing a distinct attribute.</p>
 <section id="convolutional-layers" class="level2">
@@ -302,7 +333,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="5-cnn_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="480"></p>
+<p><img src="5-cnn_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="480"></p>
 </figure>
 </div>
 </div>
@@ -314,20 +345,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code>Float [1:1, 1:28, 1:28]</code></pre>
 </div>
 </div>
-<p>Such a convolutional layer has the following parameters:</p>
+<p>A convolutional layer has the following parameters:</p>
 <ul>
 <li><strong>in_channels</strong>: The number of channels in the input image (e.g., 1 for grayscale images and 3 for RGB images).</li>
-<li><strong>out_channels</strong>: The number of filters (or kernels) used by the layer. This determines the number of channels in the output feature map.</li>
+<li><strong>out_channels</strong>: The number of filters (or kernels) used by the layer. This determines the number of channels in the output.</li>
 <li><strong>kernel_size</strong>: The size of the filter that moves over the image. For instance, a kernel size of 3 means a 3×3 filter.</li>
 <li><strong>padding</strong>: The number of pixels added to the borders of the input image. Padding can help control the spatial dimensions of the output.</li>
 <li><strong>stride</strong>: The step size with which the filter moves across the input image. A larger stride results in a smaller output feature map.</li>
 </ul>
 <p>The padding and the strides are visualized below:</p>
-<p><img src="../assets/padding_strides.png" class="img-fluid"></p>
-<p><a href="https://www.geeksforgeeks.org/cnn-introduction-to-padding/">Source</a></p>
-<p>For the input and output channels, we have the following:</p>
-<p><img src="../assets/input_output_channels.svg" class="img-fluid"></p>
-<p><a href="https://classic.d2l.ai/chapter_convolutional-neural-networks/channels.html">Source</a></p>
+<p><img src="../assets/padding-strides.jpg" class="img-fluid"></p>
+<p><a href="https://www.researchgate.net/figure/Summary-of-convolution-padding-stride-and-Max-Pooling_fig2_381448625">Source</a></p>
 <p>To create a convolutional layer for a 2D image, we can use the <code>torch::nn_conv2d</code> function.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>conv_layer <span class="ot">&lt;-</span> <span class="fu">nn_conv2d</span>(<span class="at">in_channels =</span> <span class="dv">1</span>, <span class="at">out_channels =</span> <span class="dv">1</span>, <span class="at">kernel_size =</span> <span class="dv">3</span>, <span class="at">padding =</span> <span class="dv">1</span>, <span class="at">stride =</span> <span class="dv">1</span>)</span>
@@ -371,8 +399,8 @@ The formula is <code>out_channels * (kernel_size^2 * in_channels + 1)</code>.
 Click for answer
 </summary>
 <ol type="a">
-<li><span class="math inline">\(1 * (3 * 3 * 1 + 1) = 10\)</span></li>
-<li><span class="math inline">\(784 * (784 + 1) = 615440\)</span></li>
+<li><span class="math inline">\(1 \times (3 \times 3 \times 1 + 1) = 10\)</span></li>
+<li><span class="math inline">\(784 \times (784 + 1) = 615440\)</span></li>
 </ol>
 </details>
 </div>
@@ -400,7 +428,7 @@ torch_tensor
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="5-cnn_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="5-cnn_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -417,6 +445,15 @@ torch_tensor
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Now apply the max pooling layer to the result from the convolution.</span></span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>pooled_output <span class="ot">&lt;-</span> <span class="fu">pool_layer</span>(image_rgb2[<span class="dv">1</span>, <span class="at">drop =</span> <span class="cn">FALSE</span>]<span class="sc">$</span><span class="fu">unsqueeze</span>(<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="5-cnn_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+</figure>
+</div>
+</div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -447,7 +484,7 @@ The output shape is <code>(1, 19, 19)</code>.
 </section>
 <section id="architecture-transfer-learning" class="level2">
 <h2 class="anchored" data-anchor-id="architecture-transfer-learning">Architecture &amp; Transfer Learning</h2>
-<p>While we have no covered individual components of CNNs, the question of how to configure and compose them is a challenging task, but essential for building efficient neural networks. However, for many problems, there are predefined architectures that perform well and can be used. Unless there is a specific reason to design a new architecture, it is recommended to use such an architecture.</p>
+<p>While we have now covered individual components of CNNs, the question of how to configure and compose them is a challenging task, but essential for building efficient neural networks. However, for many problems, there are predefined architectures that perform well and can be used. Unless there is a specific reason to design a new architecture, it is recommended to use an established one.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -472,11 +509,10 @@ Note
 <p>This is visualized below:</p>
 <p><img src="../assets/transfer-learning.svg" class="img-fluid"></p>
 <p><a href="https://en.wikipedia.org/wiki/Transfer_learning">Source</a></p>
-<p>The <a href="https://torchvision.mlverse.org/"><code>torchvision</code> package</a> offers various pretrained image networks that are available through the <a href="https://torchvision.mlverse.org/"><code>torchvision</code> package</a>. The ResNet-18 model is a well-known pre-trained model that was pretrained on ImageNet. It’s (complicated) architecture is shown below:</p>
+<p>The <a href="https://torchvision.mlverse.org/"><code>torchvision</code> package</a> offers various pretrained image networks that are available through the <a href="https://torchvision.mlverse.org/"><code>torchvision</code> package</a>. The ResNet-18 model is a well-known model that was trained on ImageNet. Because it’s architecture is quite complex, we only visualize it below, but don’t define it from scratch.</p>
 <p><img src="../assets/resnet18.png" class="img-fluid"></p>
-<p>Because it’s architecture is quite complex, we only visualize it below, but don’t define it from scratch.</p>
 <p><a href="https://www.researchgate.net/figure/Proposed-Modified-ResNet-18-architecture-for-Bangla-HCR-In-the-diagram-conv-stands-for_fig1_323063171">Source</a></p>
-<p>We can use the pretrained weights by setting the <code>pretrained</code> parameter to <code>TRUE</code> and specify the number of classes of our new task via the <code>num_classes</code> parameter (10 for MNIST).</p>
+<p>We can access the ResNet-18 model via torchvision and can obtain the pretrained weights by setting the <code>pretrained</code> parameter to <code>TRUE</code> and specifying the number of classes of our new task via the <code>num_classes</code> parameter (10 for MNIST).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(torchvision)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>resnet <span class="ot">&lt;-</span> <span class="fu">model_resnet18</span>(<span class="at">pretrained =</span> <span class="cn">FALSE</span>, <span class="at">num_classes =</span> <span class="dv">10</span>)</span>
@@ -500,8 +536,7 @@ Note
 • fc: &lt;nn_linear&gt; #5,130 parameters</code></pre>
 </div>
 </div>
-<p>When fine-tuning a pretrained model like ResNet-18, it’s common to observe instabilities in gradients, which can manifest as fluctuating validation performance.</p>
-<p>To fine-tune this model on MNIST, we need to also have a <code>dataloader</code>. In the case of MNIST, a predefined dataloader is available in the <code>torchvision</code> package. We transform both the input and the target to tensors (instead of R arrays).</p>
+<p>To fine-tune this model on MNIST, we need to also have a <code>dataloader</code>. In the case of MNIST, a predefined dataset is available in the <code>torchvision</code> package. We transform both the input and the target to tensors (instead of R arrays).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mnist_ds <span class="ot">&lt;-</span> <span class="fu">mnist_dataset</span>(<span class="at">root =</span> <span class="st">"data"</span>, <span class="at">download =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform =</span> torch_tensor, <span class="at">target_transform =</span> torch_tensor)</span>
@@ -532,7 +567,7 @@ Note
     transform: function (data, dtype = NULL, device = NULL, requires_grad = FALSE, </code></pre>
 </div>
 </div>
-<p>We can inspect the first element of the dataset.</p>
+<p>We can inspect the first two elements of the dataset.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>batch <span class="ot">&lt;-</span> mnist_ds[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(batch)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -564,17 +599,8 @@ Note
 <span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>mnist_test <span class="ot">&lt;-</span> <span class="fu">mnist_dataset</span>(<span class="at">root =</span> <span class="st">"data"</span>, <span class="at">download =</span> <span class="cn">TRUE</span>, <span class="at">train =</span> <span class="cn">FALSE</span>,</span>
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">transform =</span> transform_mnist, <span class="at">target_transform =</span> torch_tensor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>We can now compare the pretrained and untrained resnet on the training task and evaluate it on the validation data. The results are shown below:</p>
-<div class="cell" data-layout-align="center">
-<div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="5-cnn_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>When fine-tuning a pretrained model like ResNet-18, it’s common to observe instabilities in gradients, which can manifest as fluctuating validation performance.</p>
+<p>Below, we compare compare the results of training the pretrained and randomly initialized ResNet-18.</p>
+<p>Note that when fine-tuning a pretrained model like ResNet-18, it’s possible to observe instabilities in gradients, which can manifest as fluctuating validation performance.</p>
 <p>To address this, one can for example freeze the pretrained layers (for some epochs) and only train the new output head, a process known as <strong>freezing layers</strong>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -629,18 +655,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -672,11 +687,48 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -686,8 +738,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -699,7 +760,129 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -743,6 +926,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -768,6 +952,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -833,12 +1043,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <div class="nav-footer-left">
       &nbsp;
     </div>   
-    <div class="nav-footer-center">CC BY SA 4.0</div>
+    <div class="nav-footer-center">
+<p>CC BY SA 4.0</p>
+</div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
   </div>
 </footer>
+
 
 
 

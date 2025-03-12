@@ -115,7 +115,7 @@ plot_2d_image(imageout$squeeze())
 ::: {.content-visible when-meta=solutions}
 **Solution**
 ```{r}
-edge_kernel <- torch_tensor(matrix(c(-1, -1, 1, 1), byrow = TRUE, nrow = 3))
+edge_kernel <- torch_tensor(matrix(c(-1, -1, 1, 1), byrow = TRUE, nrow = 2))
 plot_2d_image(edge_kernel$squeeze())
 ```
 :::

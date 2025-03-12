@@ -57,15 +57,9 @@ A convolutional layer has the following parameters:
 
 The padding and the strides are visualized below:
 
-![](../assets/padding_strides.png)
+![](../assets/padding-strides.jpg)
 
 [Source](https://www.researchgate.net/figure/Summary-of-convolution-padding-stride-and-Max-Pooling_fig2_381448625)
-
-For the input and output channels, we have the following:
-
-![](../assets/input_output_channels.svg)
-
-[Source](https://classic.d2l.ai/chapter_convolutional-neural-networks/channels.html)
 
 To create a convolutional layer for a 2D image, we can use the `torch::nn_conv2d` function.
 
@@ -104,8 +98,8 @@ How many parameters does each layer have?
 
 <details>
 <summary>Click for answer</summary>
-a) $1 * (3 * 3 * 1 + 1) = 10$
-b) $784 * (784 + 1) = 615440$
+a) $1 \times (3 \times 3 \times 1 + 1) = 10$
+b) $784 \times (784 + 1) = 615440$
 </details>
 :::
 
@@ -135,7 +129,8 @@ Instead of applying a filter, max pooling simply partitions the input into non-o
 ![](../assets/maxpooling.png)
 [Source](https://www.mdpi.com/2076-3417/12/17/8643)
 
-Below, we demonstrate it in action. We start by applying a convolutional layer to an MNIST image to obtain feature maps and then apply a 2×2 max pooling layer (with stride 2) on the convolution output.
+Below, we demonstrate it in action.
+ We start by applying a convolutional layer to an MNIST image to obtain feature maps and then apply a 2×2 max pooling layer (with stride 2) on the convolution output.
 The two results are visualized side-by-side.
 
 ```{r}
@@ -146,7 +141,7 @@ pool_layer <- nn_max_pool2d(kernel_size = 2, stride = 2)
 pooled_output <- pool_layer(image_rgb2[1, drop = FALSE]$unsqueeze(1))
 ```
 
-```{r, include = FALSE}
+```{r, echo = FALSE}
 min1 = min(c(min(image_rgb2[1, ])$item(), min(pooled_output)$item()))
 max1 = min(c(max(image_rgb2[1, ])$item(), max(pooled_output)$item()))
 p_conv <- plot_2d_image(image_rgb2[1, ]$squeeze(), min = min1)
