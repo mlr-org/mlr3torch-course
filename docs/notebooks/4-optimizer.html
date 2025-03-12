@@ -2,12 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.3.433">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Optimization &amp; Regularization – Deep Learning with (mlr3)torch</title>
+<title>Deep Learning with mlr3 &amp; torch - Optimization &amp; Regularization</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,7 +22,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -33,7 +33,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -58,7 +58,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -99,13 +98,7 @@ div.csl-indent {
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 50,
-  "keyboard-shortcut": [
-    "f",
-    "/",
-    "s"
-  ],
-  "show-item-context": false,
+  "limit": 20,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -114,42 +107,14 @@ div.csl-indent {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
-    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -157,145 +122,140 @@ window.Quarto = {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container mx-auto">
+      <div class="navbar-brand-container">
     <a class="navbar-brand" href="../index.html">
-    <span class="navbar-title">Deep Learning with (mlr3)torch</span>
+    <span class="navbar-title">Deep Learning with mlr3 &amp; torch</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-general" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-general" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">General</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-general">    
         <li>
-    <a class="dropdown-item" href="../notebooks/setup-guide.html">
+    <a class="dropdown-item" href="../notebooks/setup-guide.html" rel="" target="">
  <span class="dropdown-text">Setup</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/resources.html">
+    <a class="dropdown-item" href="../notebooks/resources.html" rel="" target="">
  <span class="dropdown-text">Resources</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tutorials" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-tutorials" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">Tutorials</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-tutorials">    
         <li>
-    <a class="dropdown-item" href="../notebooks/0-tutorial-intro.html">
- <span class="dropdown-text">Intro</span></a>
-  </li>  
-        <li><hr class="dropdown-divider"></li>
-        <li>
-    <a class="dropdown-item" href="../notebooks/1-tensor.html">
+    <a class="dropdown-item" href="../notebooks/1-tensor.html" rel="" target="">
  <span class="dropdown-text">1. Tensors</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/2-autograd.html">
+    <a class="dropdown-item" href="../notebooks/2-autograd.html" rel="" target="">
  <span class="dropdown-text">2. Autograd</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/3-modules-data.html">
+    <a class="dropdown-item" href="../notebooks/3-modules-data.html" rel="" target="">
  <span class="dropdown-text">3. Modules and Data</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/4-optimizer.html">
+    <a class="dropdown-item" href="../notebooks/4-optimizer.html" rel="" target="">
  <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-cnn.html">
+    <a class="dropdown-item" href="../notebooks/5-cnn.html" rel="" target="">
  <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-mlr3torch.html">
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch.html" rel="" target="">
  <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-training-efficiency.html">
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency.html" rel="" target="">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-exercises" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-exercises" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">Exercises</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-exercises">    
         <li>
-    <a class="dropdown-item" href="../notebooks/0-exercise-intro.html">
+    <a class="dropdown-item" href="../notebooks/0-exercise-intro.html" rel="" target="">
  <span class="dropdown-text">Intro</span></a>
   </li>  
         <li><hr class="dropdown-divider"></li>
         <li>
-    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-task.html" rel="" target="">
  <span class="dropdown-text">1. Tensors</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-task.html" rel="" target="">
  <span class="dropdown-text">2. Autograd</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-task.html" rel="" target="">
  <span class="dropdown-text">3. Modules and Data</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-task.html" rel="" target="">
  <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-task.html" rel="" target="">
  <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-task.html" rel="" target="">
  <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html">
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-task.html" rel="" target="">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-solutions" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-solutions" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">Solutions</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-solutions">    
         <li>
-    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/1-tensor-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">1. Tensors</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/2-autograd-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">2. Autograd</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/3-modules-data-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">3. Modules and Data</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/4-optimizer-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">4. Optimization &amp; Regularization</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/5-cnn-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">5. CNNs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/6-mlr3torch-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">6. mlr3torch</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html">
+    <a class="dropdown-item" href="../notebooks/7-training-efficiency-exercise-solution.html" rel="" target="">
  <span class="dropdown-text">7. Training Efficiency</span></a>
   </li>  
     </ul>
@@ -303,14 +263,14 @@ window.Quarto = {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/sebffischer/torch-eds"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/mlr-org/mlr3torch-course" rel="" target=""><i class="bi bi-github" role="img">
 </i> 
-<span class="menu-text"></span></a>
+ <span class="menu-text"></span></a>
   </li>  
 </ul>
-          </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
 </div>
+          </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -337,12 +297,10 @@ window.Quarto = {
   </div>
   
 
-
 </header>
 
-
 <p>In this notebook, we will focus on the <em>optimization</em> and <em>regularization</em> aspects of deep learning.</p>
-<p>Optimizers are algorithms that iteratively adjust the parameters of a neural network to minimize the loss function during training. They define how the networks <em>learn</em> from the data.</p>
+<p>Optimizers are algorithms that iteratively adjust the parameters of a neural network to minimize the loss function during training. They define how a network <em>learns</em> from data.</p>
 <p>Let’s denote <span class="math inline">\(\hat{\mathcal{R}}(\theta)\)</span> as the empirical risk function, which assigns the empirical risk given data <span class="math inline">\(\{(x^{(i)}, y^{(i)})\}_{i = 1}^n\)</span> to a parameter vector <span class="math inline">\(\theta\)</span>. Here, <span class="math inline">\(f_\theta\)</span> is the model’s prediction function, <span class="math inline">\(x^{(i)}\)</span> is the <span class="math inline">\(i\)</span>-th sample in the training data, and <span class="math inline">\(y^{(i)}\)</span> is the corresponding target value. <span class="math display">\[\hat{\mathcal{R}}(\theta) = \frac{1}{n} \sum_{i=1}^n L(f_\theta(x^{(i)}), y^{(i)}) \]</span></p>
 <p>Often, the empirical risk function is extended with a <strong>regularization term</strong>. Regularization in machine learning and statistics is used to prevent overfitting by adding a penalty term to the risk function, which discourages overly complex models that might fit noise in the training data. It helps improve generalization to unseen data. One common regularizer is the L2 norm of the parameter vector, which penalizes large coefficients by adding the squared magnitude of the coefficients to the loss function:</p>
 <p><span class="math display">\[
@@ -370,14 +328,14 @@ Yes, because the size of the parameter vector depends on the scale of the featur
 </div>
 <p>While the goal of the risk function is to define what we want, it’s the optimizer’s job to find the parameter vector <span class="math inline">\(\theta^*\)</span> that minimizes the empirical risk function. For simplicity, we will now refer to both the regularized and unregularized risk function as <span class="math inline">\(\hat{\mathcal{R}}\)</span>.</p>
 <p><span class="math display">\[\theta^* = \arg \min_\theta \hat{\mathcal{R}}(\theta)\]</span></p>
-<p>This is done by iteratively updating the parameter vector <span class="math inline">\(\theta\)</span> using the gradient of the loss function with respect to the parameter vector. The simplified update formula for a parameter <span class="math inline">\(\theta\)</span> at time step <span class="math inline">\(t\)</span> is given by:</p>
+<p>This is done by iteratively updating the parameter vector <span class="math inline">\(\theta\)</span> using the gradient of the risk function with respect to the parameter vector. The simplified update formula for a parameter <span class="math inline">\(\theta\)</span> at time step <span class="math inline">\(t\)</span> is given by:</p>
 <p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \frac{\partial \hat{\mathcal{R}}}{\partial \theta_t}\]</span></p>
 <p>Where:</p>
 <ul>
 <li><span class="math inline">\(\theta_t\)</span> is the current value of the parameter vector at time step <span class="math inline">\(t\)</span>.</li>
 <li><span class="math inline">\(\theta_{t+1}\)</span> is the new value of the parameter after the update.</li>
 <li><span class="math inline">\(\eta\)</span> (eta) is the learning rate, which controls the step size.</li>
-<li><span class="math inline">\(\frac{\partial \hat{\mathcal{R}}}{\partial \theta_t}\)</span> is the derivative of the empirical risk function <span class="math inline">\(\hat{\mathcal{R}}\)</span> with respect to parameter <span class="math inline">\(\theta\)</span>, i.e., the gradient.</li>
+<li><span class="math inline">\(\frac{\partial \hat{\mathcal{R}}}{\partial \theta_t}\)</span> is the derivative of the empirical risk function <span class="math inline">\(\hat{\mathcal{R}}\)</span> with respect to parameter <span class="math inline">\(\theta\)</span>, evaluated at <span class="math inline">\(\theta_t\)</span>.</li>
 </ul>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -389,7 +347,7 @@ Quiz: Learning Rate
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><strong>Question 1</strong>: Can you explain what happens when the learning rate is too high? What happens when it is too low?</p>
+<p><strong>Question 1</strong>: Can you guess what happens when the learning rate is too high? What happens when it is too low?</p>
 <details>
 <summary>
 Click for answer
@@ -412,12 +370,12 @@ Click for answer
 <p>Before we cover these more advanced approaches (specifically their implementation in AdamW), we will first focus on the vanilla version of Stochastic Gradient Descent (SGD).</p>
 <section id="mini-batch-effects-in-sgd" class="level2">
 <h2 class="anchored" data-anchor-id="mini-batch-effects-in-sgd">Mini-Batch Effects in SGD</h2>
-<p>When using mini-batches, the gradient becomes a noisy estimate of the gradient over the full dataset. With <span class="math inline">\(\nabla L^{(i)}_t := \frac{\partial L^{(i)}}{\partial \theta_t}\)</span> being the gradient of the loss function with respect to the entire parameter vector estimated using <span class="math inline">\((x^{(i)}, y^{(i)})\)</span>, the mini-batch gradient is given by:</p>
-<p><span class="math display">\[\nabla L^B_t = \frac{1}{|B|} \sum_{i \in B} \nabla L^{(i)}_t\]</span></p>
+<p>When using mini-batches, the gradient becomes a noisy estimate of the gradient over the full dataset. With <span class="math inline">\(\nabla \hat{\mathcal{R}}^{(i)}_t := \frac{\partial \hat{\mathcal{R}}^{(i)}}{\partial \theta_t}\)</span> being the gradient of the risk function with respect to the entire parameter vector estimated using <span class="math inline">\((x^{(i)}, y^{(i)})\)</span>, the mini-batch gradient is given by:</p>
+<p><span class="math display">\[\nabla \hat{\mathcal{R}}^B_t = \frac{1}{|B|} \sum_{i \in B} \nabla \hat{\mathcal{R}}^{(i)}_t\]</span></p>
 <p>where <span class="math inline">\(B\)</span> is the batch of samples and <span class="math inline">\(|B|\)</span> is the batch size.</p>
 <p>The update formula for SGD is then given by:</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \nabla L^B_t\]</span></p>
-<p>This is visualized in the image below:</p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \nabla \hat{\mathcal{R}}^B_t\]</span></p>
+<p>The difference between the full gradient and the mini-batch gradient is visualized in the image below:</p>
 <p><img src="../assets/gd_vs_sgd.png" class="img-fluid"></p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -445,12 +403,12 @@ Click for answer
 <summary>
 Click for answer
 </summary>
-<p>In machine learning, we assume that the data is drawn from a distribution <span class="math inline">\(P\)</span>. The gradient over the full dataset approximates the expectation over this distribution:</p>
-<span class="math display">\[\nabla \mathcal{R} = \mathbb{E}_{x \sim P} \nabla \mathcal{L}(f_\theta(x), y)\]</span>
+<p>In machine learning, we assume that the data is drawn from a distribution <span class="math inline">\(\mathbb{E}\)</span>. The gradient over the full dataset approximates the expectation over this distribution:</p>
+<span class="math display">\[\nabla \mathcal{R} = \mathbb{E}_{x \sim P} \nabla_\theta [\mathcal{R}(f_\theta(x), y)]\]</span>
 </details>
 </div>
 </div>
-<p>Because deep learning models can have many parameters and computing gradients is expensive, understanding the effects of different batch sizes and convergence is important. The computational cost (which we define as the time it takes to perform one optimization step) of a gradient update using a batch size <span class="math inline">\(b\)</span> consists of:</p>
+<p>Because deep learning models can have many parameters and computing gradients is expensive, understanding the effects of different batch sizes and convergence is important. The computational cost (which we define as the time it takes to perform one optimization step) of a gradient update using a batch size <span class="math inline">\(B\)</span> consists of:</p>
 <ol type="1">
 <li>Loading the batch into memory (if the data does not fit into RAM).</li>
 <li>The forward pass of the model.</li>
@@ -476,8 +434,8 @@ Click for answer
 False. Because GPUs can perform many operations simultaneously, the cost of performing a gradient update using a batch size of <span class="math inline">\(2\)</span> is not twice the cost of a batch size of <span class="math inline">\(1\)</span>. The cost depends on many factors, but if the model is small, the cost of a batch with 2 observations might be almost the same as one with one observation.
 </details>
 <p><strong>Question 2:</strong> The standard error of the mini-batch gradient estimate (which characterizes the precision of the gradient estimate) can be written as:</p>
-<p><span class="math display">\[\text{SE}_{\nabla L^B_t} = \frac{\sigma_{\nabla L_t}}{\sqrt{|B|}}\]</span></p>
-<p>where <span class="math inline">\(\sigma_{\nabla L_t}\)</span> is the standard deviation of the gradient estimate relative to the batch size.</p>
+<p><span class="math display">\[\text{SE}_{\nabla \hat{\mathcal{R}}^B_t} = \frac{\sigma_{\nabla \hat{\mathcal{R}}_t}}{\sqrt{|B|}}\]</span></p>
+<p>where <span class="math inline">\(\sigma_{\nabla \hat{\mathcal{R}}_t}\)</span> is the standard deviation of the gradient estimate.</p>
 <p>Describe the dynamics of the standard error when increasing the batch size: How do you need to increase a batch size from <span class="math inline">\(1\)</span> to achieve half the standard error? What about increasing a batch size from <span class="math inline">\(100\)</span>?</p>
 <details>
 <summary>
@@ -509,14 +467,14 @@ Quiz: Local vs.&nbsp;Global Minima, Generalization
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Question 1: Do you believe SGD will find local or global minima? Explain your reasoning.</p>
+<p><strong>Question 1</strong>: Do you believe SGD will find local or global minima? Explain your reasoning.</p>
 <details>
 <summary>
 Click for answer
 </summary>
 Because the gradient only has <strong>local</strong> information about the loss function, SGD finds local minima.
 </details>
-<p>Question 2: Assuming we have found a <span class="math inline">\(\theta^*\)</span> that has low training loss, does this ensure that we have found a good model?</p>
+<p><strong>Question 2</strong>: Assuming we have found a <span class="math inline">\(\theta^*\)</span> that has low training loss, does this ensure that we have found a good model?</p>
 <details>
 <summary>
 Click for answer
@@ -546,7 +504,7 @@ Note
 </div>
 </div>
 <p>If we integrate weight decay into the gradient update formula, we get the following:</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \big(\frac{\partial L}{\partial \theta_t} - \lambda \theta_t\big)\]</span></p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \big(\frac{\partial \hat{\mathcal{R}}}{\partial \theta_t} - \lambda \theta_t\big)\]</span></p>
 <p>This formula shows that the weight decay term (<span class="math inline">\(- \lambda \theta_t\)</span>) effectively shrinks the weights during each update, helping to prevent overfitting.</p>
 <p><img src="../assets/regularization.png" class="img-fluid"></p>
 <p><a href="https://www.linkedin.com/pulse/understanding-regularization-techniques-machine-javier-icaza-santos">Source</a></p>
@@ -561,11 +519,11 @@ Note
 </ul>
 <p>The exponential moving momentum update can be expressed mathematically as:</p>
 <p><span class="math display">\[
-(1 - \beta) \sum_{\tau=1}^{t} \beta^{t-\tau} \nabla_{\theta} \mathcal{L}(\theta_{\tau-1})
+(1 - \beta) \sum_{\tau=1}^{t} \beta^{t-\tau} \nabla_{\theta} \hat{\mathcal{R}}(\theta_{\tau-1})
 \]</span></p>
 <p>In order to avoid having to keep track of all the gradients, we can calculate the update in two steps as follows:</p>
 <p><span class="math display">\[
-v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_\theta L(\theta_t)
+v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_\theta \hat{\mathcal{R} }(\theta_t)
 \]</span></p>
 <p><span class="math display">\[
 \theta_{t+1} = \theta_t - \eta \frac{v_t}{1 - \beta_1^t}
@@ -587,7 +545,7 @@ v_t = \beta_1 v_{t-1} + (1 - \beta_1) \nabla_\theta L(\theta_t)
 <li>Be different for different parameters.</li>
 </ol>
 <p>Our vanilla SGD update formula is now generalized to handle adaptive learning rates:</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta_t \cdot \frac{\nabla_\theta L(\theta_t)}{\sqrt{v_t} + \epsilon}\]</span></p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta_t \cdot \frac{\nabla_\theta \hat{\mathcal{R}}(\theta_t)}{\sqrt{v_t} + \epsilon}\]</span></p>
 <p>Here, <span class="math inline">\(\eta_t\)</span> is now not a scalar learning rate, but a vector of learning rates for each parameter, and ‘<span class="math inline">\(\cdot\)</span>’ denotes the element-wise multiplication. Further, <span class="math inline">\(\epsilon\)</span> is a small constant for numerical stability.</p>
 <p>In AdamW, the adaptive learning rate is controlled by the second moment estimate (squared gradients):</p>
 <p><span class="math display">\[v_t = \beta_2 v_{t-1} + (1-\beta_2)(g_t)^2\]</span> <span class="math display">\[\hat{\eta}_t = \eta \frac{1}{\sqrt{v_t + \epsilon}}\]</span></p>
@@ -653,7 +611,7 @@ $amsgrad
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="4-optimizer_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+<p><img src="4-optimizer_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -722,7 +680,7 @@ Quiz: Guess which parameter is varied
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="4-optimizer_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="768"></p>
+<p><img src="4-optimizer_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -738,7 +696,7 @@ The learning rate is varied. This can be seen as the gradient updates for the ri
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="4-optimizer_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="768"></p>
+<p><img src="4-optimizer_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -754,7 +712,7 @@ The weight decay is varied. We can see this as the final parameter value for the
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="4-optimizer_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="768"></p>
+<p><img src="4-optimizer_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -770,7 +728,7 @@ The momentum parameter <span class="math inline">\(\beta_1\)</span> is varied. T
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="4-optimizer_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="768"></p>
+<p><img src="4-optimizer_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="768"></p>
 </figure>
 </div>
 </div>
@@ -786,7 +744,7 @@ The <span class="math inline">\(\beta_2\)</span> parameter is varied. There is n
 <section id="learning-rate-schedules" class="level2">
 <h2 class="anchored" data-anchor-id="learning-rate-schedules">Learning Rate Schedules</h2>
 <p>While we have already covered dynamic learning rates, it can still be beneficial to use a <strong>learning rate scheduler</strong> to further improve convergence. Like for adaptive learning rates, the learning rate is then not a constant scalar, but a function of the current epoch or iteration. Note that the learning rate schedulers discussed here can also be combined with adaptive learning rates such as in AdamW and are not mutually exclusive.</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta_t \cdot \frac{\nabla_\theta L(\theta_t)}{\sqrt{v_t} + \epsilon}\]</span></p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta_t \cdot \frac{\nabla_\theta \hat{\mathcal{R}}(\theta_t)}{\sqrt{v_t} + \epsilon}\]</span></p>
 <p><strong>Decaying learning rates</strong>:</p>
 <p>This includes gradient decay, cosine annealing, and cyclical learning rates. The general idea is to start with a high learning rate and then gradually decrease it over time.</p>
 <p><strong>Warmup</strong>:</p>
@@ -798,7 +756,7 @@ The <span class="math inline">\(\beta_2\)</span> parameter is varied. There is n
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="4-optimizer_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+<p><img src="4-optimizer_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -809,17 +767,17 @@ The <span class="math inline">\(\beta_2\)</span> parameter is varied. There is n
 </div>
 <p>The main API of a learning rate scheduler is the <code>$step()</code> method, which updates the learning rate. For some schedulers, this needs to be called after each optimization step, for others after each epoch. You can find this out by consulting the documentation of the specific scheduler.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>opt<span class="sc">$</span>param_groups[[<span class="dv">1</span>L]]<span class="sc">$</span>lr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>opt<span class="sc">$</span>param_groups[[1L]]<span class="sc">$</span>lr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.2</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>scheduler<span class="sc">$</span><span class="fu">step</span>()</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>opt<span class="sc">$</span>param_groups[[<span class="dv">1</span>L]]<span class="sc">$</span>lr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>opt<span class="sc">$</span>param_groups[[1L]]<span class="sc">$</span>lr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.2</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>scheduler<span class="sc">$</span><span class="fu">step</span>()</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>opt<span class="sc">$</span>param_groups[[<span class="dv">1</span>L]]<span class="sc">$</span>lr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>opt<span class="sc">$</span>param_groups[[1L]]<span class="sc">$</span>lr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.02</code></pre>
 </div>
@@ -837,7 +795,7 @@ The <span class="math inline">\(\beta_2\)</span> parameter is varied. There is n
 <li>The <code>$state</code> which contains the optimizer’s internal state, such as the momentum and second moment estimates.</li>
 </ol>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>state_dict<span class="sc">$</span>param_groups[[<span class="dv">1</span>L]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>state_dict<span class="sc">$</span>param_groups[[1L]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>$params
 [1] 1 2
@@ -877,11 +835,11 @@ Note
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">params =</span> <span class="fu">torch_tensor</span>(<span class="dv">1</span>), <span class="at">lr =</span> <span class="dv">1</span>),</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">params =</span> <span class="fu">torch_tensor</span>(<span class="dv">2</span>), <span class="at">lr =</span> <span class="dv">2</span>)</span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>))</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>o2<span class="sc">$</span>param_groups[[<span class="dv">1</span>L]]<span class="sc">$</span>lr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>o2<span class="sc">$</span>param_groups[[1L]]<span class="sc">$</span>lr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>o2<span class="sc">$</span>param_groups[[<span class="dv">2</span>L]]<span class="sc">$</span>lr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>o2<span class="sc">$</span>param_groups[[2L]]<span class="sc">$</span>lr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 2</code></pre>
 </div>
@@ -963,7 +921,7 @@ Warning
 <p>Dropout is a regularization technique used to prevent overfitting in neural networks. During each training iteration, dropout randomly “drops” a subset of neurons by setting their activations to zero with a specified probability. This forces the network to distribute the learned representations more evenly across neurons. Dropout is most commonly used in the context of fully connected layers.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../assets/dropout.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%"></p>
+<p><img src="../assets/dropout.png" class="img-fluid figure-img" style="width:100.0%"></p>
 </figure>
 </div>
 <p><a href="https://medium.com/konvergen/understanding-dropout-ddb60c9f98aa">Source</a></p>
@@ -1164,7 +1122,7 @@ The first statement is true because, in evaluation mode, the module uses the run
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="4-optimizer_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="672"></p>
+<p><img src="4-optimizer_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1176,7 +1134,7 @@ The first statement is true because, in evaluation mode, the module uses the run
 </section>
 </section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-loshchilov2017decoupled" class="csl-entry" role="listitem">
 Loshchilov, I. 2017. <span>“Decoupled Weight Decay Regularization.”</span> <em>arXiv Preprint arXiv:1711.05101</em>.
 </div>
@@ -1216,7 +1174,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const onCopySuccess = function(e) {
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1248,50 +1217,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
   });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-    }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
-      }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+  function tippyHover(el, contentFn) {
     const config = {
       allowHTML: true,
+      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1301,17 +1231,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start',
+      placement: 'bottom-start'
     };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1323,130 +1244,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
-        }
-      }
-    }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
-          }
-        }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
-        }
-        return container.innerHTML
-      } else {
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(note);
-        }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      // TODO in 1.5, we should make sure this works without a callout special case
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
-      }
-    }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
-          }
-        } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
-          .then(res => res.text())
-          .then(html => {
-            const parser = new DOMParser();
-            const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
-            if (note !== null) {
-              const html = processXRef(id, note);
-              instance.setContent(html);
-            } 
-          }).finally(() => {
-            instance.enable();
-            instance.show();
-          });
-        }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
+      return note.innerHTML;
     });
   }
       let selectedAnnoteEl;
@@ -1490,7 +1288,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
-            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -1516,32 +1313,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1607,15 +1378,12 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     <div class="nav-footer-left">
       &nbsp;
     </div>   
-    <div class="nav-footer-center">
-<p>CC BY SA 4.0</p>
-</div>
+    <div class="nav-footer-center">CC BY SA 4.0</div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
   </div>
 </footer>
-
 
 
 
