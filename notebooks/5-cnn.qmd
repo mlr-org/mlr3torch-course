@@ -310,7 +310,7 @@ ggplot(tbl1, aes(x = epoch, y = logloss, color = pretrained)) +
   labs(title = "Validation Logloss", x = "Epoch", y = "Logloss")
 ```
 
-![](assets/pretraine-vs-random.png)
+![](assets/pretrained-vs-random.png)
 
 Note that when fine-tuning a pretrained model like ResNet-18, it's possible to observe instabilities in gradients, which can manifest as fluctuating validation performance.
 

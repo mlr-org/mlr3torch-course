@@ -11,7 +11,7 @@ In this exercise, we will once again train a simple multi-layer perceptron on th
 1. Uses 2 hidden layers with 100 neurons each.
 2. Utilizes a batch size of 128.
 3. Trains for 200 epochs.
-4. Employs a validation set co  mprising 30% of the data.
+4. Employs a validation set comprising 30% of the data.
 5. Track the validation log-loss.
 6. Utilizes trace-jitting to speed up the training process.
 7. Employs the history callback to record the training and validation log-loss during training.

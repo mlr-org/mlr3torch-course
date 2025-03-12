@@ -56,17 +56,11 @@ bench::mark(
 
 Training large networks on a CPU is not a recommended approach, but it can be a viable option for smaller networks.
 You can still use multiple threads to speed up the execution of operations.
-Please be aware that the code below will not execute on macOS, as setting the number of threads is not supported on this operating system.
+The number of threads can be specified using the `torch_set_num_threads()` function:
 
 ```{r eval = (Sys.info()["sysname"] != "Darwin")}
-# this will be skipped on macOS
-bench::mark(
-  {torch_set_num_threads(1L); x_cpu$matmul(x_cpu)},
-  {torch_set_num_threads(16L); x_cpu$matmul(x_cpu)}
-)
+torch_set_num_threads(10L)
 ```
-
-`torch` also allows for interop-parallelization, but this is more advanced and code needs to be written in a specific way.
 
 :::{.callout-note}
 ## Quiz: Number of Threads
@@ -108,7 +102,7 @@ These approaches will now be discussed.
 When implementing a dataset, we need to define:
 
 1. How we store and load the data
-2. Whether implementing loading of a batch is beneficial
+2. Whether implementing `$.getbatch()` (instead of `$.getitem()`) is beneficial
 
 :::{.callout-note}
 ## Quiz: Data Loading
@@ -259,7 +253,7 @@ ds_tensor_batch = dataset("tensor_batch",
 <summary>Click for answer</summary>
 The `$.getbatch()` implementation is faster than the `$.getitem()` implementation.
 This is because when using the `$.getitem()` method, the batch for indices `ids` is obtained by calling `$.getitem(id)` for each index in `ids` and then stacking them together, which requires a new tensor allocation.
-Slicing the tensor, however, avoids this allocation when `shuffle = TRUE` (which is also the default).
+Slicing the tensor, however, avoids this allocation when `shuffle = FALSE` (which is also the default).
 
 ```{r}
 bench::mark(
@@ -285,7 +279,7 @@ The image below visualizes this process:
 Creating such a parallel dataloader is as easy as setting the `num_workers` parameter to a value greater than 0.
 
 :::{.callout-note}
-Note that in the current implementation, parallel data loading is only beneficial when it is slow, e.g., because of loading the data from disk or because of expensive preprocessing.
+Note that in the current R implementation, parallel data loading is only beneficial when loading an individual batch is relatively slow, e.g., because of loading the data from disk or because of expensive preprocessing.
 This will hopefully be improved in the future (by a faster implementation of the parallel dataloader).
 :::
 
@@ -293,9 +287,9 @@ This will hopefully be improved in the future (by a faster implementation of the
 ### Moving Data to the GPU
 
 One thing we have ignored so far is that when training using a GPU, the data needs to be moved from RAM to the GPU.
-This is because a GPU has its own memory (VRAM), and the data needs to be moved to this memory before it can be used for training.
+This is because a GPU has its own memory (VRAM), and the data needs to be moved to this memory before GPU operations can be performed.
 The moving of the data to the GPU cannot be done on the processes that are loading the data but must be done in the main process, i.e., after the batch was received from (possibly parallelized) dataloader.
-One way to speed up the data loading process is to pin the memory of the data to the GPU.
+One way to speed up the data loading process is to pin the memory of the data that is transferred to the GPU.
 Before a tensor can be moved from RAM to VRAM, it needs to be in so-called page-locked memory, which can be enabled using the `pin_memory` parameter of `dataloader()`..
 
 ![](../assets/pinned-memory.png)
@@ -338,7 +332,7 @@ optim_ignite_adamw
 ```
 
 The 'ignite' indicates that the optimizer is a version that is optimized for performance.
-Not for all optimizers does an ignite version exist, but for the most common ones, there does.
+Not for all optimizers does an ignite version exist, but for the most common ones, there is one.
 
 Below, we compare the performance of the default optimizer and the ignite optimizer and see that the latter is considerably faster.
 
@@ -346,7 +340,8 @@ Below, we compare the performance of the default optimizer and the ignite optimi
 adamw = as_torch_optimizer(torch::optim_adamw)
 ignite_adamw = as_torch_optimizer(torch::optim_ignite_adamw)
 
-learner = lrn("classif.mlp", epochs = 10, neurons = c(100, 100), batch_size = 32, optimizer = adamw)
+learner = lrn("classif.mlp", epochs = 10, neurons = c(100, 100),
+  batch_size = 32, optimizer = adamw)
 
 learner_ignite = learner$clone(deep = TRUE)
 learner_ignite$configure(
@@ -444,7 +439,7 @@ For many simple modules, trace-compilation should usually work.
 You can also check this by running the original and trace-jitted module on some example inputs and see if they return the same result.
 
 :::{.callout-note}
-A trace-jitted module *does* respect the mode of the network, i.e., whether it is training or evaluating.
+A trace-jitted module *does* respect the mode of the network, i.e., whether it is in train mode or eval mode.
 :::
 
 In `mlr3torch`, trace compilation is also available and can be enabled by setting `jit_trace = TRUE` in the learner.
