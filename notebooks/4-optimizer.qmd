@@ -275,9 +275,6 @@ $$g_t = \beta_2 g_{t-1} + (1-\beta_2)(\nabla_{\theta_t} \hat{\mathcal{R}}^{B_t})
 $$\hat{\eta}_t = \frac{\eta}{\sqrt{\frac{g_t}{1 - \beta_2^t}} + \epsilon}$$
 
 In words, this means: In steep directions where the gradient is large, the learning rate is small and vice versa. The parameters $\beta_2$ and $\epsilon$ are hyperparameters that control the decay rate and numerical stability of the second moment estimate.
-
-![](../assets/adagrad.png)
-
 When combining weight decay, adaptive learning rates, and momentum, we get the AdamW optimizer. It therefore has parameters:
 
 * `lr`: The learning rate.
@@ -721,7 +718,7 @@ nn_vanilla <- nn_reg(dropout = FALSE, batch_norm = FALSE)
 
 We evaluate the performance of the four neural networks created above using subsampling with 10 repetitions and an 80/20 train/test split.
 We don't show the specific training code here, but only the resulting confidence intervals for the accuracy.
-While the intervals are too wide to be able to draw any final conclusions, dropout here seems to have a positive effect on the generalization performance of the model, whereas batch normalization does not (which is not too surprising as it is usually used with convolutional layers).
+While the intervals are too wide to be able to draw any final conclusions, dropout here seems to have the biggest positive effect on the generalization performance of the model.
 
 ```{r, echo = FALSE, message = FALSE}
 library(mlr3inferr)
