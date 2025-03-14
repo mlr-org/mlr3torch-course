@@ -294,19 +294,6 @@ Before a tensor can be moved from RAM to VRAM, it needs to be in so-called page-
 
 ![](../assets/pinned-memory.png)
 
-```{r, eval = cuda_is_available()}
-iter_cuda = function(ds, pin_memory = TRUE) {
-  dl = torch::dataloader(ds, batch_size = 16, pin_memory = pin_memory)
-  coro::loop(for(batch in dl) {
-    batch$cuda()
-  })
-}
-
-bench::mark(
-  not_pinned = iter_cuda(ds_disk, pin_memory = FALSE),
-  pinned = iter_cuda(ds_disk, pin_memory = TRUE)
-)
-```
 
 :::{.callout-note}
 
