@@ -213,7 +213,7 @@ For more complex optimizers such as Adam, weight decay is not equivalent to addi
 
 If we integrate weight decay into the gradient update formula, we get the following:
 
-$$\theta_{t+1} = \theta_t - \eta \big(\nabla_{\theta_t} \hat{\mathcal{R}}^B- \lambda \theta_t\big)$$
+$$\theta_{t+1} = \theta_t - \eta \big(\nabla_{\theta_t} \hat{\mathcal{R}}^B+ \lambda \theta_t\big)$$
 
 This formula shows that the weight decay term ($- \lambda \theta_t$) effectively shrinks the weights during each update, helping to prevent overfitting.
 

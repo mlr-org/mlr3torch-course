@@ -541,7 +541,7 @@ Note
 </div>
 </div>
 <p>If we integrate weight decay into the gradient update formula, we get the following:</p>
-<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \big(\nabla_{\theta_t} \hat{\mathcal{R}}^B- \lambda \theta_t\big)\]</span></p>
+<p><span class="math display">\[\theta_{t+1} = \theta_t - \eta \big(\nabla_{\theta_t} \hat{\mathcal{R}}^B+ \lambda \theta_t\big)\]</span></p>
 <p>This formula shows that the weight decay term (<span class="math inline">\(- \lambda \theta_t\)</span>) effectively shrinks the weights during each update, helping to prevent overfitting.</p>
 <p><img src="../assets/regularization.png" class="img-fluid"></p>
 <p><a href="https://www.linkedin.com/pulse/understanding-regularization-techniques-machine-javier-icaza-santos">Source</a></p>
